@@ -7,21 +7,30 @@ import { SITE_URL } from '@/lib/site'
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'OpenAA DMV | 美国驾照中文题库',
+    default: '美国 DMV 中文题库｜各州驾照笔试练习 - OpenAA DMV',
     template: '%s | OpenAA DMV',
   },
-  description: 'OpenAA DMV 提供美国各州驾照中文题库、Permit 笔试练习、模拟考试、交通标志和 DMV 办事指南。',
+  description: '美国各州 DMV 中文题库与驾照笔试练习平台。按州练习 Permit 笔试、模拟考试、交通标志和错题，并提供各州 DMV 官方入口。',
+  keywords: ['DMV中文题库', '美国驾照中文考试', 'DMV中文考试', 'Permit中文题库', '美国驾照笔试', 'DMV模拟考试', 'OpenAA DMV'],
   manifest: '/manifest.webmanifest',
-  alternates: {
-    canonical: '/',
-  },
+  alternates: { canonical: '/' },
   openGraph: {
     type: 'website',
     locale: 'zh_CN',
     siteName: 'OpenAA DMV',
     url: SITE_URL,
-    title: 'OpenAA DMV | 美国驾照中文题库',
-    description: '美国各州 DMV 中文题库、Permit 笔试练习、模拟考试和驾照指南。',
+    title: '美国 DMV 中文题库｜各州驾照笔试练习 - OpenAA DMV',
+    description: '选择所在州，开始 DMV 中文题库、Permit 笔试、模拟考试和交通标志练习。',
+  },
+  twitter: {
+    card: 'summary',
+    title: '美国 DMV 中文题库 - OpenAA DMV',
+    description: '美国各州 DMV 中文驾照笔试练习、模拟考试和交通标志。',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
   },
   icons: {
     icon: [
