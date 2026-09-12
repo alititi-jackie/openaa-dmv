@@ -1,14 +1,28 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import Header from '@/components/Header'
-import BottomNav from '@/components/BottomNav'
+import Footer from '@/components/Footer'
 import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
-  title: 'OpenAA – 纽约站 – 华人生活圈',
-  description: '纽约华人综合服务平台 — 招聘·房屋·二手·DMV·新闻',
   metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'OpenAA DMV | 美国驾照中文题库',
+    template: '%s | OpenAA DMV',
+  },
+  description: 'OpenAA DMV 提供美国各州驾照中文题库、Permit 笔试练习、模拟考试、交通标志和 DMV 办事指南。',
   manifest: '/manifest.webmanifest',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'zh_CN',
+    siteName: 'OpenAA DMV',
+    url: SITE_URL,
+    title: 'OpenAA DMV | 美国驾照中文题库',
+    description: '美国各州 DMV 中文题库、Permit 笔试练习、模拟考试和驾照指南。',
+  },
   icons: {
     icon: [
       { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -25,19 +39,13 @@ export const viewport: Viewport = {
   themeColor: '#ffffff',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body className="bg-zinc-200 antialiased">
-        <div className="mx-auto max-w-[560px] md:max-w-[760px] lg:max-w-[960px] xl:max-w-[1040px] min-h-screen bg-white relative shadow-[0_0_80px_rgba(0,0,0,0.10)]">
-          <Header />
-          <main className="pt-14 pb-20">{children}</main>
-          <BottomNav />
-        </div>
+      <body>
+        <Header />
+        <main>{children}</main>
+        <Footer />
       </body>
     </html>
   )

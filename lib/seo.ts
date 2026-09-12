@@ -1,94 +1,50 @@
-import type { Metadata } from 'next'
-import { SITE_URL, getSiteUrl } from '@/lib/site'
+import type { DmvState } from './dmv-data'
+import { getSiteUrl, OPENAA_URL } from './site'
 
-type DmvMetadataInput = {
-  title: string
-  description: string
-  path: string
-  keywords?: string[]
+export function stateTitle(state: DmvState, suffix = '中文题库与模拟考试') {
+  return `${state.nameZh} DMV ${suffix}`
 }
 
-type FaqItem = {
-  question: string
-  answer: string
+export function stateDescription(state: DmvState) {
+  return `${state.nameZh} ${state.nameEn} DMV 中文题库、Permit 笔试练习、模拟考试、交通标志和驾照考试指南。OpenAA DMV 提供中文学习辅助，正式要求以官方 ${state.officialName} 为准。`
 }
 
-type BreadcrumbItem = {
-  name: string
-  path: string
-}
-
-export function buildDmvMetadata({ title, description, path, keywords }: DmvMetadataInput): Metadata {
-  const canonical = getSiteUrl(path)
-
-  return {
-    metadataBase: new URL(SITE_URL),
-    title,
-    description,
-    ...(keywords?.length ? { keywords } : {}),
-    alternates: {
-      canonical,
-    },
-    openGraph: {
-      title,
-      description,
-      url: canonical,
-      siteName: 'OpenAA',
-      locale: 'zh_CN',
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
-  }
-}
-
-export function buildWebPageSchema({
-  name,
-  description,
-  path,
-}: {
-  name: string
-  description: string
-  path: string
-}) {
+export function webPageJsonLd(name: string, description: string, path: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     name,
     description,
     url: getSiteUrl(path),
-    inLanguage: 'zh-CN',
     isPartOf: {
       '@type': 'WebSite',
-      name: 'OpenAA',
+      name: 'OpenAA DMV',
       url: getSiteUrl('/'),
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'OpenAA',
+      url: OPENAA_URL,
     },
   }
 }
 
-export function buildFaqSchema(faqItems: FaqItem[]) {
+export function faqJsonLd(items: Array<{ question: string; answer: string }>) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: faqItems.map(({ question, answer }) => ({
+    mainEntity: items.map((item) => ({
       '@type': 'Question',
-      name: question,
+      name: item.question,
       acceptedAnswer: {
         '@type': 'Answer',
-        text: answer,
+        text: item.answer,
       },
     })),
   }
 }
 
-export function buildBreadcrumbSchema(items: BreadcrumbItem[]) {
+export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',

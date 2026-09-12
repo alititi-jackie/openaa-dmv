@@ -1,11 +1,11 @@
 {
-  "name": "OpenAA · 美国华人生活入口",
-  "short_name": "OpenAA",
+  "name": "OpenAA DMV · 美国驾照中文题库",
+  "short_name": "OpenAA DMV",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#0d6efd",
+  "theme_color": "#1261a6",
   "icons": [
     {
       "src": "/favicon/android-chrome-192x192.png",
