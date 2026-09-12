@@ -21,10 +21,10 @@ export default function StateSearch({ states }: { states: DmvState[] }) {
       <div className="page-shell">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-bold uppercase tracking-normal text-teal-700">Choose your state</p>
+            <p className="text-sm font-bold text-teal-700">按州刷题</p>
             <h2 className="mt-2 text-3xl font-black text-slate-950">选择你的考试州</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              已上线的州可以直接练习；准备中的州先提供官方入口，题库完成后再开放。
+              选择所在州进入中文题库。纽约州题库位于 OpenAA 主站；其他已上线州可直接在这里练习。
             </p>
           </div>
           <label className="relative block w-full md:w-80">
@@ -32,7 +32,8 @@ export default function StateSearch({ states }: { states: DmvState[] }) {
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="搜索州名或缩写"
+              placeholder="搜索：加州、CA、Texas..."
+              aria-label="搜索考试州"
               className="focus-ring h-11 w-full rounded-md border border-slate-300 bg-white pl-10 pr-3 text-sm text-slate-900"
             />
           </label>
@@ -42,8 +43,7 @@ export default function StateSearch({ states }: { states: DmvState[] }) {
           {filteredStates.map((state) => {
             const isExternal = state.status === 'external'
             const href = isExternal ? state.externalUrl || '/' : `/${state.slug}`
-            const statusText =
-              state.status === 'live' ? `${state.questionCount} 题 · 已上线` : state.status === 'external' ? '主站承接' : '题库准备中'
+            const statusText = state.status === 'live' ? `${state.questionCount} 题 · 已上线` : isExternal ? `${state.questionCount}+ 题 · 已上线` : '即将上线'
             const content = (
               <div className="card flex h-full min-h-36 flex-col justify-between p-4 transition hover:-translate-y-0.5 hover:border-slate-300">
                 <div>
@@ -57,27 +57,25 @@ export default function StateSearch({ states }: { states: DmvState[] }) {
                   <p className="mt-3 text-sm leading-6 text-slate-600">{state.summary}</p>
                 </div>
                 <span className="mt-4 inline-flex items-center text-sm font-bold text-blue-700">
-                  {state.status === 'live' ? '进入题库' : isExternal ? '去 OpenAA 主站' : '查看官方入口'}
+                  {state.status === 'live' ? '进入中文题库' : isExternal ? '进入纽约题库' : '查看州信息'}
                   {isExternal ? <ExternalLink size={15} className="ml-1.5" /> : <ArrowRight size={15} className="ml-1.5" />}
                 </span>
               </div>
             )
 
             if (isExternal) {
-              return (
-                <a key={state.slug} href={href} className="focus-ring rounded-md">
-                  {content}
-                </a>
-              )
+              return <a key={state.slug} href={href} className="focus-ring rounded-md">{content}</a>
             }
 
-            return (
-              <Link key={state.slug} href={href} className="focus-ring rounded-md">
-                {content}
-              </Link>
-            )
+            return <Link key={state.slug} href={href} className="focus-ring rounded-md">{content}</Link>
           })}
         </div>
+
+        {filteredStates.length === 0 && (
+          <div className="mt-7 rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-600">
+            暂时没有找到这个州。我们会继续增加更多州的中文 DMV 题库。
+          </div>
+        )}
       </div>
     </section>
   )
