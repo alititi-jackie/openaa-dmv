@@ -6,6 +6,7 @@ import QuestionSignImage from './QuestionSignImage'
 import { categoryLabels, type DmvQuestion } from '@/lib/dmv-data'
 
 type Filter = 'all' | 'favorites' | DmvQuestion['category']
+type StudyMode = 'practice' | 'study'
 type ProgressState = {
   answered: string[]
   correct: string[]
@@ -39,6 +40,7 @@ export default function QuestionsClient({
   removeFromWrongOnMastery?: boolean
 }) {
   const [filter, setFilter] = useState<Filter>('all')
+  const [studyMode, setStudyMode] = useState<StudyMode>('practice')
   const [revealed, setRevealed] = useState<Record<string, number>>({})
   const [page, setPage] = useState(1)
   const [progress, setProgress] = useState<ProgressState>({ answered: [], correct: [], mastered: [], favorites: [] })
@@ -47,6 +49,7 @@ export default function QuestionsClient({
   const correctKey = `${storageKey}:correct`
   const masteredKey = `${storageKey}:mastered`
   const favoritesKey = `${storageKey}:favorites`
+  const studyModeKey = `${storageKey}:questions-mode`
 
   useEffect(() => {
     setProgress({
@@ -55,7 +58,9 @@ export default function QuestionsClient({
       mastered: readIds(masteredKey),
       favorites: readIds(favoritesKey),
     })
-  }, [answeredKey, correctKey, masteredKey, favoritesKey])
+    const savedMode = window.localStorage.getItem(studyModeKey)
+    if (savedMode === 'study' || savedMode === 'practice') setStudyMode(savedMode)
+  }, [answeredKey, correctKey, masteredKey, favoritesKey, studyModeKey])
 
   const filteredQuestions = useMemo(() => {
     if (filter === 'all') return questions
@@ -91,6 +96,7 @@ export default function QuestionsClient({
   }
 
   function recordAnswer(question: DmvQuestion, choiceIndex: number) {
+    if (studyMode === 'study') return
     const isCorrect = choiceIndex === question.answerIndex
     const nextAnswered = Array.from(new Set([...progress.answered, question.id]))
     const nextCorrect = isCorrect
@@ -126,8 +132,42 @@ export default function QuestionsClient({
     setPage(1)
   }
 
+  function changeStudyMode(next: StudyMode) {
+    setStudyMode(next)
+    window.localStorage.setItem(studyModeKey, next)
+  }
+
   return (
     <div>
+      <section className="mb-4 rounded-lg border border-slate-200 bg-white p-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-black text-slate-950">题库模式</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              {studyMode === 'study'
+                ? '学习模式会直接显示正确答案和解析，不计入正确率、已完成或错题记录。'
+                : '练习模式需要先作答，再显示答案和解析，并记录学习进度。'}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 rounded-lg bg-slate-100 p-1 sm:w-64">
+            <button
+              type="button"
+              onClick={() => changeStudyMode('practice')}
+              className={`focus-ring rounded-md px-3 py-2 text-sm font-black ${studyMode === 'practice' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}
+            >
+              练习模式
+            </button>
+            <button
+              type="button"
+              onClick={() => changeStudyMode('study')}
+              className={`focus-ring rounded-md px-3 py-2 text-sm font-black ${studyMode === 'study' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}
+            >
+              学习模式
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-lg border border-slate-200 bg-white p-3">
           <p className="text-xs font-bold text-slate-500">已完成</p>
@@ -177,6 +217,8 @@ export default function QuestionsClient({
           const globalIndex = (page - 1) * PAGE_SIZE + index + 1
           const isFavorite = progress.favorites.includes(question.id)
           const isMastered = progress.mastered.includes(question.id)
+          const showAnswer = studyMode === 'study' || selected !== undefined
+
           return (
             <article key={question.id} className="card p-4">
               <div className="flex items-start justify-between gap-3">
@@ -191,39 +233,47 @@ export default function QuestionsClient({
                   {isFavorite ? '已收藏' : '收藏'}
                 </button>
               </div>
+
               <h2 className="mt-2 text-lg font-black leading-7 text-slate-950">
                 {globalIndex}. {question.question}
               </h2>
               <QuestionSignImage question={question} stateSlug={stateSlug} />
+
               <div className="mt-4 grid gap-2">
                 {question.choices.map((choice, choiceIndex) => {
                   const isSelected = selected === choiceIndex
                   const isAnswer = question.answerIndex === choiceIndex
-                  const visible = selected !== undefined
-                  const Icon = visible && isAnswer ? CheckCircle2 : visible && isSelected ? XCircle : Circle
+                  const Icon = showAnswer && isAnswer ? CheckCircle2 : showAnswer && isSelected ? XCircle : Circle
                   return (
                     <button
                       key={choice}
                       type="button"
                       onClick={() => recordAnswer(question, choiceIndex)}
+                      disabled={studyMode === 'study'}
                       className={`focus-ring flex items-start gap-3 rounded-md border p-3 text-left text-sm ${
-                        visible && isAnswer
+                        showAnswer && isAnswer
                           ? 'border-green-300 bg-green-50 text-green-950'
-                          : visible && isSelected
+                          : showAnswer && isSelected
                             ? 'border-rose-300 bg-rose-50 text-rose-950'
-                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                            : studyMode === 'study'
+                              ? 'cursor-default border-slate-200 bg-white text-slate-600'
+                              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                       }`}
                     >
-                      <Icon size={18} className="mt-0.5 shrink-0" />
+                      <Icon size={18} className={`mt-0.5 shrink-0 ${showAnswer && isAnswer ? 'text-green-700' : ''}`} />
                       <span>{choice}</span>
                     </button>
                   )
                 })}
               </div>
-              {selected !== undefined ? (
-                <div className="mt-4 rounded-md bg-slate-100 p-3">
+
+              {showAnswer ? (
+                <div className={`mt-4 rounded-md p-3 ${studyMode === 'study' ? 'border border-teal-100 bg-teal-50/70' : 'bg-slate-100'}`}>
+                  {studyMode === 'study' ? (
+                    <p className="mb-2 text-xs font-black text-teal-800">正确答案：{question.choices[question.answerIndex]}</p>
+                  ) : null}
                   <p className="text-sm leading-6 text-slate-700">{question.explanation}</p>
-                  {selected === question.answerIndex ? (
+                  {(studyMode === 'study' || selected === question.answerIndex) ? (
                     <button
                       type="button"
                       onClick={() => toggleMastered(question.id)}
