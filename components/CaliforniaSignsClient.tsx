@@ -82,12 +82,12 @@ function SignVisual({ id, size = 150 }: { id: SignId; size?: number }) {
 function buildChoices(index: number) {
   const correct = signs[index]
   const distractors = signs.filter((item) => item.id !== correct.id)
-  const picks = [
-    distractors[(index * 3 + 1) % distractors.length],
-    distractors[(index * 5 + 4) % distractors.length],
-    distractors[(index * 7 + 6) % distractors.length],
-  ]
-  return [correct, ...picks].sort((a, b) => ((a.id.charCodeAt(0) + index * 11) % 17) - ((b.id.charCodeAt(0) + index * 11) % 17))
+  const offset = index % distractors.length
+  const rotated = [...distractors.slice(offset), ...distractors.slice(0, offset)]
+  const picks = [rotated[0], rotated[3], rotated[6]]
+  const options = [correct, ...picks]
+  const shift = (index * 2 + 1) % options.length
+  return [...options.slice(shift), ...options.slice(0, shift)]
 }
 
 export default function CaliforniaSignsClient() {
