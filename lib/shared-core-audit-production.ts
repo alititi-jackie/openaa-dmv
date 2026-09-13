@@ -50,6 +50,7 @@ export function auditSharedCoreBank(questions: AuditableQuestion[]) {
 }
 
 export function validateSharedCoreBank<T extends AuditableQuestion>(questions: T[]): T[] {
-  auditSharedCoreBank(questions)
+  const issues = auditSharedCoreBank(questions)
+  if (issues.length > 0) throw new Error('Shared DMV core validation failed: ' + issues.join(' | '))
   return questions
 }
