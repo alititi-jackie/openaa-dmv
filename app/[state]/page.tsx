@@ -173,7 +173,7 @@ export default async function StatePage({ params }: Props) {
           <div className="card p-5">
             <h2 className="text-2xl font-black text-slate-950">{state.shortZh} DMV 中文题库概览</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              当前开放 {questions.length} 道中文练习题，覆盖道路规则、交通标志、安全驾驶和证件流程。练习页支持即时答案解析，模拟考试支持 36 题或 46 题分类随机组卷，答错题目会保存到本地错题本。
+              当前开放 {questions.length} 道中文练习题，覆盖道路规则、交通标志、安全驾驶和证件流程。练习页支持即时答案解析，{isCalifornia ? '模拟考试支持 36 题或 46 题分类随机组卷' : '模拟考试支持分类随机组卷'}，答错题目会保存到本地错题本。
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href={`/${state.slug}/questions`} className="focus-ring inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">查看全部题目</Link>
