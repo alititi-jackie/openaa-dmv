@@ -4,6 +4,87 @@ import { getLiveStateBySlug, type DmvQuestion } from './dmv-data'
 import { sharedCoreQuestions } from './shared-core-questions'
 import { sharedCoreReplacements } from './shared-core-replacements'
 import { sharedCoreSupplement } from './shared-core-supplement'
-const sharedCoreBase=sharedCoreQuestions.filter(q=>!/^shared-core-\d+b$/.test(q.id));const sharedCoreBank=[...sharedCoreBase,...sharedCoreReplacements,...sharedCoreSupplement];if(sharedCoreBank.length!==150)throw new Error('Shared core bank must contain exactly 150 questions')
-const overrides:Record<string,Partial<DmvQuestion>>={'ca2-rules-001':{question:'接近没有信号灯的人行横道时，看到行人已经准备进入横道，最合适的做法是什么？',choices:['保持车速，只要行人还没踏上车道即可','减速并准备停车让行，确认行人安全通过','轻按喇叭提醒行人后继续通过'],answerIndex:1,explanation:'接近人行横道时应主动观察并为行人留出安全通行空间，必要时停车让行。'},'ca2-rules-006':{question:'你驶近一个闪烁红灯的路口，正确处理方式是什么？',choices:['减速观察后直接通过','像 STOP 标志一样完全停车，确认安全后再通行','如果没有其他车辆，只需短暂停顿'],answerIndex:1,explanation:'闪烁红灯按停车标志处理：先完全停车，再在安全且有路权时通行。'},'ca2-rules-007':{question:'交通信号为闪烁黄灯时，驾驶人应如何通行？',choices:['完全停车后等待信号变化','保持原速，只注意横向车辆','减速、观察路口并谨慎通过'],answerIndex:2,explanation:'闪烁黄灯要求减速并谨慎通行，不要求像闪烁红灯那样完全停车。'},'ca2-rules-011':{question:'在高速公路上发现自己刚刚错过出口，最安全的处理方式是什么？',choices:['继续前行，在下一个出口离开后重新规划路线','打开双闪并在路肩倒车回出口','确认后方无车后跨越实线驶回出口'],answerIndex:0,explanation:'错过出口后应继续前往下一个出口，不能倒车或突然跨越车道。'},'ca2-rules-013':{question:'使用高速公路加速车道时，最重要的目标是什么？',choices:['尽早并入，即使车速明显低于主车流','在车道末端停车等待完全没有车辆','调整到接近主车流速度，并寻找足够安全的空隙汇入'],answerIndex:2,explanation:'加速车道用于匹配主车流速度并寻找安全汇入空间。'},'ca2-rules-020':{question:'交通缓慢时，你前方需要穿越铁路轨道，但轨道另一侧暂时没有足够空间容纳你的车辆。应该怎么办？',choices:['先驶上轨道，等前车继续前进','在轨道前等待，直到能一次完全通过','跟紧前车，尽量缩短停在轨道上的时间'],answerIndex:1,explanation:'只有在确认车辆能够完全越过轨道时才能进入，不能把车辆停在轨道上。'},'ca2-rules-021':{question:'没有闸门的铁路道口前，你看到火车正在接近，但估计自己可能来得及通过。最安全且正确的选择是什么？',choices:['停车等待火车完全通过','如果前车已经通过就立即跟上','只要没有听到汽笛就可以通过'],answerIndex:0,explanation:'火车制动距离很长，看到火车接近时不要抢行。'},'ca2-rules-022':{question:'前方校车开始闪烁黄色警示灯时，这通常表示什么？',choices:['校车正在准备停车，应减速并做好停车准备','校车已经允许后车安全超越','只有对向车辆需要减速'],answerIndex:0,explanation:'黄色警示灯表示校车即将停车上下学生，应降低速度并准备停车。'},'ca2-rules-023':{question:'前方校车已经停车并闪烁红灯时，你应如何判断是否可以继续行驶？',choices:['只要没有看到学生就可以慢速通过','按适用道路条件遵守加州校车停车规则，等待红灯停止且确认安全','如果后车鸣笛催促就可以通过'],answerIndex:1,explanation:'校车红灯通常表示学生正在上下车或过街，必须遵守适用的停车规则。'},'ca2-rules-028':{question:'施工区内旗手给出的手势与临时车道标线看起来不一致时，应优先怎么做？',choices:['服从现场旗手或交通控制人员的指示','只按照原有道路标线行驶','自行选择看起来最空的车道'],answerIndex:0,explanation:'施工区现场交通控制人员的指示用于应对临时路况，应按其指挥安全通行。'},'ca2-rules-030':{question:'进入浓雾路段后，你发现前方车辆越来越难看清。最合适的做法是什么？',choices:['打开远光灯并保持原速','减速、增加跟车距离并使用合适的近光灯','紧跟前车尾灯以免偏离车道'],answerIndex:1,explanation:'雾天应降低速度、扩大跟车距离，并避免远光灯造成反射眩光。'}}
-function norm(v:string){return v.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g,'')}function hash(v:string){let h=2166136261;for(let i=0;i<v.length;i++){h^=v.charCodeAt(i);h=Math.imul(h,16777619)}return Math.abs(h>>>0)}function ov(q:DmvQuestion){return overrides[q.id]?{...q,...overrides[q.id]}:q}function bal(q:DmvQuestion){if(q.choices.length<2)return q;const t=hash(q.id)%q.choices.length;if(t===q.answerIndex)return q;const c=[...q.choices],a=c[q.answerIndex];c.splice(q.answerIndex,1);c.splice(t,0,a);return{...q,choices:c,answerIndex:t}}function prep(qs:DmvQuestion[]){const ids=new Set<string>(),texts=new Set<string>();return qs.map(ov).filter(q=>{const t=norm(q.question);if(ids.has(q.id)||texts.has(t))return false;ids.add(q.id);texts.add(t);return true}).map(bal)}export function getQuestionSourceForLanguage(id:string):DmvQuestion|null{const q=[...californiaQuestions,...californiaExpandedQuestions,...sharedCoreBank].find(x=>x.id===id);return q?ov(q):null}export function getQuestionsForState(s:string):DmvQuestion[]{if(!getLiveStateBySlug(s))return[];return s==='california'?prep([...californiaQuestions,...californiaExpandedQuestions,...sharedCoreBank]):prep(sharedCoreBank)}export function getQuestionsByCategory(s:string,c:DmvQuestion['category']){return getQuestionsForState(s).filter(q=>q.category===c)}export function getQuestionCountForState(s:string){return getQuestionsForState(s).length}
+import { validateSharedCoreBank } from './shared-core-audit-production'
+
+const sharedCoreBase = sharedCoreQuestions.filter((question) => !/^shared-core-\d+b$/.test(question.id))
+const sharedCoreBank = validateSharedCoreBank([
+  ...sharedCoreBase,
+  ...sharedCoreReplacements,
+  ...sharedCoreSupplement,
+])
+
+const overrides: Record<string, Partial<DmvQuestion>> = {
+  'ca2-rules-001': { question: '接近没有信号灯的人行横道时，看到行人已经准备进入横道，最合适的做法是什么？', choices: ['保持车速，只要行人还没踏上车道即可', '减速并准备停车让行，确认行人安全通过', '轻按喇叭提醒行人后继续通过'], answerIndex: 1, explanation: '接近人行横道时应主动观察并为行人留出安全通行空间，必要时停车让行。' },
+  'ca2-rules-006': { question: '你驶近一个闪烁红灯的路口，正确处理方式是什么？', choices: ['减速观察后直接通过', '像 STOP 标志一样完全停车，确认安全后再通行', '如果没有其他车辆，只需短暂停顿'], answerIndex: 1, explanation: '闪烁红灯按停车标志处理：先完全停车，再在安全且有路权时通行。' },
+  'ca2-rules-007': { question: '交通信号为闪烁黄灯时，驾驶人应如何通行？', choices: ['完全停车后等待信号变化', '保持原速，只注意横向车辆', '减速、观察路口并谨慎通过'], answerIndex: 2, explanation: '闪烁黄灯要求减速并谨慎通行，不要求像闪烁红灯那样完全停车。' },
+  'ca2-rules-011': { question: '在高速公路上发现自己刚刚错过出口，最安全的处理方式是什么？', choices: ['继续前行，在下一个出口离开后重新规划路线', '打开双闪并在路肩倒车回出口', '确认后方无车后跨越实线驶回出口'], answerIndex: 0, explanation: '错过出口后应继续前往下一个出口，不能倒车或突然跨越车道。' },
+  'ca2-rules-013': { question: '使用高速公路加速车道时，最重要的目标是什么？', choices: ['尽早并入，即使车速明显低于主车流', '在车道末端停车等待完全没有车辆', '调整到接近主车流速度，并寻找足够安全的空隙汇入'], answerIndex: 2, explanation: '加速车道用于匹配主车流速度并寻找安全汇入空间。' },
+  'ca2-rules-020': { question: '交通缓慢时，你前方需要穿越铁路轨道，但轨道另一侧暂时没有足够空间容纳你的车辆。应该怎么办？', choices: ['先驶上轨道，等前车继续前进', '在轨道前等待，直到能一次完全通过', '跟紧前车，尽量缩短停在轨道上的时间'], answerIndex: 1, explanation: '只有在确认车辆能够完全越过轨道时才能进入，不能把车辆停在轨道上。' },
+  'ca2-rules-021': { question: '没有闸门的铁路道口前，你看到火车正在接近，但估计自己可能来得及通过。最安全且正确的选择是什么？', choices: ['停车等待火车完全通过', '如果前车已经通过就立即跟上', '只要没有听到汽笛就可以通过'], answerIndex: 0, explanation: '火车制动距离很长，看到火车接近时不要抢行。' },
+  'ca2-rules-022': { question: '前方校车开始闪烁黄色警示灯时，这通常表示什么？', choices: ['校车正在准备停车，应减速并做好停车准备', '校车已经允许后车安全超越', '只有对向车辆需要减速'], answerIndex: 0, explanation: '黄色警示灯表示校车即将停车上下学生，应降低速度并准备停车。' },
+  'ca2-rules-023': { question: '前方校车已经停车并闪烁红灯时，你应如何判断是否可以继续行驶？', choices: ['只要没有看到学生就可以慢速通过', '按适用道路条件遵守加州校车停车规则，等待红灯停止且确认安全', '如果后车鸣笛催促就可以通过'], answerIndex: 1, explanation: '校车红灯通常表示学生正在上下车或过街，必须遵守适用的停车规则。' },
+  'ca2-rules-028': { question: '施工区内旗手给出的手势与临时车道标线看起来不一致时，应优先怎么做？', choices: ['服从现场旗手或交通控制人员的指示', '只按照原有道路标线行驶', '自行选择看起来最空的车道'], answerIndex: 0, explanation: '施工区现场交通控制人员的指示用于应对临时路况，应按其指挥安全通行。' },
+  'ca2-rules-030': { question: '进入浓雾路段后，你发现前方车辆越来越难看清。最合适的做法是什么？', choices: ['打开远光灯并保持原速', '减速、增加跟车距离并使用合适的近光灯', '紧跟前车尾灯以免偏离车道'], answerIndex: 1, explanation: '雾天应降低速度、扩大跟车距离，并避免远光灯造成反射眩光。' },
+}
+
+function normalize(value: string) {
+  return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '')
+}
+
+function hash(value: string) {
+  let result = 2166136261
+  for (let index = 0; index < value.length; index += 1) {
+    result ^= value.charCodeAt(index)
+    result = Math.imul(result, 16777619)
+  }
+  return Math.abs(result >>> 0)
+}
+
+function applyOverride(question: DmvQuestion): DmvQuestion {
+  return overrides[question.id] ? { ...question, ...overrides[question.id] } : question
+}
+
+function balanceAnswerPosition(question: DmvQuestion): DmvQuestion {
+  if (question.choices.length < 2) return question
+  const target = hash(question.id) % question.choices.length
+  if (target === question.answerIndex) return question
+  const choices = [...question.choices]
+  const correct = choices[question.answerIndex]
+  choices.splice(question.answerIndex, 1)
+  choices.splice(target, 0, correct)
+  return { ...question, choices, answerIndex: target }
+}
+
+function prepareQuestions(questions: DmvQuestion[]) {
+  const ids = new Set<string>()
+  const texts = new Set<string>()
+  return questions
+    .map(applyOverride)
+    .filter((question) => {
+      const text = normalize(question.question)
+      if (ids.has(question.id) || texts.has(text)) return false
+      ids.add(question.id)
+      texts.add(text)
+      return true
+    })
+    .map(balanceAnswerPosition)
+}
+
+export function getQuestionSourceForLanguage(questionId: string): DmvQuestion | null {
+  const question = [...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank].find((item) => item.id === questionId)
+  return question ? applyOverride(question) : null
+}
+
+export function getQuestionsForState(stateSlug: string): DmvQuestion[] {
+  if (!getLiveStateBySlug(stateSlug)) return []
+  if (stateSlug === 'california') return prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank])
+  return prepareQuestions(sharedCoreBank)
+}
+
+export function getQuestionsByCategory(stateSlug: string, category: DmvQuestion['category']) {
+  return getQuestionsForState(stateSlug).filter((question) => question.category === category)
+}
+
+export function getQuestionCountForState(stateSlug: string) {
+  return getQuestionsForState(stateSlug).length
+}

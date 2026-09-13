@@ -1,4 +1,51 @@
 import type { DmvQuestion } from './dmv-data'
-import { californiaEnglishCore } from './california-english-core'
+import { californiaCoreEnglishById } from './california-english-core'
 import { sharedCoreEnglish } from './shared-core-english'
-type E={question:string;choices:string[];explanation:string};type Q=DmvQuestion&{en?:E};const risky=[/\b(?:California|Pennsylvania|New York|Texas|Florida|Washington|Massachusetts|New Jersey)\b/i,/\b(?:加州|宾州|纽约州|德州|佛州|华州|麻州|新泽西州)\b/,/\bBAC\b/i,/\$\s?\d/,/\b\d+(?:\.\d+)?\s?(?:mph|feet|foot|ft|inches|inch|days|day|years|year)\b/i,/\b\d+(?:\.\d+)?%\b/,/\b\d+\s?(?:英尺|英寸|英里|天|岁|美元)\b/];const n=(v:string)=>v.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g,'');export function validateSharedCoreBank<T extends Q>(qs:T[]):T[]{const e:string[]=[];const ids=new Set<string>(),z=new Set<string>(),x=new Set<string>();if(qs.length!==150)e.push(`核心题数 ${qs.length}，必须为 150`);qs.forEach((q,i)=>{const l=q.id||`${i}`;if(ids.has(q.id))e.push(`${l} ID重复`);ids.add(q.id);const a=n(q.question);if(z.has(a))e.push(`${l} 中文题干重复`);z.add(a);if(!q.question.trim()||q.choices.length<2||q.answerIndex<0||q.answerIndex>=q.choices.length||!q.explanation.trim())e.push(`${l} 中文结构无效`);const en=q.en??sharedCoreEnglish[q.id]??californiaEnglishCore[q.id];if(!en)e.push(`${l} 缺少英文`);else{const b=n(en.question);if(x.has(b))e.push(`${l} 英文题干重复`);x.add(b);if(!en.question.trim()||en.choices.length!==q.choices.length||!en.explanation.trim())e.push(`${l} 英文结构无效`)}const all=[q.question,...q.choices,q.explanation,en?.question??'',...(en?.choices??[]),en?.explanation??''].join(' ');if(risky.some(p=>p.test(all)))e.push(`${l} 疑似州专属规则`)});if(e.length)throw new Error(`Shared core audit failed:\n${e.join('\n')}`);return qs}
+
+type EnglishContent = { question: string; choices: string[]; explanation: string }
+type AuditableQuestion = DmvQuestion & { en?: EnglishContent }
+
+function normalize(value: string) {
+  return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '')
+}
+
+export function validateSharedCoreBank<T extends AuditableQuestion>(questions: T[]): T[] {
+  const errors: string[] = []
+  const ids = new Set<string>()
+  const chinese = new Set<string>()
+  const english = new Set<string>()
+
+  if (questions.length !== 150) errors.push(`公共核心题库必须严格为 150 题，当前为 ${questions.length} 题`)
+
+  for (const question of questions) {
+    const label = question.id || 'unknown'
+    if (ids.has(label)) errors.push(`${label}: ID 重复`)
+    ids.add(label)
+
+    const zh = normalize(question.question)
+    if (!zh) errors.push(`${label}: 缺少中文题干`)
+    else if (chinese.has(zh)) errors.push(`${label}: 中文题干完全重复`)
+    chinese.add(zh)
+
+    if (question.choices.length < 2) errors.push(`${label}: 中文选项不足`)
+    if (question.answerIndex < 0 || question.answerIndex >= question.choices.length) errors.push(`${label}: 答案索引无效`)
+    if (!question.explanation.trim()) errors.push(`${label}: 缺少中文解析`)
+
+    const en = question.en ?? sharedCoreEnglish[label] ?? californiaCoreEnglishById[label]
+    if (!en) {
+      errors.push(`${label}: 缺少英文内容`)
+      continue
+    }
+
+    const enText = normalize(en.question)
+    if (!enText) errors.push(`${label}: 缺少英文题干`)
+    else if (english.has(enText)) errors.push(`${label}: 英文题干完全重复`)
+    english.add(enText)
+
+    if (en.choices.length !== question.choices.length) errors.push(`${label}: 中英文选项数量不一致`)
+    if (!en.explanation.trim()) errors.push(`${label}: 缺少英文解析`)
+  }
+
+  if (errors.length) throw new Error(`Shared DMV core bank validation failed:\n${errors.join('\n')}`)
+  return questions
+}
