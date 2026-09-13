@@ -14,6 +14,8 @@ type SignItem = {
   imageUrl: string
 }
 
+const ASSET = '/traffic-signs/california'
+
 const signs: SignItem[] = [
   {
     id: 'stop',
@@ -21,7 +23,7 @@ const signs: SignItem[] = [
     english: 'STOP',
     meaning: '必须完全停车，确认路口安全后再通行。',
     tip: '红色八角形。',
-    imageUrl: 'https://qr.dmv.ca.gov/portal/uploads/2020/05/16_stopsign.gif',
+    imageUrl: `${ASSET}/r1-1-stop.svg`,
   },
   {
     id: 'yield',
@@ -29,7 +31,7 @@ const signs: SignItem[] = [
     english: 'YIELD',
     meaning: '减速并准备停车，让有优先权的车辆、行人或自行车先行。',
     tip: '红白倒三角形。',
-    imageUrl: 'https://qr.dmv.ca.gov/portal/uploads/2020/05/16_yieldsign.gif',
+    imageUrl: `${ASSET}/r1-2-yield.svg`,
   },
   {
     id: 'do-not-enter',
@@ -37,7 +39,7 @@ const signs: SignItem[] = [
     english: 'DO NOT ENTER',
     meaning: '不得进入该道路或匝道。',
     tip: '常见于单行道反方向或高速出口。',
-    imageUrl: 'https://qr.dmv.ca.gov/portal/uploads/2020/02/donotenter.png',
+    imageUrl: `${ASSET}/r5-1-do-not-enter.svg`,
   },
   {
     id: 'wrong-way',
@@ -45,7 +47,7 @@ const signs: SignItem[] = [
     english: 'WRONG WAY',
     meaning: '表示正在逆向进入道路，应在安全情况下停车并纠正方向。',
     tip: '看到此牌应立即意识到行驶方向错误。',
-    imageUrl: 'https://qr.dmv.ca.gov/portal/uploads/2020/05/16_wrong_way_sign.gif',
+    imageUrl: `${ASSET}/r5-1a-wrong-way.svg`,
   },
   {
     id: 'no-u-turn',
@@ -53,7 +55,7 @@ const signs: SignItem[] = [
     english: 'NO U-TURN',
     meaning: '此处禁止进行 U 型掉头。',
     tip: '红色圆圈和斜杠表示禁止图中的动作。',
-    imageUrl: 'https://qr.dmv.ca.gov/portal/uploads/2020/02/nouturn.png',
+    imageUrl: `${ASSET}/r3-4-no-u-turn.svg`,
   },
   {
     id: 'railroad',
@@ -61,7 +63,7 @@ const signs: SignItem[] = [
     english: 'RAILROAD CROSSING',
     meaning: '前方铁路道口，减速、观察、听声并准备停车。',
     tip: '黄色圆形，黑色 X 和两个 R。',
-    imageUrl: 'https://qr.dmv.ca.gov/portal/uploads/2020/02/railroad.png',
+    imageUrl: `${ASSET}/w10-1-railroad-warning.svg`,
   },
   {
     id: 'school',
@@ -69,7 +71,7 @@ const signs: SignItem[] = [
     english: 'SCHOOL',
     meaning: '接近学校或学生过街区域，应减速并特别注意儿童。',
     tip: '学校警告牌常用五边形。',
-    imageUrl: 'https://qr.dmv.ca.gov/portal/uploads/2020/02/schoolzone.png',
+    imageUrl: `${ASSET}/s1-1-school.svg`,
   },
 ]
 
@@ -79,7 +81,6 @@ function OfficialSignImage({ sign, large = false }: { sign: SignItem; large?: bo
       src={sign.imageUrl}
       alt={`${sign.english} ${sign.name}`}
       loading="lazy"
-      referrerPolicy="no-referrer"
       className={`max-h-full max-w-full object-contain ${large ? 'h-48 w-48' : 'h-36 w-36'}`}
     />
   )
@@ -131,14 +132,14 @@ export default function CaliforniaSignsClient() {
     <div className="grid gap-6">
       <section className="card p-4 md:p-5">
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => setMode('study')} className={`focus-ring rounded-md px-4 py-2 text-sm font-black ${mode === 'study' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700'}`}>官方图形学习</button>
-          <button type="button" onClick={() => setMode('quiz')} className={`focus-ring rounded-md px-4 py-2 text-sm font-black ${mode === 'quiz' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700'}`}>官方图形识别测验</button>
+          <button type="button" onClick={() => setMode('study')} className={`focus-ring rounded-md px-4 py-2 text-sm font-black ${mode === 'study' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700'}`}>标准图形学习</button>
+          <button type="button" onClick={() => setMode('quiz')} className={`focus-ring rounded-md px-4 py-2 text-sm font-black ${mode === 'quiz' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-700'}`}>标准图形识别测验</button>
         </div>
         <p className="mt-3 text-sm leading-6 text-slate-600">
-          本区直接显示 California DMV 驾驶手册页面使用的交通标志图，不再使用本站自绘近似图。先记住形状、颜色和含义，再进入识图测验。
+          本区使用已保存到 OpenAA DMV 本地的 FHWA / MUTCD 标准交通标志矢量图，不再依赖外部图片地址，也不使用本站自绘近似图。
         </p>
         <p className="mt-2 text-xs leading-5 text-slate-500">
-          图像来源：California DMV Driver’s Handbook。正式规则及更多标志请同时参考 Caltrans CA MUTCD / Sign Charts。
+          California 采用 CA MUTCD；联邦标准标志按 FHWA Standard Highway Signs / MUTCD 设计学习，正式规则仍以 California DMV 与 Caltrans 最新资料为准。
         </p>
       </section>
 
@@ -156,7 +157,7 @@ export default function CaliforniaSignsClient() {
         </div>
       ) : finished ? (
         <section className="card p-6 text-center">
-          <p className="text-sm font-bold text-teal-700">官方图形识别测验完成</p>
+          <p className="text-sm font-bold text-teal-700">标准图形识别测验完成</p>
           <p className="mt-2 text-4xl font-black text-slate-950">{score} / {signs.length}</p>
           <p className="mt-2 text-sm text-slate-600">正确率 {Math.round((score / signs.length) * 100)}%</p>
           <button type="button" onClick={restart} className="focus-ring mt-5 inline-flex items-center rounded-md bg-slate-950 px-4 py-2 text-sm font-black text-white"><RotateCcw size={15} className="mr-1.5" />再测一次</button>
@@ -166,7 +167,7 @@ export default function CaliforniaSignsClient() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-bold text-teal-700">第 {quizIndex + 1} / {signs.length} 题</p>
-              <h2 className="mt-1 text-2xl font-black text-slate-950">这个官方交通标志表示什么？</h2>
+              <h2 className="mt-1 text-2xl font-black text-slate-950">这个标准交通标志表示什么？</h2>
             </div>
             <p className="text-sm font-bold text-slate-500">得分 {score}</p>
           </div>
