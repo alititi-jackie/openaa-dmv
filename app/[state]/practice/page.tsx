@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import JsonLd from '@/components/JsonLd'
 import PracticeClient from '@/components/PracticeClient'
 import { dmvStates, getLiveStateBySlug } from '@/lib/dmv-data'
@@ -33,6 +34,7 @@ export default async function PracticePage({ params }: Props) {
       <JsonLd data={webPageJsonLd(`${state.nameZh} DMV 顺序练习`, stateDescription(state), `/${state.slug}/practice`)} />
       <JsonLd data={breadcrumbJsonLd([{ name: '首页', path: '/' }, { name: state.nameZh, path: `/${state.slug}` }, { name: '练习', path: `/${state.slug}/practice` }])} />
       <div className="page-shell">
+        {state.slug === 'california' ? <BackLink href="/california" label="返回加州 DMV" /> : null}
         <PracticeClient questions={getQuestionsForState(state.slug)} stateSlug={state.slug} storageKey={`openaa-dmv:${state.slug}:wrong`} />
       </div>
     </section>
