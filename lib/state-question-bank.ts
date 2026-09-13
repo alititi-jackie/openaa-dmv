@@ -1,6 +1,7 @@
 import type { DmvQuestion } from './dmv-data'
 import { getQuestionsForState as getBaseQuestionsForState } from './question-bank'
 import { newJerseyQuestions } from './new-jersey-questions'
+import { newJerseySignQuestions } from './new-jersey-sign-questions'
 
 function normalize(value: string) {
   return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '')
@@ -18,9 +19,6 @@ function dedupe(questions: DmvQuestion[]) {
   })
 }
 
-// The shared core is intended to contain road-rule/safety/sign knowledge, but NJ gets
-// an additional guard so administrative/process/test-format material can never enter
-// its practice or mock-test pool even if such a question is added to the shared bank later.
 const NJ_NON_EXAM_PATTERNS = [
   /多少道.*题|多少题.*通过|答对多少|通过分|及格分|80%.*通过/,
   /预约|appointment|测试中心|testing center|哪里.*考试|考试地点/,
@@ -41,7 +39,7 @@ export function getStateQuestions(stateSlug: string): DmvQuestion[] {
   const shared = getBaseQuestionsForState(stateSlug)
   if (stateSlug !== 'new-jersey') return shared
   const examOnlyShared = shared.filter(isNewJerseyExamQuestion)
-  return dedupe([...newJerseyQuestions, ...examOnlyShared])
+  return dedupe([...newJerseyQuestions, ...newJerseySignQuestions, ...examOnlyShared])
 }
 
 export function getStateQuestionsByCategory(stateSlug: string, category: DmvQuestion['category']) {
