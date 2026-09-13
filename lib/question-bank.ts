@@ -4,7 +4,7 @@ import { getLiveStateBySlug, type DmvQuestion } from './dmv-data'
 import { sharedCoreQuestions } from './shared-core-questions'
 import { sharedCoreReplacements } from './shared-core-replacements'
 import { sharedCoreSupplement } from './shared-core-supplement'
-import { validateSharedCoreBank } from './shared-core-audit'
+import { validateSharedCoreBank } from './shared-core-audit-v2'
 
 const sharedCoreBase = sharedCoreQuestions.filter((question) => !/^shared-core-\d+b$/.test(question.id))
 const sharedCoreBank = validateSharedCoreBank([...sharedCoreBase, ...sharedCoreReplacements, ...sharedCoreSupplement])
@@ -22,25 +22,13 @@ const californiaQualityOverrides: Record<string, Partial<DmvQuestion>> = {
   'ca2-rules-028': { question: '施工区内旗手给出的手势与临时车道标线看起来不一致时，应优先怎么做？', choices: ['服从现场旗手或交通控制人员的指示', '只按照原有道路标线行驶', '自行选择看起来最空的车道'], answerIndex: 0, explanation: '施工区现场交通控制人员的指示用于应对临时路况，应按其指挥安全通行。' },
   'ca2-rules-030': { question: '进入浓雾路段后，你发现前方车辆越来越难看清。最合适的做法是什么？', choices: ['打开远光灯并保持原速', '减速、增加跟车距离并使用合适的近光灯', '紧跟前车尾灯以免偏离车道'], answerIndex: 1, explanation: '雾天应降低速度、扩大跟车距离，并避免远光灯造成反射眩光。' },
 }
-
 function normalizeText(value: string) { return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '') }
 function hashString(value: string) { let hash = 2166136261; for (let index = 0; index < value.length; index += 1) { hash ^= value.charCodeAt(index); hash = Math.imul(hash, 16777619) } return Math.abs(hash >>> 0) }
 function applyQualityOverride(question: DmvQuestion): DmvQuestion { const override = californiaQualityOverrides[question.id]; return override ? { ...question, ...override } : question }
 function balanceAnswerPosition(question: DmvQuestion): DmvQuestion { if (question.choices.length < 2) return question; const targetIndex = hashString(question.id) % question.choices.length; if (targetIndex === question.answerIndex) return question; const choices = [...question.choices]; const correctChoice = choices[question.answerIndex]; choices.splice(question.answerIndex, 1); choices.splice(targetIndex, 0, correctChoice); return { ...question, choices, answerIndex: targetIndex } }
 function dedupeExactQuestions(questions: DmvQuestion[]) { const seenIds = new Set<string>(); const seenQuestions = new Set<string>(); return questions.filter((question) => { const normalized = normalizeText(question.question); if (seenIds.has(question.id) || seenQuestions.has(normalized)) return false; seenIds.add(question.id); seenQuestions.add(normalized); return true }) }
 function prepareQuestions(questions: DmvQuestion[]) { return dedupeExactQuestions(questions.map(applyQualityOverride)).map(balanceAnswerPosition) }
-
-export function getQuestionSourceForLanguage(questionId: string): DmvQuestion | null {
-  const original = [...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank].find((question) => question.id === questionId)
-  return original ? applyQualityOverride(original) : null
-}
-
-export function getQuestionsForState(stateSlug: string): DmvQuestion[] {
-  const state = getLiveStateBySlug(stateSlug)
-  if (!state) return []
-  if (stateSlug === 'california') return prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank])
-  return prepareQuestions(sharedCoreBank)
-}
-
+export function getQuestionSourceForLanguage(questionId: string): DmvQuestion | null { const original = [...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank].find((question) => question.id === questionId); return original ? applyQualityOverride(original) : null }
+export function getQuestionsForState(stateSlug: string): DmvQuestion[] { const state = getLiveStateBySlug(stateSlug); if (!state) return []; if (stateSlug === 'california') return prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank]); return prepareQuestions(sharedCoreBank) }
 export function getQuestionsByCategory(stateSlug: string, category: DmvQuestion['category']) { return getQuestionsForState(stateSlug).filter((question) => question.category === category) }
 export function getQuestionCountForState(stateSlug: string) { return getQuestionsForState(stateSlug).length }
