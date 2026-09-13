@@ -1,4 +1,5 @@
 import type { DmvQuestion } from './dmv-data'
+import { californiaEnglishById } from './california-english'
 
 export type DmvLanguage = 'zh' | 'en' | 'bilingual'
 
@@ -22,8 +23,12 @@ export function languageStorageKey(stateSlug: string) {
   return `openaa-dmv:${stateSlug}:language`
 }
 
+function externalEnglish(question: DmvQuestion) {
+  return californiaEnglishById[question.id]
+}
+
 export function hasEnglish(question: DmvQuestion) {
-  return Boolean((question as BilingualDmvQuestion).en)
+  return Boolean((question as BilingualDmvQuestion).en || externalEnglish(question))
 }
 
 export function englishCoverage(questions: DmvQuestion[]) {
@@ -31,27 +36,29 @@ export function englishCoverage(questions: DmvQuestion[]) {
 }
 
 export function getQuestionText(question: DmvQuestion, language: DmvLanguage) {
-  const item = question as BilingualDmvQuestion
-  if (language === 'en' && item.en) return item.en.question
+  const english = getEnglishContent(question)
+  if (language === 'en' && english) return english.question
   return question.question
 }
 
 export function getChoiceText(question: DmvQuestion, choiceIndex: number, language: DmvLanguage) {
-  const item = question as BilingualDmvQuestion
-  if (language === 'en' && item.en?.choices[choiceIndex]) return item.en.choices[choiceIndex]
+  const english = getEnglishContent(question)
+  if (language === 'en' && english?.choices[choiceIndex]) return english.choices[choiceIndex]
   return question.choices[choiceIndex]
 }
 
 export function getExplanationText(question: DmvQuestion, language: DmvLanguage) {
-  const item = question as BilingualDmvQuestion
-  if (language === 'en' && item.en) return item.en.explanation
+  const english = getEnglishContent(question)
+  if (language === 'en' && english) return english.explanation
   return question.explanation
 }
 
-export function getEnglishContent(question: DmvQuestion) {
-  return (question as BilingualDmvQuestion).en
+export function getEnglishContent(question: DmvQuestion): DmvEnglishContent | undefined {
+  return (question as BilingualDmvQuestion).en ?? externalEnglish(question)
 }
 
-export function getKeywords(question: DmvQuestion) {
-  return (question as BilingualDmvQuestion).keywords ?? []
+export function getKeywords(question: DmvQuestion): DmvKeyword[] {
+  const embedded = (question as BilingualDmvQuestion).keywords
+  if (embedded?.length) return embedded
+  return externalEnglish(question)?.keywords ?? []
 }
