@@ -8,6 +8,7 @@ import { shuffleQuestions, type DmvQuestion } from '@/lib/dmv-data'
 const PRACTICE_TARGET = 80
 
 type Category = DmvQuestion['category']
+type CaliforniaMode = 'adult-36' | 'teen-46'
 
 type ExamProfile = {
   size: number
@@ -19,9 +20,15 @@ const DEFAULT_PROFILE: ExamProfile = {
   quotas: { rules: 8, safety: 5, signs: 4, documents: 3 },
 }
 
-const CALIFORNIA_PROFILE: ExamProfile = {
-  size: 30,
-  quotas: { rules: 14, safety: 8, signs: 5, documents: 3 },
+const CALIFORNIA_PROFILES: Record<CaliforniaMode, ExamProfile> = {
+  'adult-36': {
+    size: 36,
+    quotas: { rules: 16, safety: 10, signs: 6, documents: 4 },
+  },
+  'teen-46': {
+    size: 46,
+    quotas: { rules: 20, safety: 13, signs: 8, documents: 5 },
+  },
 }
 
 function normalize(value: string) {
@@ -68,8 +75,7 @@ function takeWithVariety(pool: DmvQuestion[], amount: number, selected: DmvQuest
   return picked
 }
 
-function buildBalancedTest(questions: DmvQuestion[], stateSlug: string, seed: number) {
-  const profile = stateSlug === 'california' ? CALIFORNIA_PROFILE : DEFAULT_PROFILE
+function buildBalancedTest(questions: DmvQuestion[], profile: ExamProfile, seed: number) {
   const selected: DmvQuestion[] = []
   const categories: Category[] = ['rules', 'safety', 'signs', 'documents']
 
@@ -101,11 +107,23 @@ export default function MockTestClient({
   stateSlug: string
   storageKey: string
 }) {
+  const isCalifornia = stateSlug === 'california'
+  const [californiaMode, setCaliforniaMode] = useState<CaliforniaMode | null>(null)
   const [seed, setSeed] = useState(0)
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState(false)
 
-  const testQuestions = useMemo(() => buildBalancedTest(questions, stateSlug, seed + 1), [questions, seed, stateSlug])
+  const profile = isCalifornia
+    ? californiaMode
+      ? CALIFORNIA_PROFILES[californiaMode]
+      : null
+    : DEFAULT_PROFILE
+
+  const testQuestions = useMemo(
+    () => (profile ? buildBalancedTest(questions, profile, seed + 1) : []),
+    [questions, profile, seed],
+  )
+
   const correctCount = testQuestions.filter((question) => answers[question.id] === question.answerIndex).length
   const score = testQuestions.length ? Math.round((correctCount / testQuestions.length) * 100) : 0
   const passed = score >= PRACTICE_TARGET
@@ -116,6 +134,13 @@ export default function MockTestClient({
       { rules: 0, safety: 0, signs: 0, documents: 0 },
     )
   }, [testQuestions])
+
+  function chooseCaliforniaMode(mode: CaliforniaMode) {
+    setCaliforniaMode(mode)
+    setSeed((current) => current + 1)
+    setAnswers({})
+    setSubmitted(false)
+  }
 
   function submit() {
     const wrongIds = testQuestions.filter((question) => answers[question.id] !== question.answerIndex).map((question) => question.id)
@@ -128,6 +153,50 @@ export default function MockTestClient({
     setSeed((current) => current + 1)
     setAnswers({})
     setSubmitted(false)
+  }
+
+  function changeMode() {
+    setCaliforniaMode(null)
+    setAnswers({})
+    setSubmitted(false)
+  }
+
+  if (isCalifornia && !californiaMode) {
+    return (
+      <div className="grid gap-5">
+        <section className="card p-5 md:p-6">
+          <p className="text-sm font-bold text-teal-700">California DMV 模拟考试</p>
+          <h1 className="mt-2 text-2xl font-black text-slate-950">选择模拟考试模式</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+            两种模式都会从当前加州题库中按道路规则、安全驾驶、交通标志和证件流程分类随机组卷，并尽量避免相似题集中出现。本站以 80% 作为练习目标；正式考试题量、申请类型和通过要求请以 California DMV 当日规定为准。
+          </p>
+        </section>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => chooseCaliforniaMode('adult-36')}
+            className="focus-ring card p-5 text-left transition hover:border-blue-300 hover:bg-blue-50"
+          >
+            <span className="text-sm font-bold text-blue-700">标准模拟</span>
+            <span className="mt-2 block text-3xl font-black text-slate-950">36 题</span>
+            <span className="mt-2 block text-sm leading-6 text-slate-600">参考加州成人 Class C 历史考试题量设计，适合大多数成人申请者进行完整模拟练习。</span>
+            <span className="mt-4 inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">开始 36 题模拟</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => chooseCaliforniaMode('teen-46')}
+            className="focus-ring card p-5 text-left transition hover:border-violet-300 hover:bg-violet-50"
+          >
+            <span className="text-sm font-bold text-violet-700">青少年强化模拟</span>
+            <span className="mt-2 block text-3xl font-black text-slate-950">46 题</span>
+            <span className="mt-2 block text-sm leading-6 text-slate-600">参考加州未满 18 岁申请者历史考试题量设计，题量更大，适合强化训练和考前自测。</span>
+            <span className="mt-4 inline-flex rounded-md bg-slate-950 px-4 py-2 text-sm font-black text-white">开始 46 题模拟</span>
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -146,10 +215,17 @@ export default function MockTestClient({
               <span className="rounded-full bg-slate-100 px-2.5 py-1">证件流程 {categoryCounts.documents}</span>
             </div>
           </div>
-          <button type="button" onClick={restart} className="focus-ring inline-flex shrink-0 items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">
-            <RotateCcw size={15} className="mr-1.5" />
-            换一套题
-          </button>
+          <div className="flex flex-wrap gap-2">
+            {isCalifornia ? (
+              <button type="button" onClick={changeMode} className="focus-ring inline-flex shrink-0 items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">
+                更换模式
+              </button>
+            ) : null}
+            <button type="button" onClick={restart} className="focus-ring inline-flex shrink-0 items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">
+              <RotateCcw size={15} className="mr-1.5" />
+              换一套题
+            </button>
+          </div>
         </div>
       </section>
 
