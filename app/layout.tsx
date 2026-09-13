@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import BackToTop from '@/components/BackToTop'
 import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main>{children}</main>
         <Footer />
+        <BackToTop />
       </body>
     </html>
   )
