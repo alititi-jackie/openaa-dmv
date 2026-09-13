@@ -1,3 +1,4 @@
+import { validateCaliforniaSpecificBank } from './california-audit'
 import { californiaQuestions } from './california-questions'
 import { californiaExpandedQuestions } from './california-questions-expanded'
 import { getLiveStateBySlug, type DmvQuestion } from './dmv-data'
@@ -5,6 +6,11 @@ import { sharedCoreQuestions } from './shared-core-questions'
 import { sharedCoreReplacements } from './shared-core-replacements'
 import { sharedCoreSupplement } from './shared-core-supplement'
 import { validateSharedCoreBank } from './shared-core-audit-production'
+
+const californiaSpecificBank = validateCaliforniaSpecificBank([
+  ...californiaQuestions,
+  ...californiaExpandedQuestions,
+])
 
 const sharedCoreBase = sharedCoreQuestions.filter((question) => !/^shared-core-\d+b$/.test(question.id))
 const sharedCoreBank = validateSharedCoreBank([
@@ -71,13 +77,13 @@ function prepareQuestions(questions: DmvQuestion[]) {
 }
 
 export function getQuestionSourceForLanguage(questionId: string): DmvQuestion | null {
-  const question = [...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank].find((item) => item.id === questionId)
+  const question = [...californiaSpecificBank, ...sharedCoreBank].find((item) => item.id === questionId)
   return question ? applyOverride(question) : null
 }
 
 export function getQuestionsForState(stateSlug: string): DmvQuestion[] {
   if (!getLiveStateBySlug(stateSlug)) return []
-  if (stateSlug === 'california') return prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank])
+  if (stateSlug === 'california') return prepareQuestions([...californiaSpecificBank, ...sharedCoreBank])
   return prepareQuestions(sharedCoreBank)
 }
 
