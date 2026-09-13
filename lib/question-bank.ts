@@ -47,7 +47,13 @@ function hash(value: string) { let result = 2166136261; for (let index = 0; inde
 function applyOverride(question: DmvQuestion): DmvQuestion { return overrides[question.id] ? { ...question, ...overrides[question.id] } : question }
 function balanceAnswerPosition(question: DmvQuestion): DmvQuestion { if (question.choices.length < 2) return question; const target = hash(question.id) % question.choices.length; if (target === question.answerIndex) return question; const choices = [...question.choices]; const correct = choices[question.answerIndex]; choices.splice(question.answerIndex, 1); choices.splice(target, 0, correct); return { ...question, choices, answerIndex: target } }
 function prepareQuestions(questions: DmvQuestion[]) { const ids = new Set<string>(); const texts = new Set<string>(); return questions.map(applyOverride).filter((question) => { const text = normalize(question.question); if (ids.has(question.id) || texts.has(text)) return false; ids.add(question.id); texts.add(text); return true }).map(balanceAnswerPosition) }
+
+const californiaCanonicalSignId = /^ca2-signs-(?:00[1-9]|01\d|020)$/
+function dedupeCaliforniaSigns(questions: DmvQuestion[]) {
+  return questions.filter((question) => question.category !== 'signs' || californiaCanonicalSignId.test(question.id))
+}
+
 export function getQuestionSourceForLanguage(questionId: string): DmvQuestion | null { const question = [...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank].find((item) => item.id === questionId); return question ? applyOverride(question) : null }
-export function getQuestionsForState(stateSlug: string): DmvQuestion[] { if (!getLiveStateBySlug(stateSlug)) return []; if (stateSlug === 'california') return prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank]); return prepareQuestions(sharedCoreBank) }
+export function getQuestionsForState(stateSlug: string): DmvQuestion[] { if (!getLiveStateBySlug(stateSlug)) return []; if (stateSlug === 'california') return dedupeCaliforniaSigns(prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank])); return prepareQuestions(sharedCoreBank) }
 export function getQuestionsByCategory(stateSlug: string, category: DmvQuestion['category']) { return getQuestionsForState(stateSlug).filter((question) => question.category === category) }
 export function getQuestionCountForState(stateSlug: string) { return getQuestionsForState(stateSlug).length }
