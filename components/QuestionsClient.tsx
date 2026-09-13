@@ -7,7 +7,15 @@ import { categoryLabels, type DmvQuestion } from '@/lib/dmv-data'
 
 type Filter = 'all' | DmvQuestion['category']
 
-export default function QuestionsClient({ questions, storageKey }: { questions: DmvQuestion[]; storageKey: string }) {
+export default function QuestionsClient({
+  questions,
+  storageKey,
+  stateSlug,
+}: {
+  questions: DmvQuestion[]
+  storageKey: string
+  stateSlug: string
+}) {
   const [filter, setFilter] = useState<Filter>('all')
   const [revealed, setRevealed] = useState<Record<string, number>>({})
 
@@ -47,7 +55,7 @@ export default function QuestionsClient({ questions, storageKey }: { questions: 
               <h2 className="mt-2 text-lg font-black leading-7 text-slate-950">
                 {index + 1}. {question.question}
               </h2>
-              <QuestionSignImage question={question} />
+              <QuestionSignImage question={question} stateSlug={stateSlug} />
               <div className="mt-4 grid gap-2">
                 {question.choices.map((choice, choiceIndex) => {
                   const isSelected = selected === choiceIndex
