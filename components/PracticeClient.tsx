@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, CheckCircle2, RotateCcw, XCircle } from 'lucide-react'
+import QuestionSignImage from './QuestionSignImage'
 import { shuffleQuestions, type DmvQuestion } from '@/lib/dmv-data'
 
 export default function PracticeClient({
@@ -78,6 +79,7 @@ export default function PracticeClient({
       </div>
 
       <h1 className="mt-5 text-2xl font-black leading-9 text-slate-950">{question.question}</h1>
+      <QuestionSignImage question={question} large />
       <div className="mt-5 grid gap-3">
         {question.choices.map((choice, choiceIndex) => {
           const isAnswer = choiceIndex === question.answerIndex
