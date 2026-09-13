@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" role="img" aria-labelledby="title desc">
+  <title id="title">MUTCD yellow center line examples</title>
+  <desc id="desc">Two-way roadway showing a solid yellow line beside a broken yellow line, based on MUTCD Figure 3B center-line marking conventions.</desc>
+  <rect width="640" height="320" fill="#4b5563"/>
+  <rect x="300" width="10" height="320" fill="#facc15"/>
+  <g fill="#facc15">
+    <rect x="330" y="0" width="10" height="55"/>
+    <rect x="330" y="95" width="10" height="55"/>
+    <rect x="330" y="190" width="10" height="55"/>
+    <rect x="330" y="285" width="10" height="35"/>
+  </g>
+  <path d="M145 250v-110h-34l44-60 44 60h-34v110z" fill="#fff"/>
+  <path d="M495 70v110h34l-44 60-44-60h34V70z" fill="#fff"/>
+</svg>

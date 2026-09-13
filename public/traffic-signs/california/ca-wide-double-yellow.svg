@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" role="img" aria-labelledby="title desc">
+  <title id="title">California widely separated double yellow lines</title>
+  <desc id="desc">Two sets of double solid yellow lines separated by a broad painted median area, representing the California rule that such a separation is treated as a barrier.</desc>
+  <rect width="640" height="320" fill="#4b5563"/>
+  <rect x="248" width="9" height="320" fill="#facc15"/>
+  <rect x="269" width="9" height="320" fill="#facc15"/>
+  <rect x="362" width="9" height="320" fill="#facc15"/>
+  <rect x="383" width="9" height="320" fill="#facc15"/>
+  <rect x="278" width="84" height="320" fill="#374151"/>
+  <path d="M130 250v-110H96l44-60 44 60h-34v110z" fill="#fff"/>
+  <path d="M510 70v110h34l-44 60-44-60h34V70z" fill="#fff"/>
+</svg>

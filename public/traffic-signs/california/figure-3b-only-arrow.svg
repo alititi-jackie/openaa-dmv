@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 640" role="img" aria-labelledby="title desc">
+  <title id="title">MUTCD ONLY pavement marking with directional arrow</title>
+  <desc id="desc">White ONLY word marking and directional arrow on a dark pavement field, based on MUTCD pavement-marking conventions.</desc>
+  <rect width="420" height="640" fill="#4b5563"/>
+  <path d="M210 78l72 94h-44v114h-56V172h-44z" fill="#fff"/>
+  <text x="210" y="450" text-anchor="middle" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="100" font-weight="700" transform="rotate(-90 210 450)">ONLY</text>
+</svg>

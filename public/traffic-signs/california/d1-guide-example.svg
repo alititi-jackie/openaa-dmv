@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-labelledby="title desc">
+  <title id="title">MUTCD green destination guide sign example</title>
+  <desc id="desc">Green guide sign with white destination names, route distances, and direction arrow, based on MUTCD guide-sign conventions.</desc>
+  <rect width="640" height="300" rx="18" fill="#fff"/>
+  <rect x="14" y="14" width="612" height="272" rx="14" fill="#087f5b" stroke="#fff" stroke-width="8"/>
+  <text x="55" y="88" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700">CITY CENTER</text>
+  <text x="55" y="162" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="700">2 MILES</text>
+  <path d="M468 205h76v-40l58 61-58 61v-40h-76z" fill="#fff" transform="translate(0 -16)"/>
+</svg>
