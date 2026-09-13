@@ -30,6 +30,7 @@ export default function PracticeClient({
   const [index, setIndex] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [mode, setMode] = useState<'order' | 'random'>('order')
+  const [scope, setScope] = useState<'all' | 'favorites'>('all')
   const [seed, setSeed] = useState(0)
   const [answeredIds, setAnsweredIds] = useState<string[]>([])
   const [correctIds, setCorrectIds] = useState<string[]>([])
@@ -51,18 +52,49 @@ export default function PracticeClient({
     if (Number.isFinite(savedIndex) && savedIndex >= 0 && savedIndex < questions.length) setIndex(savedIndex)
   }, [answeredKey, correctKey, masteredKey, favoritesKey, resumeKey, questions.length])
 
-  const orderedQuestions = useMemo(() => {
-    if (mode === 'order') return questions
-    return shuffleQuestions(questions, seed)
-  }, [mode, questions, seed])
+  const scopedQuestions = useMemo(
+    () => scope === 'favorites' ? questions.filter((question) => favoriteIds.includes(question.id)) : questions,
+    [scope, questions, favoriteIds],
+  )
 
-  const question = orderedQuestions[index]
-  const answered = selected !== null
-  const isCorrect = answered && selected === question.answerIndex
+  const orderedQuestions = useMemo(() => {
+    if (mode === 'order') return scopedQuestions
+    return shuffleQuestions(scopedQuestions, seed)
+  }, [mode, scopedQuestions, seed])
+
+  useEffect(() => {
+    if (index >= orderedQuestions.length) {
+      setIndex(0)
+      setSelected(null)
+    }
+  }, [index, orderedQuestions.length])
+
   const scopedIds = useMemo(() => new Set(questions.map((item) => item.id)), [questions])
   const completedCount = answeredIds.filter((id) => scopedIds.has(id)).length
   const correctCount = correctIds.filter((id) => scopedIds.has(id)).length
   const accuracy = completedCount ? Math.round((correctCount / completedCount) * 100) : 0
+  const favoriteCount = favoriteIds.filter((id) => scopedIds.has(id)).length
+
+  function changeScope(nextScope: 'all' | 'favorites') {
+    setScope(nextScope)
+    setIndex(0)
+    setSelected(null)
+  }
+
+  if (scope === 'favorites' && orderedQuestions.length === 0) {
+    return (
+      <div className="card p-6 text-center">
+        <Star size={28} className="mx-auto text-amber-500" />
+        <h1 className="mt-3 text-2xl font-black text-slate-950">还没有收藏题目</h1>
+        <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">在练习或题库中点击“收藏”，以后可以只练这些重点题。</p>
+        <button type="button" onClick={() => changeScope('all')} className="focus-ring mt-5 rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">返回全部练习</button>
+      </div>
+    )
+  }
+
+  const question = orderedQuestions[index]
+  const answered = selected !== null
+  const isCorrect = answered && selected === question.answerIndex
   const isFavorite = favoriteIds.includes(question.id)
   const isMastered = masteredIds.includes(question.id)
 
@@ -102,14 +134,14 @@ export default function PracticeClient({
     setSelected(null)
     const next = Math.min(index + 1, orderedQuestions.length - 1)
     setIndex(next)
-    if (mode === 'order') window.localStorage.setItem(resumeKey, String(next))
+    if (scope === 'all' && mode === 'order') window.localStorage.setItem(resumeKey, String(next))
   }
 
   function goPrev() {
     setSelected(null)
     const next = Math.max(index - 1, 0)
     setIndex(next)
-    if (mode === 'order') window.localStorage.setItem(resumeKey, String(next))
+    if (scope === 'all' && mode === 'order') window.localStorage.setItem(resumeKey, String(next))
   }
 
   function restart(nextMode = mode) {
@@ -117,12 +149,12 @@ export default function PracticeClient({
     setSeed((current) => current + 1)
     setIndex(0)
     setSelected(null)
-    if (nextMode === 'order') window.localStorage.setItem(resumeKey, '0')
+    if (scope === 'all' && nextMode === 'order') window.localStorage.setItem(resumeKey, '0')
   }
 
   return (
     <div className="card p-4 md:p-6">
-      <div className="grid grid-cols-3 gap-2 border-b border-slate-200 pb-4 sm:max-w-md">
+      <div className="grid grid-cols-4 gap-2 border-b border-slate-200 pb-4">
         <div className="rounded-md bg-slate-50 p-2.5">
           <p className="text-[11px] font-bold text-slate-500">已完成</p>
           <p className="mt-0.5 text-base font-black text-slate-950">{completedCount}/{questions.length}</p>
@@ -135,16 +167,23 @@ export default function PracticeClient({
           <p className="text-[11px] font-bold text-slate-500">已掌握</p>
           <p className="mt-0.5 text-base font-black text-slate-950">{masteredIds.filter((id) => scopedIds.has(id)).length}</p>
         </div>
+        <button type="button" onClick={() => changeScope('favorites')} className="focus-ring rounded-md bg-amber-50 p-2.5 text-left">
+          <p className="text-[11px] font-bold text-amber-700">收藏题</p>
+          <p className="mt-0.5 text-base font-black text-amber-900">{favoriteCount}</p>
+        </button>
       </div>
 
       <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-sm font-bold text-teal-700">第 {index + 1} / {orderedQuestions.length} 题</p>
+          <p className="text-sm font-bold text-teal-700">{scope === 'favorites' ? '收藏专项 · ' : ''}第 {index + 1} / {orderedQuestions.length} 题</p>
           <div className="mt-2 h-2 w-64 max-w-full overflow-hidden rounded-full bg-slate-200">
             <div className="h-full rounded-full bg-teal-600" style={{ width: `${((index + 1) / orderedQuestions.length) * 100}%` }} />
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => changeScope(scope === 'all' ? 'favorites' : 'all')} className={`focus-ring rounded-md border px-3 py-2 text-sm font-bold ${scope === 'favorites' ? 'border-amber-300 bg-amber-50 text-amber-900' : 'border-slate-300 text-slate-700'}`}>
+            {scope === 'favorites' ? '返回全部题' : `只练收藏 ${favoriteCount}`}
+          </button>
           <button type="button" onClick={() => restart('order')} className="focus-ring rounded-md border border-slate-300 px-3 py-2 text-sm font-bold text-slate-700">顺序</button>
           <button type="button" onClick={() => restart('random')} className="focus-ring rounded-md border border-slate-300 px-3 py-2 text-sm font-bold text-slate-700">随机</button>
           <button type="button" onClick={() => restart()} className="focus-ring inline-flex items-center rounded-md border border-slate-300 px-3 py-2 text-sm font-bold text-slate-700">
