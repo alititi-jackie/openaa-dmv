@@ -56,7 +56,7 @@ export default function WrongQuestionsClient({
           清空
         </button>
       </div>
-      <QuestionsClient questions={wrongQuestions} storageKey={storageKey} />
+      <QuestionsClient questions={wrongQuestions} storageKey={storageKey} stateSlug={stateSlug} />
     </div>
   )
 }
