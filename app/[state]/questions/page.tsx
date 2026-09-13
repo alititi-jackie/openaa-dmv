@@ -41,7 +41,7 @@ export default async function QuestionsPage({ params }: Props) {
           <h1 className="mt-2 text-3xl font-black text-slate-950">{state.nameZh} DMV 中文题库</h1>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">当前共 {questions.length} 道练习题。点击选项即可显示答案，答错题会自动加入本地错题本。</p>
         </div>
-        <QuestionsClient questions={questions} storageKey={`openaa-dmv:${state.slug}:wrong`} />
+        <QuestionsClient questions={questions} storageKey={`openaa-dmv:${state.slug}:wrong`} stateSlug={state.slug} />
       </div>
     </section>
   )
