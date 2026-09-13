@@ -4,6 +4,7 @@ import JsonLd from '@/components/JsonLd'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import StateSearch from '@/components/StateSearch'
 import { dmvStates, popularStates } from '@/lib/dmv-data'
+import { getQuestionCountForState } from '@/lib/question-bank'
 import { breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from '@/lib/seo'
 import { OPENAA_DMV_URL } from '@/lib/site'
 
@@ -49,11 +50,12 @@ export default function HomePage() {
           <div className="mx-auto mt-9 grid max-w-3xl grid-cols-2 gap-3 md:grid-cols-3">
             {popularStates.map((state) => {
               const href = state.status === 'external' ? state.externalUrl || OPENAA_DMV_URL : `/${state.slug}`
+              const count = state.status === 'live' ? getQuestionCountForState(state.slug) : state.questionCount
               return (
                 <a key={state.slug} href={href} className="card p-4 text-left transition hover:-translate-y-0.5 hover:border-slate-300">
                   <p className="text-lg font-black text-slate-950">{state.shortZh}</p>
                   <p className="mt-1 text-xs font-semibold text-slate-500">
-                    {state.status === 'live' ? `${state.questionCount} 道中文练习题` : '150+ 道中文题 · 已上线'}
+                    {state.status === 'live' ? `${count} 道中文练习题` : '150+ 道中文题 · 已上线'}
                   </p>
                   <span className="mt-3 inline-flex items-center text-sm font-bold text-blue-700">
                     开始刷题 <ArrowRight size={14} className="ml-1" />
