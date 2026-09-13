@@ -1,6 +1,7 @@
 import { californiaQuestions } from './california-questions'
 import { californiaExpandedQuestions } from './california-questions-expanded'
-import { getLiveStateBySlug, sharedQuestions, type DmvQuestion } from './dmv-data'
+import { getLiveStateBySlug, type DmvQuestion } from './dmv-data'
+import { sharedCoreQuestions } from './shared-core-questions'
 
 const californiaQualityOverrides: Record<string, Partial<DmvQuestion>> = {
   'ca2-rules-001': { question: '接近没有信号灯的人行横道时，看到行人已经准备进入横道，最合适的做法是什么？', choices: ['保持车速，只要行人还没踏上车道即可', '减速并准备停车让行，确认行人安全通过', '轻按喇叭提醒行人后继续通过'], answerIndex: 1, explanation: '接近人行横道时应主动观察并为行人留出安全通行空间，必要时停车让行。' },
@@ -16,67 +17,24 @@ const californiaQualityOverrides: Record<string, Partial<DmvQuestion>> = {
   'ca2-rules-030': { question: '进入浓雾路段后，你发现前方车辆越来越难看清。最合适的做法是什么？', choices: ['打开远光灯并保持原速', '减速、增加跟车距离并使用合适的近光灯', '紧跟前车尾灯以免偏离车道'], answerIndex: 1, explanation: '雾天应降低速度、扩大跟车距离，并避免远光灯造成反射眩光。' },
 }
 
-function normalizeText(value: string) {
-  return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '')
-}
-
-function hashString(value: string) {
-  let hash = 2166136261
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index)
-    hash = Math.imul(hash, 16777619)
-  }
-  return Math.abs(hash >>> 0)
-}
-
-function applyQualityOverride(question: DmvQuestion): DmvQuestion {
-  const override = californiaQualityOverrides[question.id]
-  return override ? { ...question, ...override } : question
-}
-
-function balanceAnswerPosition(question: DmvQuestion): DmvQuestion {
-  if (question.choices.length < 2) return question
-  const targetIndex = hashString(question.id) % question.choices.length
-  if (targetIndex === question.answerIndex) return question
-  const choices = [...question.choices]
-  const correctChoice = choices[question.answerIndex]
-  choices.splice(question.answerIndex, 1)
-  choices.splice(targetIndex, 0, correctChoice)
-  return { ...question, choices, answerIndex: targetIndex }
-}
-
-function dedupeExactQuestions(questions: DmvQuestion[]) {
-  const seenIds = new Set<string>()
-  const seenQuestions = new Set<string>()
-  return questions.filter((question) => {
-    const normalized = normalizeText(question.question)
-    if (seenIds.has(question.id) || seenQuestions.has(normalized)) return false
-    seenIds.add(question.id)
-    seenQuestions.add(normalized)
-    return true
-  })
-}
-
-function prepareQuestions(questions: DmvQuestion[]) {
-  return dedupeExactQuestions(questions.map(applyQualityOverride)).map(balanceAnswerPosition)
-}
+function normalizeText(value: string) { return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '') }
+function hashString(value: string) { let hash = 2166136261; for (let index = 0; index < value.length; index += 1) { hash ^= value.charCodeAt(index); hash = Math.imul(hash, 16777619) } return Math.abs(hash >>> 0) }
+function applyQualityOverride(question: DmvQuestion): DmvQuestion { const override = californiaQualityOverrides[question.id]; return override ? { ...question, ...override } : question }
+function balanceAnswerPosition(question: DmvQuestion): DmvQuestion { if (question.choices.length < 2) return question; const targetIndex = hashString(question.id) % question.choices.length; if (targetIndex === question.answerIndex) return question; const choices = [...question.choices]; const correctChoice = choices[question.answerIndex]; choices.splice(question.answerIndex, 1); choices.splice(targetIndex, 0, correctChoice); return { ...question, choices, answerIndex: targetIndex } }
+function dedupeExactQuestions(questions: DmvQuestion[]) { const seenIds = new Set<string>(); const seenQuestions = new Set<string>(); return questions.filter((question) => { const normalized = normalizeText(question.question); if (seenIds.has(question.id) || seenQuestions.has(normalized)) return false; seenIds.add(question.id); seenQuestions.add(normalized); return true }) }
+function prepareQuestions(questions: DmvQuestion[]) { return dedupeExactQuestions(questions.map(applyQualityOverride)).map(balanceAnswerPosition) }
 
 export function getQuestionSourceForLanguage(questionId: string): DmvQuestion | null {
-  const original = [...californiaQuestions, ...californiaExpandedQuestions, ...sharedQuestions].find((question) => question.id === questionId)
+  const original = [...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreQuestions].find((question) => question.id === questionId)
   return original ? applyQualityOverride(original) : null
 }
 
 export function getQuestionsForState(stateSlug: string): DmvQuestion[] {
   const state = getLiveStateBySlug(stateSlug)
   if (!state) return []
-  if (stateSlug === 'california') return prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedQuestions])
-  return prepareQuestions(sharedQuestions)
+  if (stateSlug === 'california') return prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreQuestions])
+  return prepareQuestions(sharedCoreQuestions)
 }
 
-export function getQuestionsByCategory(stateSlug: string, category: DmvQuestion['category']) {
-  return getQuestionsForState(stateSlug).filter((question) => question.category === category)
-}
-
-export function getQuestionCountForState(stateSlug: string) {
-  return getQuestionsForState(stateSlug).length
-}
+export function getQuestionsByCategory(stateSlug: string, category: DmvQuestion['category']) { return getQuestionsForState(stateSlug).filter((question) => question.category === category) }
+export function getQuestionCountForState(stateSlug: string) { return getQuestionsForState(stateSlug).length }
