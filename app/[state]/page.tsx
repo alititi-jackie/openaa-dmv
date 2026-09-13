@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import JsonLd from '@/components/JsonLd'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import StateHero from '@/components/StateHero'
@@ -96,6 +97,13 @@ export default async function StatePage({ params }: Props) {
       <JsonLd data={webPageJsonLd(pageTitle, pageDescription, `/${state.slug}`)} />
       <JsonLd data={faqJsonLd(faq)} />
       <JsonLd data={breadcrumbJsonLd([{ name: '首页', path: '/' }, { name: state.nameZh, path: `/${state.slug}` }])} />
+      {isCalifornia ? (
+        <div className="bg-white pt-6">
+          <div className="page-shell">
+            <BackLink href="/" label="返回美国 DMV 首页" />
+          </div>
+        </div>
+      ) : null}
       <StateHero state={state} />
       <ToolGrid state={state} />
 
@@ -149,7 +157,7 @@ export default async function StatePage({ params }: Props) {
           <div className="card p-5">
             <h2 className="text-2xl font-black text-slate-950">官方入口</h2>
             <div className="mt-4 grid gap-2 text-sm font-bold text-blue-800">
-              <a href={state.officialUrl}>California DMV 官方首页</a>
+              <a href={state.officialUrl}>{state.officialName} 官方首页</a>
               <a href={state.driverManualUrl}>California Driver’s Handbook</a>
               <a href={state.permitUrl}>Instruction Permit / License 申请</a>
               <a href={state.roadTestUrl}>Drive Test / Road Test</a>
@@ -165,7 +173,7 @@ export default async function StatePage({ params }: Props) {
           <div className="card p-5">
             <h2 className="text-2xl font-black text-slate-950">{state.shortZh} DMV 中文题库概览</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              当前开放 {questions.length} 道中文练习题，覆盖道路规则、交通标志、安全驾驶和证件流程。练习页支持即时答案解析，模拟考试支持随机抽题，答错题目会保存到本地错题本。
+              当前开放 {questions.length} 道中文练习题，覆盖道路规则、交通标志、安全驾驶和证件流程。练习页支持即时答案解析，模拟考试支持 36 题或 46 题分类随机组卷，答错题目会保存到本地错题本。
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href={`/${state.slug}/questions`} className="focus-ring inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">查看全部题目</Link>
