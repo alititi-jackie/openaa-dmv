@@ -4,6 +4,7 @@ import { californiaCoreEnglishById } from './california-english-core'
 import { californiaExpandedEnglishById } from './california-english-expanded'
 import { californiaQualityEnglishById } from './california-english-quality'
 import { getQuestionSourceForLanguage } from './question-bank'
+import { sharedCoreEnglish } from './shared-core-english'
 
 export type DmvLanguage = 'zh' | 'en' | 'bilingual'
 
@@ -32,6 +33,7 @@ function externalEnglish(question: DmvQuestion) {
     ?? californiaEnglishById[question.id]
     ?? californiaCoreEnglishById[question.id]
     ?? californiaExpandedEnglishById[question.id]
+    ?? sharedCoreEnglish[question.id]
 }
 
 function alignChoices(question: DmvQuestion, english: DmvEnglishContent): DmvEnglishContent {
