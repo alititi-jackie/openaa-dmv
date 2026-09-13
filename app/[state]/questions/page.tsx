@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
 import QuestionsClient from '@/components/QuestionsClient'
-import { dmvStates, getLiveStateBySlug, getQuestionsForState } from '@/lib/dmv-data'
+import { dmvStates, getLiveStateBySlug } from '@/lib/dmv-data'
+import { getQuestionsForState } from '@/lib/question-bank'
 import { breadcrumbJsonLd, stateDescription, webPageJsonLd } from '@/lib/seo'
 
 type Props = { params: Promise<{ state: string }> }
@@ -36,7 +37,7 @@ export default async function QuestionsPage({ params }: Props) {
         <div className="mb-6">
           <p className="text-sm font-bold text-teal-700">{state.nameEn} DMV</p>
           <h1 className="mt-2 text-3xl font-black text-slate-950">{state.nameZh} DMV 中文题库</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">点击选项即可显示答案。答错题会自动加入本地错题本。</p>
+          <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">当前共 {questions.length} 道练习题。点击选项即可显示答案，答错题会自动加入本地错题本。</p>
         </div>
         <QuestionsClient questions={questions} storageKey={`openaa-dmv:${state.slug}:wrong`} />
       </div>
