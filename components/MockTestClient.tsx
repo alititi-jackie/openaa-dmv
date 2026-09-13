@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { CheckCircle2, RotateCcw, XCircle } from 'lucide-react'
 import QuestionSignImage from './QuestionSignImage'
-import { shuffleQuestions, type DmvQuestion } from '@/lib/dmv-data'
+import { categoryLabels, shuffleQuestions, type DmvQuestion } from '@/lib/dmv-data'
 
 const PRACTICE_TARGET = 80
 
@@ -150,6 +150,20 @@ export default function MockTestClient({
     )
   }, [activeQuestions])
 
+  const categoryResults = useMemo(() => {
+    const categories: Category[] = ['rules', 'safety', 'signs', 'documents']
+    return categories.map((category) => {
+      const categoryQuestions = activeQuestions.filter((question) => question.category === category)
+      const correct = categoryQuestions.filter((question) => answers[question.id] === question.answerIndex).length
+      const total = categoryQuestions.length
+      return { category, correct, total, score: total ? Math.round((correct / total) * 100) : 0 }
+    }).filter((item) => item.total > 0)
+  }, [activeQuestions, answers])
+
+  const weakCategories = submitted
+    ? categoryResults.filter((item) => item.score < PRACTICE_TARGET).sort((a, b) => a.score - b.score)
+    : []
+
   useEffect(() => {
     if (!submitted) return
     window.requestAnimationFrame(() => {
@@ -170,6 +184,7 @@ export default function MockTestClient({
     const wrongIds = activeQuestions.filter((question) => answers[question.id] !== question.answerIndex).map((question) => question.id)
     const existing = JSON.parse(window.localStorage.getItem(storageKey) || '[]') as string[]
     window.localStorage.setItem(storageKey, JSON.stringify(Array.from(new Set([...existing, ...wrongIds]))))
+    window.dispatchEvent(new Event('openaa-dmv-wrong-update'))
     setSubmitted(true)
   }
 
@@ -234,22 +249,14 @@ export default function MockTestClient({
         </section>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <button
-            type="button"
-            onClick={() => chooseCaliforniaMode('adult-36')}
-            className="focus-ring card p-5 text-left transition hover:border-blue-300 hover:bg-blue-50"
-          >
+          <button type="button" onClick={() => chooseCaliforniaMode('adult-36')} className="focus-ring card p-5 text-left transition hover:border-blue-300 hover:bg-blue-50">
             <span className="text-sm font-bold text-blue-700">标准模拟</span>
             <span className="mt-2 block text-3xl font-black text-slate-950">36 题</span>
             <span className="mt-2 block text-sm leading-6 text-slate-600">参考加州成人 Class C 历史考试题量设计，适合大多数成人申请者进行完整模拟练习。</span>
             <span className="mt-4 inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">开始 36 题模拟</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => chooseCaliforniaMode('teen-46')}
-            className="focus-ring card p-5 text-left transition hover:border-violet-300 hover:bg-violet-50"
-          >
+          <button type="button" onClick={() => chooseCaliforniaMode('teen-46')} className="focus-ring card p-5 text-left transition hover:border-violet-300 hover:bg-violet-50">
             <span className="text-sm font-bold text-violet-700">青少年强化模拟</span>
             <span className="mt-2 block text-3xl font-black text-slate-950">46 题</span>
             <span className="mt-2 block text-sm leading-6 text-slate-600">参考加州未满 18 岁申请者历史考试题量设计，题量更大，适合强化训练和考前自测。</span>
@@ -280,44 +287,82 @@ export default function MockTestClient({
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            {isCalifornia ? (
-              <button type="button" onClick={changeMode} className="focus-ring inline-flex shrink-0 items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">
-                更换模式
-              </button>
-            ) : null}
+            {isCalifornia ? <button type="button" onClick={changeMode} className="focus-ring inline-flex shrink-0 items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">更换模式</button> : null}
             <button type="button" onClick={restart} className="focus-ring inline-flex shrink-0 items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">
-              <RotateCcw size={15} className="mr-1.5" />
-              {reviewQuestionIds ? '返回新试卷' : '换一套题'}
+              <RotateCcw size={15} className="mr-1.5" />{reviewQuestionIds ? '返回新试卷' : '换一套题'}
             </button>
           </div>
+        </div>
+      </section>
+
+      <section className="card p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-black text-slate-950">答题卡</p>
+            <p className="mt-1 text-xs text-slate-500">点击题号可直接跳转。蓝色已答，白色未答；交卷后绿色正确、红色错误。</p>
+          </div>
+          {!submitted && remainingCount > 0 ? <button type="button" onClick={jumpToNextUnanswered} className="focus-ring shrink-0 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-black text-amber-900">下一道未答</button> : null}
+        </div>
+        <div className="mt-3 grid grid-cols-8 gap-2 sm:grid-cols-10 md:grid-cols-12">
+          {activeQuestions.map((question, index) => {
+            const selected = answers[question.id]
+            const isAnswered = selected !== undefined
+            const isCorrect = submitted && selected === question.answerIndex
+            const isWrong = submitted && selected !== question.answerIndex
+            return (
+              <button
+                key={question.id}
+                type="button"
+                onClick={() => jumpToQuestion(question.id)}
+                className={`focus-ring aspect-square rounded-md border text-xs font-black ${
+                  isCorrect
+                    ? 'border-green-300 bg-green-100 text-green-800'
+                    : isWrong
+                      ? 'border-rose-300 bg-rose-100 text-rose-800'
+                      : isAnswered
+                        ? 'border-blue-400 bg-blue-100 text-blue-800'
+                        : 'border-slate-300 bg-white text-slate-600'
+                }`}
+                aria-label={`跳到第 ${index + 1} 题`}
+              >
+                {index + 1}
+              </button>
+            )
+          })}
         </div>
       </section>
 
       {submitted ? (
         <section ref={resultRef} className={`card scroll-mt-6 p-5 ${passed ? 'border-green-300 bg-green-50' : 'border-amber-300 bg-amber-50'}`}>
           <p className="text-sm font-bold uppercase tracking-wide text-slate-600">{reviewQuestionIds ? '错题复习结果' : '考试结果'}</p>
-          <p className={`mt-1 text-3xl font-black ${passed ? 'text-green-800' : 'text-amber-900'}`}>
-            {passed ? '达到练习目标' : '建议继续复习'} · {score}%
-          </p>
+          <p className={`mt-1 text-3xl font-black ${passed ? 'text-green-800' : 'text-amber-900'}`}>{passed ? '达到练习目标' : '建议继续复习'} · {score}%</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-md bg-white/80 p-3">
-              <p className="text-xs font-bold text-slate-500">答对</p>
-              <p className="mt-1 text-xl font-black text-slate-950">{correctCount} / {activeQuestions.length}</p>
-            </div>
-            <div className="rounded-md bg-white/80 p-3">
-              <p className="text-xs font-bold text-slate-500">本次错题</p>
-              <p className="mt-1 text-xl font-black text-slate-950">{wrongQuestions.length} 题</p>
-            </div>
-            <div className="rounded-md bg-white/80 p-3">
-              <p className="text-xs font-bold text-slate-500">练习目标</p>
-              <p className="mt-1 text-xl font-black text-slate-950">{PRACTICE_TARGET}%</p>
-            </div>
+            <div className="rounded-md bg-white/80 p-3"><p className="text-xs font-bold text-slate-500">答对</p><p className="mt-1 text-xl font-black text-slate-950">{correctCount} / {activeQuestions.length}</p></div>
+            <div className="rounded-md bg-white/80 p-3"><p className="text-xs font-bold text-slate-500">本次错题</p><p className="mt-1 text-xl font-black text-slate-950">{wrongQuestions.length} 题</p></div>
+            <div className="rounded-md bg-white/80 p-3"><p className="text-xs font-bold text-slate-500">练习目标</p><p className="mt-1 text-xl font-black text-slate-950">{PRACTICE_TARGET}%</p></div>
           </div>
+
+          <div className="mt-5 border-t border-slate-200/80 pt-4">
+            <p className="text-sm font-black text-slate-950">分类成绩</p>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+              {categoryResults.map((item) => (
+                <div key={item.category} className={`rounded-md border bg-white/80 p-3 ${item.score < PRACTICE_TARGET ? 'border-amber-300' : 'border-green-200'}`}>
+                  <p className="text-xs font-bold text-slate-500">{categoryLabels[item.category]}</p>
+                  <p className={`mt-1 text-lg font-black ${item.score < PRACTICE_TARGET ? 'text-amber-800' : 'text-green-800'}`}>{item.score}%</p>
+                  <p className="mt-1 text-xs text-slate-600">答对 {item.correct} / {item.total}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-sm font-bold text-slate-700">
+              {weakCategories.length
+                ? `建议重点复习：${weakCategories.map((item) => categoryLabels[item.category]).join('、')}`
+                : '四个分类都达到 80% 练习目标，继续保持。'}
+            </p>
+          </div>
+
           <p className="mt-3 text-sm leading-6 text-slate-600">本次答错题目已加入本地错题本。正式考试题量和通过要求请以 California DMV 最新规定为准。</p>
           <div className="mt-4 flex flex-wrap gap-3">
-            {isCalifornia && wrongQuestions.length ? (
-              <button type="button" onClick={startWrongReview} className="focus-ring rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">重新练习本次 {wrongQuestions.length} 道错题</button>
-            ) : null}
+            {isCalifornia && wrongQuestions.length ? <button type="button" onClick={startWrongReview} className="focus-ring rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">重新练习本次 {wrongQuestions.length} 道错题</button> : null}
             <button type="button" onClick={restart} className="focus-ring rounded-md bg-slate-950 px-4 py-2 text-sm font-black text-white">再考一套</button>
             <Link href={`/${stateSlug}/wrong-questions`} className="focus-ring rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700">全部错题本</Link>
             {isCalifornia ? <Link href="/california" className="focus-ring rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700">返回加州 DMV</Link> : null}
@@ -331,13 +376,9 @@ export default function MockTestClient({
           const answeredWrong = submitted && selected !== question.answerIndex
           const isHighlighted = highlightedQuestionId === question.id
           return (
-            <article
-              id={`question-${question.id}`}
-              key={question.id}
-              className={`card scroll-mt-24 p-4 transition ${answeredWrong ? 'border-rose-200' : ''} ${isHighlighted ? 'border-amber-400 ring-4 ring-amber-100' : ''}`}
-            >
+            <article id={`question-${question.id}`} key={question.id} className={`card scroll-mt-24 p-4 transition ${answeredWrong ? 'border-rose-200' : ''} ${isHighlighted ? 'border-amber-400 ring-4 ring-amber-100' : ''}`}>
               <h2 className="text-lg font-black leading-7 text-slate-950">{index + 1}. {question.question}</h2>
-              <QuestionSignImage question={question} />
+              <QuestionSignImage question={question} stateSlug={stateSlug} />
               <div className="mt-4 grid gap-2">
                 {question.choices.map((choice, choiceIndex) => {
                   const isAnswer = choiceIndex === question.answerIndex
@@ -379,33 +420,16 @@ export default function MockTestClient({
               <div className="mt-2 flex flex-wrap gap-2">
                 {unansweredQuestions.slice(0, 12).map((question) => {
                   const questionNumber = activeQuestions.findIndex((item) => item.id === question.id) + 1
-                  return (
-                    <button
-                      key={question.id}
-                      type="button"
-                      onClick={() => jumpToQuestion(question.id)}
-                      className="focus-ring rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-black text-amber-900"
-                    >
-                      第 {questionNumber} 题
-                    </button>
-                  )
+                  return <button key={question.id} type="button" onClick={() => jumpToQuestion(question.id)} className="focus-ring rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-black text-amber-900">第 {questionNumber} 题</button>
                 })}
                 {remainingCount > 12 ? <span className="px-1 py-1 text-xs font-bold text-amber-800">还有 {remainingCount - 12} 题…</span> : null}
               </div>
             </div>
           ) : null}
-          <button
-            type="button"
-            onClick={submitOrJump}
-            className={`focus-ring rounded-md px-5 py-3 text-sm font-black text-white ${remainingCount > 0 ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-700 hover:bg-blue-800'}`}
-          >
-            {remainingCount === 0
-              ? `提交${reviewQuestionIds ? '错题复习' : '考试'}（${answeredCount}/${activeQuestions.length} 已完成）`
-              : `还剩 ${remainingCount} 题未作答 · 点击定位下一题`}
+          <button type="button" onClick={submitOrJump} className={`focus-ring rounded-md px-5 py-3 text-sm font-black text-white ${remainingCount > 0 ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-700 hover:bg-blue-800'}`}>
+            {remainingCount === 0 ? `提交${reviewQuestionIds ? '错题复习' : '考试'}（${answeredCount}/${activeQuestions.length} 已完成）` : `还剩 ${remainingCount} 题未作答 · 点击定位下一题`}
           </button>
-          <p className="text-center text-xs text-slate-500">
-            {remainingCount > 0 ? '可点击上方题号直接跳转，也可以点击按钮依次定位未答题。' : '已完成全部题目，可以提交并查看成绩。'}
-          </p>
+          <p className="text-center text-xs text-slate-500">{remainingCount > 0 ? '可使用答题卡或未答题提示直接跳转。' : '已完成全部题目，可以提交并查看成绩。'}</p>
         </div>
       ) : null}
     </div>
