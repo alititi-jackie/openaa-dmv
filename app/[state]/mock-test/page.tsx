@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import JsonLd from '@/components/JsonLd'
 import MockTestClient from '@/components/MockTestClient'
 import { dmvStates, getLiveStateBySlug } from '@/lib/dmv-data'
@@ -33,6 +34,7 @@ export default async function MockTestPage({ params }: Props) {
       <JsonLd data={webPageJsonLd(`${state.nameZh} DMV 中文模拟考试`, stateDescription(state), `/${state.slug}/mock-test`)} />
       <JsonLd data={breadcrumbJsonLd([{ name: '首页', path: '/' }, { name: state.nameZh, path: `/${state.slug}` }, { name: '模拟考试', path: `/${state.slug}/mock-test` }])} />
       <div className="page-shell">
+        {state.slug === 'california' ? <BackLink href="/california" label="返回加州 DMV" /> : null}
         <MockTestClient questions={getQuestionsForState(state.slug)} stateSlug={state.slug} storageKey={`openaa-dmv:${state.slug}:wrong`} />
       </div>
     </section>
