@@ -2,6 +2,8 @@ import type { DmvQuestion } from './dmv-data'
 import { californiaEnglishById } from './california-english'
 import { californiaCoreEnglishById } from './california-english-core'
 import { californiaExpandedEnglishById } from './california-english-expanded'
+import { californiaQualityEnglishById } from './california-english-quality'
+import { getQuestionSourceForLanguage } from './question-bank'
 
 export type DmvLanguage = 'zh' | 'en' | 'bilingual'
 
@@ -26,9 +28,22 @@ export function languageStorageKey(stateSlug: string) {
 }
 
 function externalEnglish(question: DmvQuestion) {
-  return californiaEnglishById[question.id]
+  return californiaQualityEnglishById[question.id]
+    ?? californiaEnglishById[question.id]
     ?? californiaCoreEnglishById[question.id]
     ?? californiaExpandedEnglishById[question.id]
+}
+
+function alignChoices(question: DmvQuestion, english: DmvEnglishContent): DmvEnglishContent {
+  const source = getQuestionSourceForLanguage(question.id)
+  if (!source || source.choices.length !== english.choices.length || question.choices.length !== english.choices.length) return english
+
+  const aligned = question.choices.map((choice, index) => {
+    const sourceIndex = source.choices.indexOf(choice)
+    return sourceIndex >= 0 ? english.choices[sourceIndex] : english.choices[index]
+  })
+
+  return { ...english, choices: aligned }
 }
 
 export function hasEnglish(question: DmvQuestion) {
@@ -58,7 +73,9 @@ export function getExplanationText(question: DmvQuestion, language: DmvLanguage)
 }
 
 export function getEnglishContent(question: DmvQuestion): DmvEnglishContent | undefined {
-  return (question as BilingualDmvQuestion).en ?? externalEnglish(question)
+  const embedded = (question as BilingualDmvQuestion).en
+  const english = embedded ?? externalEnglish(question)
+  return english ? alignChoices(question, english) : undefined
 }
 
 export function getKeywords(question: DmvQuestion): DmvKeyword[] {
