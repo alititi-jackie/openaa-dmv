@@ -15,7 +15,7 @@ export default function StateHero({ state }: { state: DmvState }) {
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-200">{state.summary}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href={`/${state.slug}/practice`} className="focus-ring inline-flex items-center rounded-md bg-cyan-400 px-4 py-2.5 text-sm font-black text-slate-950 hover:bg-cyan-300">
-              开始练习
+              开始练习题库
               <ArrowRight size={16} className="ml-1.5" />
             </Link>
             <a href={state.officialUrl} className="focus-ring inline-flex items-center rounded-md border border-white/20 px-4 py-2.5 text-sm font-bold text-white hover:bg-white/10">
