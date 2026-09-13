@@ -16,12 +16,18 @@ const ASSET = '/traffic-signs/california'
 const MUTCD = {
   stop: `${ASSET}/r1-1-stop.svg`,
   yield: `${ASSET}/r1-2-yield.svg`,
+  speedLimit: `${ASSET}/r2-1-speed-limit.svg`,
+  noUTurn: `${ASSET}/r3-4-no-u-turn.svg`,
   doNotEnter: `${ASSET}/r5-1-do-not-enter.svg`,
   wrongWay: `${ASSET}/r5-1a-wrong-way.svg`,
   railroad: `${ASSET}/w10-1-railroad-warning.svg`,
   crossbuck: `${ASSET}/r15-1-crossbuck.svg`,
   school: `${ASSET}/s1-1-school.svg`,
   curve: `${ASSET}/w1-2-curve.svg`,
+  roadWork: `${ASSET}/cw20-1-road-work.svg`,
+  hospital: `${ASSET}/d9-2-hospital.svg`,
+  guide: `${ASSET}/d1-guide-example.svg`,
+  recreation: `${ASSET}/figure-2m-2-recreation-guide.svg`,
   redCurb: `${ASSET}/ca-curb-red.svg`,
   whiteCurb: `${ASSET}/ca-curb-white.svg`,
   blueCurb: `${ASSET}/ca-curb-blue.svg`,
@@ -38,53 +44,47 @@ const visual = (
   sourceLabel?: string,
 ): SignMeta => ({ imageUrl, alt, code, note, sourceLabel })
 
+const categoryExample = '本图是该颜色/类别的官方标准示例，用于帮助识别标志体系；答题仍应以题目所问的类别含义为准。'
 const curbNote = '本图用于对应 California 路缘颜色规则；请结合题目文字判断该颜色的停车或停靠限制。'
 const markingNote = '本图用于展示题目所考的道路标线，不代表交通标志牌。'
 
 /**
- * California 题图最终审计规则：
- * 1. question.id -> 固定资源，禁止关键词猜图。
- * 2. 只有题目考点与某个具体标志/标线直接对应时才显示图片。
- * 3. 仅考颜色、形状或“标志类别”的概念题不显示某个具体标志，避免形成错误记忆。
- * 4. 路缘与路面标线题只使用对应的 Part 3 学习图。
+ * California 交通标志题图：固定 question.id -> 固定资源。
+ * 标准标志优先使用 FHWA/MUTCD 标准图；California 路缘/标线使用按 CA MUTCD 规则核对的学习图。
+ * 颜色或类别概念题使用明确标注的官方标准“类别示例”，避免让用户误以为只有这一种标志。
  */
-const CALIFORNIA_QUESTION_VISUALS: Record<string, SignMeta | null> = {
-  // 共享题库：具体标志题显示；颜色/形状/类别题不配具体标志。
+const CALIFORNIA_QUESTION_VISUALS: Record<string, SignMeta> = {
+  // 公共核心标志题
   'signs-001': visual(MUTCD.stop, 'STOP 停车标志', 'R1-1'),
   'signs-002': visual(MUTCD.yield, 'YIELD 让行标志', 'R1-2'),
-  'signs-003': null,
-  'signs-004': null,
-  'signs-005': null,
-  'signs-006': visual(
-    MUTCD.railroad,
-    '铁路道口圆形预警标志',
-    'W10-1',
-    '本题同时涉及圆形铁路预警标志和 Crossbuck；这里仅展示题目中明确提到的 W10-1 圆形预警标志。',
-  ),
-  'signs-007': null,
-  'signs-008': null,
+  'signs-003': visual(MUTCD.speedLimit, '白底黑字法规标志示例：SPEED LIMIT', 'R2-1', categoryExample),
+  'signs-004': visual(MUTCD.curve, '黄色菱形警告标志示例：Curve', 'W1-2', categoryExample),
+  'signs-005': visual(MUTCD.roadWork, '橙色施工警告标志示例：ROAD WORK', 'CW20-1', categoryExample),
+  'signs-006': visual(MUTCD.railroad, '铁路道口圆形预警标志', 'W10-1'),
+  'signs-007': visual(MUTCD.guide, '绿色导向标志示例', 'MUTCD Chapter 2D', categoryExample, 'CA MUTCD / MUTCD 导向标志学习图'),
+  'signs-008': visual(MUTCD.hospital, '蓝色服务标志示例：Hospital', 'D9-2', categoryExample),
 
-  // California 专属题库：类别概念题不再用某一具体标志代替整个类别。
+  // California 专属标志题
   'ca-signs-001': visual(MUTCD.stop, 'STOP 停车标志', 'R1-1'),
   'ca-signs-002': visual(MUTCD.yield, 'YIELD 让行标志', 'R1-2'),
-  'ca-signs-003': null,
-  'ca-signs-004': null,
+  'ca-signs-003': visual(MUTCD.curve, '黄色菱形警告标志示例：Curve', 'W1-2', categoryExample),
+  'ca-signs-004': visual(MUTCD.roadWork, '橙色施工警告标志示例：ROAD WORK', 'CW20-1', categoryExample),
   'ca-signs-005': visual(MUTCD.school, '学校区域标志', 'S1-1'),
   'ca-signs-006': visual(MUTCD.railroad, '铁路道口圆形预警标志', 'W10-1'),
-  'ca-signs-007': null,
-  'ca-signs-008': null,
-  'ca-signs-009': null,
-  'ca-signs-010': null,
+  'ca-signs-007': visual(MUTCD.speedLimit, '白底黑字限速法规标志', 'R2-1'),
+  'ca-signs-008': visual(MUTCD.guide, '绿色导向标志示例', 'MUTCD Chapter 2D', categoryExample, 'CA MUTCD / MUTCD 导向标志学习图'),
+  'ca-signs-009': visual(MUTCD.hospital, '蓝色服务标志示例：Hospital', 'D9-2', categoryExample),
+  'ca-signs-010': visual(MUTCD.recreation, '棕色休闲/文化兴趣地点标志示例', 'CA MUTCD Figure 2M-2', categoryExample, 'CA MUTCD 休闲导向标志学习图'),
 
-  // California 扩展题库。
+  // California 扩展标志与标线题
   'ca2-signs-001': visual(MUTCD.stop, 'STOP 停车标志', 'R1-1'),
   'ca2-signs-002': visual(MUTCD.yield, 'YIELD 让行标志', 'R1-2'),
-  'ca2-signs-003': null,
-  'ca2-signs-004': null,
-  'ca2-signs-005': null,
-  'ca2-signs-006': null,
-  'ca2-signs-007': null,
-  'ca2-signs-008': null,
+  'ca2-signs-003': visual(MUTCD.speedLimit, '白底黑字法规标志示例：SPEED LIMIT', 'R2-1', categoryExample),
+  'ca2-signs-004': visual(MUTCD.curve, '黄色菱形警告标志示例：Curve', 'W1-2', categoryExample),
+  'ca2-signs-005': visual(MUTCD.roadWork, '橙色施工警告标志示例：ROAD WORK', 'CW20-1', categoryExample),
+  'ca2-signs-006': visual(MUTCD.guide, '绿色导向标志示例', 'MUTCD Chapter 2D', categoryExample, 'CA MUTCD / MUTCD 导向标志学习图'),
+  'ca2-signs-007': visual(MUTCD.hospital, '蓝色服务标志示例：Hospital', 'D9-2', categoryExample),
+  'ca2-signs-008': visual(MUTCD.recreation, '棕色休闲/文化兴趣地点标志示例', 'CA MUTCD Figure 2M-2', categoryExample, 'CA MUTCD 休闲导向标志学习图'),
   'ca2-signs-009': visual(MUTCD.school, '学校区域标志', 'S1-1'),
   'ca2-signs-010': visual(MUTCD.railroad, '铁路道口圆形预警标志', 'W10-1'),
   'ca2-signs-011': visual(MUTCD.crossbuck, '铁路道口 Crossbuck 标志', 'R15-1'),
@@ -96,12 +96,7 @@ const CALIFORNIA_QUESTION_VISUALS: Record<string, SignMeta | null> = {
   'ca2-signs-017': visual(MUTCD.wideDoubleYellow, '相隔较宽的双黄线分隔', 'Part 3B · Wide double yellow', markingNote, 'California 道路标线学习图'),
   'ca2-signs-018': visual(MUTCD.doNotEnter, 'DO NOT ENTER 禁止驶入标志', 'R5-1'),
   'ca2-signs-019': visual(MUTCD.wrongWay, 'WRONG WAY 方向错误标志', 'R5-1a'),
-  'ca2-signs-020': visual(
-    MUTCD.curve,
-    'Curve 弯道警告标志',
-    'W1-2',
-    '本题明确考查看到弯道警告后的驾驶处理，因此显示对应的 W1-2 Curve 标志。',
-  ),
+  'ca2-signs-020': visual(MUTCD.curve, 'Curve 弯道警告标志', 'W1-2'),
 }
 
 export function getQuestionSignMeta(question: DmvQuestion): SignMeta | null {
