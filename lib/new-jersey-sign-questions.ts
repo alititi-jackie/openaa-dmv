@@ -18,4 +18,12 @@ export const newJerseySignQuestions: DmvQuestion[] = [
   { id:'nj-sign-015', category:'signs', question:'图中的 DIVIDED HIGHWAY 标志表示什么？', choices:['前方道路将由中央分隔带分开','前方变成单行道','前方禁止超车'], answerIndex:0, explanation:'前方进入有中央分隔带的分隔式道路。' },
   { id:'nj-sign-016', category:'signs', question:'图中的行人横道警告标志提醒什么？', choices:['前方可能有行人横穿，应减速观察','前方禁止行人','这里只允许自行车'], answerIndex:0, explanation:'应减速并准备为行人让行。' },
   { id:'nj-sign-017', category:'signs', question:'图中的 SIGNAL AHEAD 标志表示什么？', choices:['前方有交通信号灯，应准备减速或停车','前方铁路道口','前方只有停车标志'], answerIndex:0, explanation:'前方有交通信号控制，应提前观察并准备调整速度。' },
+  { id:'nj-sign-018', category:'signs', question:'图中的弯道警告标志表示什么？', choices:['前方道路有弯道，应提前减速','前方必须停车','前方禁止右转'], answerIndex:0, explanation:'弯道警告标志提醒驾驶人提前降低速度并保持车道。' },
+  { id:'nj-sign-019', category:'signs', question:'图中的 WINDING ROAD 标志表示什么？', choices:['前方连续弯道较多，应降低速度','前方道路笔直','前方只能掉头'], answerIndex:0, explanation:'连续弯道会降低视距，应减速并控制车辆。' },
+  { id:'nj-sign-020', category:'signs', question:'图中的 TWO-WAY TRAFFIC 标志提醒什么？', choices:['前方有双向交通','前方变成单行道','只有对向车辆可以通行'], answerIndex:0, explanation:'该标志表示道路上将有相反方向的车流。' },
+  { id:'nj-sign-021', category:'signs', question:'图中的 NO PASSING ZONE 三角旗形标志表示什么？', choices:['进入禁止超车区域','可以从右侧超车','前方必须停车'], answerIndex:0, explanation:'黄色三角旗形标志用于提示禁止超车区域。' },
+  { id:'nj-sign-022', category:'signs', question:'图中的 LANE ENDS 标志表示什么？', choices:['前方车道结束，需要安全并入','前方道路封闭','前方新增车道'], answerIndex:0, explanation:'车道结束时应提前观察相邻车道并安全合流。' },
+  { id:'nj-sign-023', category:'signs', question:'图中的 STOP AHEAD 标志表示什么？', choices:['前方有 STOP 标志，应准备停车','前方可直接通过','前方只有减速标志'], answerIndex:0, explanation:'STOP AHEAD 用于提前提醒驾驶人前方需要完全停车。' },
+  { id:'nj-sign-024', category:'signs', question:'图中的 YIELD AHEAD 标志表示什么？', choices:['前方有 YIELD 标志，应减速并准备让行','前方必须掉头','前方禁止停车'], answerIndex:0, explanation:'YIELD AHEAD 提醒驾驶人前方需要减速并按路权规则让行。' },
+  { id:'nj-sign-025', category:'signs', question:'图中的 RAILROAD CROSSING Crossbuck 标志表示什么？', choices:['这里是铁路平交道口，应让火车先行','这里是学校入口','这里只允许火车停车'], answerIndex:0, explanation:'Crossbuck 标志标示铁路平交道口，驾驶人必须注意列车并依法让行。' },
 ]
