@@ -1,3 +1,6 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
 import type { DmvQuestion } from '@/lib/dmv-data'
 
 type SignMeta = {
@@ -77,10 +80,13 @@ export default function QuestionSignImage({
   large = false,
 }: {
   question: DmvQuestion
-  stateSlug: string
+  stateSlug?: string
   large?: boolean
 }) {
-  if (stateSlug !== 'california') return null
+  const pathname = usePathname()
+  const effectiveStateSlug = stateSlug ?? pathname.split('/').filter(Boolean)[0]
+  if (effectiveStateSlug !== 'california') return null
+
   const sign = getQuestionSignMeta(question)
   if (!sign) return null
 
