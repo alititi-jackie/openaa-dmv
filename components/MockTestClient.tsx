@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { CheckCircle2, RotateCcw, XCircle } from 'lucide-react'
+import QuestionSignImage from './QuestionSignImage'
 import { shuffleQuestions, type DmvQuestion } from '@/lib/dmv-data'
 
 const PRACTICE_TARGET = 80
@@ -301,6 +302,7 @@ export default function MockTestClient({
           return (
             <article id={`question-${question.id}`} key={question.id} className={`card scroll-mt-24 p-4 ${answeredWrong ? 'border-rose-200' : ''}`}>
               <h2 className="text-lg font-black leading-7 text-slate-950">{index + 1}. {question.question}</h2>
+              <QuestionSignImage question={question} />
               <div className="mt-4 grid gap-2">
                 {question.choices.map((choice, choiceIndex) => {
                   const isAnswer = choiceIndex === question.answerIndex
