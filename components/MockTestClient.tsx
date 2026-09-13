@@ -112,6 +112,7 @@ export default function MockTestClient({
   const [seed, setSeed] = useState(0)
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState(false)
+  const [reviewQuestionIds, setReviewQuestionIds] = useState<string[] | null>(null)
   const resultRef = useRef<HTMLElement | null>(null)
 
   const profile = isCalifornia
@@ -125,21 +126,26 @@ export default function MockTestClient({
     [questions, profile, seed],
   )
 
-  const correctCount = testQuestions.filter((question) => answers[question.id] === question.answerIndex).length
-  const score = testQuestions.length ? Math.round((correctCount / testQuestions.length) * 100) : 0
+  const activeQuestions = useMemo(
+    () => reviewQuestionIds ? testQuestions.filter((question) => reviewQuestionIds.includes(question.id)) : testQuestions,
+    [reviewQuestionIds, testQuestions],
+  )
+
+  const correctCount = activeQuestions.filter((question) => answers[question.id] === question.answerIndex).length
+  const score = activeQuestions.length ? Math.round((correctCount / activeQuestions.length) * 100) : 0
   const passed = score >= PRACTICE_TARGET
-  const answeredCount = Object.keys(answers).length
-  const remainingCount = Math.max(testQuestions.length - answeredCount, 0)
+  const answeredCount = activeQuestions.filter((question) => answers[question.id] !== undefined).length
+  const remainingCount = Math.max(activeQuestions.length - answeredCount, 0)
   const wrongQuestions = submitted
-    ? testQuestions.filter((question) => answers[question.id] !== question.answerIndex)
+    ? activeQuestions.filter((question) => answers[question.id] !== question.answerIndex)
     : []
 
   const categoryCounts = useMemo(() => {
-    return testQuestions.reduce<Record<Category, number>>(
+    return activeQuestions.reduce<Record<Category, number>>(
       (counts, question) => ({ ...counts, [question.category]: counts[question.category] + 1 }),
       { rules: 0, safety: 0, signs: 0, documents: 0 },
     )
-  }, [testQuestions])
+  }, [activeQuestions])
 
   useEffect(() => {
     if (!submitted) return
@@ -153,10 +159,11 @@ export default function MockTestClient({
     setSeed((current) => current + 1)
     setAnswers({})
     setSubmitted(false)
+    setReviewQuestionIds(null)
   }
 
   function submit() {
-    const wrongIds = testQuestions.filter((question) => answers[question.id] !== question.answerIndex).map((question) => question.id)
+    const wrongIds = activeQuestions.filter((question) => answers[question.id] !== question.answerIndex).map((question) => question.id)
     const existing = JSON.parse(window.localStorage.getItem(storageKey) || '[]') as string[]
     window.localStorage.setItem(storageKey, JSON.stringify(Array.from(new Set([...existing, ...wrongIds]))))
     setSubmitted(true)
@@ -166,18 +173,22 @@ export default function MockTestClient({
     setSeed((current) => current + 1)
     setAnswers({})
     setSubmitted(false)
+    setReviewQuestionIds(null)
   }
 
   function changeMode() {
     setCaliforniaMode(null)
     setAnswers({})
     setSubmitted(false)
+    setReviewQuestionIds(null)
   }
 
-  function scrollToFirstWrong() {
-    const firstWrong = wrongQuestions[0]
-    if (!firstWrong) return
-    document.getElementById(`question-${firstWrong.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  function startWrongReview() {
+    if (!wrongQuestions.length) return
+    setReviewQuestionIds(wrongQuestions.map((question) => question.id))
+    setAnswers({})
+    setSubmitted(false)
+    window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
   }
 
   if (isCalifornia && !californiaMode) {
@@ -223,9 +234,12 @@ export default function MockTestClient({
       <section className="card p-4 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-2xl font-black text-slate-950">模拟考试</h1>
+            <p className="text-sm font-bold text-teal-700">{reviewQuestionIds ? '本次错题复习' : '模拟考试'}</p>
+            <h1 className="mt-1 text-2xl font-black text-slate-950">{reviewQuestionIds ? `重新练习 ${activeQuestions.length} 道错题` : '模拟考试'}</h1>
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              本套共 {testQuestions.length} 题，按道路规则、安全驾驶、交通标志和证件流程配额抽题；本站建议练习目标为 {PRACTICE_TARGET}% 以上，正式考试题量与通过要求以官方 DMV 为准。
+              {reviewQuestionIds
+                ? '只显示上一轮答错的题目。全部完成后可再次提交，继续检查是否已经掌握。'
+                : `本套共 ${activeQuestions.length} 题，按道路规则、安全驾驶、交通标志和证件流程配额抽题；本站建议练习目标为 ${PRACTICE_TARGET}% 以上，正式考试题量与通过要求以官方 DMV 为准。`}
             </p>
             <div className="mt-3 flex flex-wrap gap-2 text-xs font-bold text-slate-600">
               <span className="rounded-full bg-slate-100 px-2.5 py-1">道路规则 {categoryCounts.rules}</span>
@@ -242,7 +256,7 @@ export default function MockTestClient({
             ) : null}
             <button type="button" onClick={restart} className="focus-ring inline-flex shrink-0 items-center rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700">
               <RotateCcw size={15} className="mr-1.5" />
-              换一套题
+              {reviewQuestionIds ? '返回新试卷' : '换一套题'}
             </button>
           </div>
         </div>
@@ -250,14 +264,14 @@ export default function MockTestClient({
 
       {submitted ? (
         <section ref={resultRef} className={`card scroll-mt-6 p-5 ${passed ? 'border-green-300 bg-green-50' : 'border-amber-300 bg-amber-50'}`}>
-          <p className="text-sm font-bold uppercase tracking-wide text-slate-600">考试结果</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-slate-600">{reviewQuestionIds ? '错题复习结果' : '考试结果'}</p>
           <p className={`mt-1 text-3xl font-black ${passed ? 'text-green-800' : 'text-amber-900'}`}>
             {passed ? '达到练习目标' : '建议继续复习'} · {score}%
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <div className="rounded-md bg-white/80 p-3">
               <p className="text-xs font-bold text-slate-500">答对</p>
-              <p className="mt-1 text-xl font-black text-slate-950">{correctCount} / {testQuestions.length}</p>
+              <p className="mt-1 text-xl font-black text-slate-950">{correctCount} / {activeQuestions.length}</p>
             </div>
             <div className="rounded-md bg-white/80 p-3">
               <p className="text-xs font-bold text-slate-500">本次错题</p>
@@ -270,8 +284,8 @@ export default function MockTestClient({
           </div>
           <p className="mt-3 text-sm leading-6 text-slate-600">本次答错题目已加入本地错题本。正式考试题量和通过要求请以 California DMV 最新规定为准。</p>
           <div className="mt-4 flex flex-wrap gap-3">
-            {wrongQuestions.length ? (
-              <button type="button" onClick={scrollToFirstWrong} className="focus-ring rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">查看本次错题</button>
+            {isCalifornia && wrongQuestions.length ? (
+              <button type="button" onClick={startWrongReview} className="focus-ring rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">重新练习本次 {wrongQuestions.length} 道错题</button>
             ) : null}
             <button type="button" onClick={restart} className="focus-ring rounded-md bg-slate-950 px-4 py-2 text-sm font-black text-white">再考一套</button>
             <Link href={`/${stateSlug}/wrong-questions`} className="focus-ring rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700">全部错题本</Link>
@@ -281,7 +295,7 @@ export default function MockTestClient({
       ) : null}
 
       <div className="grid gap-4">
-        {testQuestions.map((question, index) => {
+        {activeQuestions.map((question, index) => {
           const selected = answers[question.id]
           const answeredWrong = submitted && selected !== question.answerIndex
           return (
@@ -328,7 +342,7 @@ export default function MockTestClient({
             disabled={remainingCount > 0}
             className="focus-ring rounded-md bg-blue-700 px-5 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
           >
-            {remainingCount === 0 ? `提交考试（${answeredCount}/${testQuestions.length} 已完成）` : `还剩 ${remainingCount} 题未作答`}
+            {remainingCount === 0 ? `提交${reviewQuestionIds ? '错题复习' : '考试'}（${answeredCount}/${activeQuestions.length} 已完成）` : `还剩 ${remainingCount} 题未作答`}
           </button>
           <p className="text-center text-xs text-slate-500">完成全部题目后即可提交并查看成绩。</p>
         </div>
