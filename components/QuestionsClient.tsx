@@ -5,7 +5,7 @@ import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Star, XCircle } from '
 import QuestionSignImage from './QuestionSignImage'
 import { categoryLabels, type DmvQuestion } from '@/lib/dmv-data'
 
-type Filter = 'all' | DmvQuestion['category']
+type Filter = 'all' | 'favorites' | DmvQuestion['category']
 type ProgressState = {
   answered: string[]
   correct: string[]
@@ -31,10 +31,12 @@ export default function QuestionsClient({
   questions,
   storageKey,
   stateSlug,
+  removeFromWrongOnMastery = false,
 }: {
   questions: DmvQuestion[]
   storageKey: string
   stateSlug: string
+  removeFromWrongOnMastery?: boolean
 }) {
   const [filter, setFilter] = useState<Filter>('all')
   const [revealed, setRevealed] = useState<Record<string, number>>({})
@@ -57,8 +59,9 @@ export default function QuestionsClient({
 
   const filteredQuestions = useMemo(() => {
     if (filter === 'all') return questions
+    if (filter === 'favorites') return questions.filter((question) => progress.favorites.includes(question.id))
     return questions.filter((question) => question.category === filter)
-  }, [filter, questions])
+  }, [filter, questions, progress.favorites])
 
   const totalPages = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE))
   const pageQuestions = useMemo(
@@ -109,10 +112,13 @@ export default function QuestionsClient({
 
   function toggleMastered(questionId: string) {
     const exists = progress.mastered.includes(questionId)
-    persistProgress({
-      ...progress,
-      mastered: exists ? progress.mastered.filter((id) => id !== questionId) : [...progress.mastered, questionId],
-    })
+    const nextMastered = exists ? progress.mastered.filter((id) => id !== questionId) : [...progress.mastered, questionId]
+    persistProgress({ ...progress, mastered: nextMastered })
+
+    if (!exists && removeFromWrongOnMastery) {
+      writeIds(storageKey, readIds(storageKey).filter((id) => id !== questionId))
+      window.dispatchEvent(new Event('openaa-dmv-wrong-update'))
+    }
   }
 
   function changeFilter(next: Filter) {
@@ -135,14 +141,14 @@ export default function QuestionsClient({
           <p className="text-xs font-bold text-slate-500">已掌握</p>
           <p className="mt-1 text-xl font-black text-slate-950">{masteredCount}</p>
         </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-3">
+        <button type="button" onClick={() => changeFilter('favorites')} className="focus-ring rounded-lg border border-slate-200 bg-white p-3 text-left hover:border-amber-300 hover:bg-amber-50">
           <p className="text-xs font-bold text-slate-500">已收藏</p>
           <p className="mt-1 text-xl font-black text-slate-950">{favoriteCount}</p>
-        </div>
+        </button>
       </section>
 
       <div className="flex flex-wrap gap-2">
-        {(['all', 'rules', 'signs', 'safety', 'documents'] as Filter[]).map((item) => (
+        {(['all', 'favorites', 'rules', 'signs', 'safety', 'documents'] as Filter[]).map((item) => (
           <button
             key={item}
             type="button"
@@ -151,7 +157,7 @@ export default function QuestionsClient({
               filter === item ? 'border-blue-700 bg-blue-700 text-white' : 'border-slate-300 bg-white text-slate-700'
             }`}
           >
-            {item === 'all' ? '全部题目' : categoryLabels[item]}
+            {item === 'all' ? '全部题目' : item === 'favorites' ? `收藏题 ${favoriteCount}` : categoryLabels[item]}
           </button>
         ))}
       </div>
@@ -160,6 +166,10 @@ export default function QuestionsClient({
         <span>每页 {PAGE_SIZE} 题 · 共 {filteredQuestions.length} 题</span>
         <span>第 {page} / {totalPages} 页</span>
       </div>
+
+      {filter === 'favorites' && filteredQuestions.length === 0 ? (
+        <div className="card mt-4 p-6 text-center text-sm text-slate-600">还没有收藏题目。刷题时点击右上角“收藏”，以后可以在这里集中复习。</div>
+      ) : null}
 
       <div className="mt-4 grid gap-4">
         {pageQuestions.map((question, index) => {
@@ -219,7 +229,7 @@ export default function QuestionsClient({
                       onClick={() => toggleMastered(question.id)}
                       className={`focus-ring mt-3 rounded-md border px-3 py-2 text-xs font-black ${isMastered ? 'border-green-300 bg-green-50 text-green-800' : 'border-slate-300 bg-white text-slate-700'}`}
                     >
-                      {isMastered ? '✓ 已掌握' : '标记为已掌握'}
+                      {isMastered ? '✓ 已掌握' : removeFromWrongOnMastery ? '已会了，从错题中移除' : '标记为已掌握'}
                     </button>
                   ) : null}
                 </div>
