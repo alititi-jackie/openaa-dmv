@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import JsonLd from '@/components/JsonLd'
 import QuestionsClient from '@/components/QuestionsClient'
 import { dmvStates, getLiveStateBySlug } from '@/lib/dmv-data'
@@ -34,6 +35,7 @@ export default async function QuestionsPage({ params }: Props) {
       <JsonLd data={webPageJsonLd(`${state.nameZh} DMV 中文题库`, stateDescription(state), `/${state.slug}/questions`)} />
       <JsonLd data={breadcrumbJsonLd([{ name: '首页', path: '/' }, { name: state.nameZh, path: `/${state.slug}` }, { name: '中文题库', path: `/${state.slug}/questions` }])} />
       <div className="page-shell">
+        {state.slug === 'california' ? <BackLink href="/california" label="返回加州 DMV" /> : null}
         <div className="mb-6">
           <p className="text-sm font-bold text-teal-700">{state.nameEn} DMV</p>
           <h1 className="mt-2 text-3xl font-black text-slate-950">{state.nameZh} DMV 中文题库</h1>
