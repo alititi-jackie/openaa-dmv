@@ -38,8 +38,8 @@ export default function WrongQuestionsClient({
   if (wrongQuestions.length === 0) {
     return (
       <div className="card p-6 text-center">
-        <h1 className="text-2xl font-black text-slate-950">错题本是空的</h1>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-600">练习或模拟考试中答错的题会自动保存在这台设备上。</p>
+        <h1 className="text-2xl font-black text-slate-950">待复习错题已经清空</h1>
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-600">练习或模拟考试中答错的题会自动进入这里；重新答对后可标记“已会了”，题目会从待复习错题中移除。</p>
         <Link href={`/${stateSlug}/practice`} className="focus-ring mt-5 inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">
           去练习
         </Link>
@@ -49,14 +49,19 @@ export default function WrongQuestionsClient({
 
   return (
     <div>
-      <div className="mb-5 flex items-center justify-between gap-3">
-        <p className="text-sm font-bold text-slate-700">共 {wrongQuestions.length} 道错题</p>
-        <button type="button" onClick={clearWrongQuestions} className="focus-ring inline-flex items-center rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-bold text-rose-700">
-          <Trash2 size={15} className="mr-1.5" />
-          清空
-        </button>
+      <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-black text-amber-950">待复习错题 {wrongQuestions.length} 道</p>
+            <p className="mt-1 text-xs leading-5 text-amber-900">重新答对后点击“已会了，从错题中移除”，只保留真正还没掌握的题。</p>
+          </div>
+          <button type="button" onClick={clearWrongQuestions} className="focus-ring inline-flex shrink-0 items-center rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-bold text-rose-700">
+            <Trash2 size={15} className="mr-1.5" />
+            清空
+          </button>
+        </div>
       </div>
-      <QuestionsClient questions={wrongQuestions} storageKey={storageKey} stateSlug={stateSlug} />
+      <QuestionsClient questions={wrongQuestions} storageKey={storageKey} stateSlug={stateSlug} removeFromWrongOnMastery />
     </div>
   )
 }
