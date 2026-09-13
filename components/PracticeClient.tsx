@@ -79,7 +79,7 @@ export default function PracticeClient({
       </div>
 
       <h1 className="mt-5 text-2xl font-black leading-9 text-slate-950">{question.question}</h1>
-      <QuestionSignImage question={question} large />
+      <QuestionSignImage question={question} stateSlug={stateSlug} large />
       <div className="mt-5 grid gap-3">
         {question.choices.map((choice, choiceIndex) => {
           const isAnswer = choiceIndex === question.answerIndex
