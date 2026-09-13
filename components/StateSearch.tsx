@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, ExternalLink, Search } from 'lucide-react'
 import type { DmvState } from '@/lib/dmv-data'
+import { getQuestionCountForState } from '@/lib/question-bank'
 
 export default function StateSearch({ states }: { states: DmvState[] }) {
   const [query, setQuery] = useState('')
@@ -43,7 +44,8 @@ export default function StateSearch({ states }: { states: DmvState[] }) {
           {filteredStates.map((state) => {
             const isExternal = state.status === 'external'
             const href = isExternal ? state.externalUrl || '/' : `/${state.slug}`
-            const statusText = state.status === 'live' ? `${state.questionCount} 题 · 已上线` : isExternal ? `${state.questionCount}+ 题 · 已上线` : '即将上线'
+            const actualCount = state.status === 'live' ? getQuestionCountForState(state.slug) : state.questionCount
+            const statusText = state.status === 'live' ? `${actualCount} 题 · 已上线` : isExternal ? `${state.questionCount}+ 题 · 已上线` : '即将上线'
             const content = (
               <div className="card flex h-full min-h-36 flex-col justify-between p-4 transition hover:-translate-y-0.5 hover:border-slate-300">
                 <div>
