@@ -1,5 +1,7 @@
 import type { DmvQuestion } from './dmv-data'
 import { californiaEnglishById } from './california-english'
+import { californiaCoreEnglishById } from './california-english-core'
+import { californiaExpandedEnglishById } from './california-english-expanded'
 
 export type DmvLanguage = 'zh' | 'en' | 'bilingual'
 
@@ -25,6 +27,8 @@ export function languageStorageKey(stateSlug: string) {
 
 function externalEnglish(question: DmvQuestion) {
   return californiaEnglishById[question.id]
+    ?? californiaCoreEnglishById[question.id]
+    ?? californiaExpandedEnglishById[question.id]
 }
 
 export function hasEnglish(question: DmvQuestion) {
@@ -60,5 +64,5 @@ export function getEnglishContent(question: DmvQuestion): DmvEnglishContent | un
 export function getKeywords(question: DmvQuestion): DmvKeyword[] {
   const embedded = (question as BilingualDmvQuestion).keywords
   if (embedded?.length) return embedded
-  return externalEnglish(question)?.keywords ?? []
+  return californiaEnglishById[question.id]?.keywords ?? []
 }
