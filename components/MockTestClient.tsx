@@ -114,6 +114,7 @@ export default function MockTestClient({
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState(false)
   const [reviewQuestionIds, setReviewQuestionIds] = useState<string[] | null>(null)
+  const [highlightedQuestionId, setHighlightedQuestionId] = useState<string | null>(null)
   const resultRef = useRef<HTMLElement | null>(null)
 
   const profile = isCalifornia
@@ -136,7 +137,8 @@ export default function MockTestClient({
   const score = activeQuestions.length ? Math.round((correctCount / activeQuestions.length) * 100) : 0
   const passed = score >= PRACTICE_TARGET
   const answeredCount = activeQuestions.filter((question) => answers[question.id] !== undefined).length
-  const remainingCount = Math.max(activeQuestions.length - answeredCount, 0)
+  const unansweredQuestions = activeQuestions.filter((question) => answers[question.id] === undefined)
+  const remainingCount = unansweredQuestions.length
   const wrongQuestions = submitted
     ? activeQuestions.filter((question) => answers[question.id] !== question.answerIndex)
     : []
@@ -161,6 +163,7 @@ export default function MockTestClient({
     setAnswers({})
     setSubmitted(false)
     setReviewQuestionIds(null)
+    setHighlightedQuestionId(null)
   }
 
   function submit() {
@@ -170,11 +173,36 @@ export default function MockTestClient({
     setSubmitted(true)
   }
 
+  function jumpToQuestion(questionId: string) {
+    setHighlightedQuestionId(questionId)
+    document.getElementById(`question-${questionId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    window.setTimeout(() => setHighlightedQuestionId((current) => current === questionId ? null : current), 1800)
+  }
+
+  function jumpToNextUnanswered() {
+    if (!unansweredQuestions.length) return
+    const viewportTop = window.scrollY + 100
+    const next = unansweredQuestions.find((question) => {
+      const element = document.getElementById(`question-${question.id}`)
+      return element ? element.getBoundingClientRect().top + window.scrollY > viewportTop : false
+    }) ?? unansweredQuestions[0]
+    jumpToQuestion(next.id)
+  }
+
+  function submitOrJump() {
+    if (remainingCount > 0) {
+      jumpToNextUnanswered()
+      return
+    }
+    submit()
+  }
+
   function restart() {
     setSeed((current) => current + 1)
     setAnswers({})
     setSubmitted(false)
     setReviewQuestionIds(null)
+    setHighlightedQuestionId(null)
   }
 
   function changeMode() {
@@ -182,6 +210,7 @@ export default function MockTestClient({
     setAnswers({})
     setSubmitted(false)
     setReviewQuestionIds(null)
+    setHighlightedQuestionId(null)
   }
 
   function startWrongReview() {
@@ -189,6 +218,7 @@ export default function MockTestClient({
     setReviewQuestionIds(wrongQuestions.map((question) => question.id))
     setAnswers({})
     setSubmitted(false)
+    setHighlightedQuestionId(null)
     window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'smooth' }))
   }
 
@@ -299,8 +329,13 @@ export default function MockTestClient({
         {activeQuestions.map((question, index) => {
           const selected = answers[question.id]
           const answeredWrong = submitted && selected !== question.answerIndex
+          const isHighlighted = highlightedQuestionId === question.id
           return (
-            <article id={`question-${question.id}`} key={question.id} className={`card scroll-mt-24 p-4 ${answeredWrong ? 'border-rose-200' : ''}`}>
+            <article
+              id={`question-${question.id}`}
+              key={question.id}
+              className={`card scroll-mt-24 p-4 transition ${answeredWrong ? 'border-rose-200' : ''} ${isHighlighted ? 'border-amber-400 ring-4 ring-amber-100' : ''}`}
+            >
               <h2 className="text-lg font-black leading-7 text-slate-950">{index + 1}. {question.question}</h2>
               <QuestionSignImage question={question} />
               <div className="mt-4 grid gap-2">
@@ -337,16 +372,40 @@ export default function MockTestClient({
       </div>
 
       {!submitted ? (
-        <div className="grid gap-2">
+        <div className="grid gap-3">
+          {remainingCount > 0 ? (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+              <p className="text-sm font-bold text-amber-900">还有 {remainingCount} 题未作答</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {unansweredQuestions.slice(0, 12).map((question) => {
+                  const questionNumber = activeQuestions.findIndex((item) => item.id === question.id) + 1
+                  return (
+                    <button
+                      key={question.id}
+                      type="button"
+                      onClick={() => jumpToQuestion(question.id)}
+                      className="focus-ring rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-black text-amber-900"
+                    >
+                      第 {questionNumber} 题
+                    </button>
+                  )
+                })}
+                {remainingCount > 12 ? <span className="px-1 py-1 text-xs font-bold text-amber-800">还有 {remainingCount - 12} 题…</span> : null}
+              </div>
+            </div>
+          ) : null}
           <button
             type="button"
-            onClick={submit}
-            disabled={remainingCount > 0}
-            className="focus-ring rounded-md bg-blue-700 px-5 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300"
+            onClick={submitOrJump}
+            className={`focus-ring rounded-md px-5 py-3 text-sm font-black text-white ${remainingCount > 0 ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-700 hover:bg-blue-800'}`}
           >
-            {remainingCount === 0 ? `提交${reviewQuestionIds ? '错题复习' : '考试'}（${answeredCount}/${activeQuestions.length} 已完成）` : `还剩 ${remainingCount} 题未作答`}
+            {remainingCount === 0
+              ? `提交${reviewQuestionIds ? '错题复习' : '考试'}（${answeredCount}/${activeQuestions.length} 已完成）`
+              : `还剩 ${remainingCount} 题未作答 · 点击定位下一题`}
           </button>
-          <p className="text-center text-xs text-slate-500">完成全部题目后即可提交并查看成绩。</p>
+          <p className="text-center text-xs text-slate-500">
+            {remainingCount > 0 ? '可点击上方题号直接跳转，也可以点击按钮依次定位未答题。' : '已完成全部题目，可以提交并查看成绩。'}
+          </p>
         </div>
       ) : null}
     </div>
