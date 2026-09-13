@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
 import QuestionsClient from '@/components/QuestionsClient'
-import { dmvStates, getLiveStateBySlug, getQuestionsByCategory } from '@/lib/dmv-data'
+import { dmvStates, getLiveStateBySlug } from '@/lib/dmv-data'
+import { getQuestionsByCategory } from '@/lib/question-bank'
 import { breadcrumbJsonLd, stateDescription, webPageJsonLd } from '@/lib/seo'
 
 type Props = { params: Promise<{ state: string }> }
