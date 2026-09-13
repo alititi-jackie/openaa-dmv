@@ -1,4 +1,5 @@
 import { californiaQuestions } from './california-questions'
+import { californiaExpandedQuestions } from './california-questions-expanded'
 import { getLiveStateBySlug, sharedQuestions, type DmvQuestion } from './dmv-data'
 
 export function getQuestionsForState(stateSlug: string): DmvQuestion[] {
@@ -6,7 +7,7 @@ export function getQuestionsForState(stateSlug: string): DmvQuestion[] {
   if (!state) return []
 
   if (stateSlug === 'california') {
-    return [...californiaQuestions, ...sharedQuestions]
+    return [...californiaQuestions, ...californiaExpandedQuestions, ...sharedQuestions]
   }
 
   return sharedQuestions
