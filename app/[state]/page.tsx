@@ -20,9 +20,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state: stateSlug } = await params
   const state = getStateBySlug(stateSlug)
   if (!state || state.status === 'external') return {}
-  const title = state.slug === 'california' ? '2026 加州 DMV 中文题库｜驾照笔试练习与模拟考试' : stateTitle(state)
+  const title = state.slug === 'california' ? '2026 加州 DMV 中英双语题库｜驾照笔试练习与模拟考试' : stateTitle(state)
   const description = state.slug === 'california'
-    ? '加州 DMV 中文题库与 Class C 驾照知识考试学习入口，包含中文练习、模拟考试、交通标志、错题本、官方中文 Driver Handbook 和申请入口。'
+    ? '加州 DMV Class C 驾照知识考试中英双语学习入口，支持中文、English 和中英对照练习，包含模拟考试、交通标志、错题本、官方中文 Driver Handbook 和申请入口。'
     : stateDescription(state)
   return {
     title,
@@ -61,19 +61,19 @@ export default async function StatePage({ params }: Props) {
     ? [
         {
           question: '加州 DMV 有官方中文 Driver Handbook 吗？',
-          answer: '有。California DMV 官方 Driver’s Handbooks 页面提供中文版 California Driver’s Handbook PDF，考试前建议与本站中文练习配合使用。',
+          answer: '有。California DMV 官方 Driver’s Handbooks 页面提供中文版 California Driver’s Handbook PDF，考试前建议与本站练习配合使用。',
         },
         {
           question: '加州 DMV 是否提供中文 Class C 样题？',
           answer: '提供。California DMV 官方 Sample Driver’s License Knowledge Tests 页面提供中文 Class C 驾照知识考试样题。',
         },
         {
-          question: '加州 DMV 中文题库需要登录吗？',
+          question: '加州 DMV 题库需要登录吗？',
           answer: '不需要。练习记录和错题默认保存在当前浏览器本地，清理浏览器数据或更换设备后可能无法保留。',
         },
         {
           question: '本站题库可以代替 California Driver’s Handbook 吗？',
-          answer: '不能。本站用于中文学习和模拟练习，正式考试规则、证件、费用与预约要求应以 California DMV 官方页面和 Driver’s Handbook 为准。',
+          answer: '不能。本站用于中英双语学习和模拟练习，正式考试规则、证件、费用与预约要求应以 California DMV 官方页面和 Driver’s Handbook 为准。',
         },
       ]
     : [
@@ -87,9 +87,9 @@ export default async function StatePage({ params }: Props) {
         },
       ]
 
-  const pageTitle = isCalifornia ? '2026 加州 DMV 中文题库' : stateTitle(state)
+  const pageTitle = isCalifornia ? '2026 加州 DMV 中英双语题库' : stateTitle(state)
   const pageDescription = isCalifornia
-    ? `当前提供 ${questions.length} 道中文练习题，覆盖道路规则、交通标志、安全驾驶和证件流程，并配套模拟考试、错题本和官方 California DMV 学习入口。`
+    ? `当前提供 ${questions.length} 道中英双语练习题，覆盖道路规则、交通标志、安全驾驶和证件流程，并配套模拟考试、错题本和官方 California DMV 学习入口。`
     : stateDescription(state)
 
   return (
@@ -113,7 +113,7 @@ export default async function StatePage({ params }: Props) {
             <div className="card p-5">
               <p className="text-sm font-bold text-teal-700">当前题库</p>
               <p className="mt-2 text-3xl font-black text-slate-950">{questions.length} 题</p>
-              <p className="mt-2 text-sm leading-6 text-slate-600">加州专属题 + 通用安全驾驶题，后续继续扩充。</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">加州专属题 + 150 道公共核心题，支持中文、English 和中英对照。</p>
             </div>
             <div className="card p-5">
               <p className="text-sm font-bold text-teal-700">官方中文资料</p>
@@ -137,7 +137,7 @@ export default async function StatePage({ params }: Props) {
               {(isCalifornia
                 ? [
                     '先阅读 California DMV 官方 Driver’s Handbook；官方提供中文版本。',
-                    '使用本站中文题库熟悉路权、车道线、交通标志、行人、自行车和安全驾驶。',
+                    '使用本站题库熟悉路权、车道线、交通标志、行人、自行车和安全驾驶，可切换中文、English 或中英对照。',
                     '完成多次模拟考试，把答错题目集中到错题本反复复习。',
                     '申请或预约前再次到 California DMV 官方页面核对证件、费用、考试方式和最新规定。',
                     '通过知识考试取得相应许可后，再按年龄和申请类型准备驾驶训练及路考。',
@@ -171,9 +171,9 @@ export default async function StatePage({ params }: Props) {
       <section className="bg-white py-10">
         <div className="page-shell">
           <div className="card p-5">
-            <h2 className="text-2xl font-black text-slate-950">{state.shortZh} DMV 中文题库概览</h2>
+            <h2 className="text-2xl font-black text-slate-950">{state.shortZh} DMV 题库概览</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              当前开放 {questions.length} 道中文练习题，覆盖道路规则、交通标志、安全驾驶和证件流程。练习页支持即时答案解析，{isCalifornia ? '模拟考试支持 36 题或 46 题分类随机组卷' : '模拟考试支持分类随机组卷'}，答错题目会保存到本地错题本。
+              当前开放 {questions.length} 道练习题，覆盖道路规则、交通标志、安全驾驶和证件流程。练习页支持中文、English、中英对照及即时答案解析，{isCalifornia ? '模拟考试提供参考历史题量设计的 36 题和 46 题练习模式' : '模拟考试支持分类随机组卷'}，答错题目会保存到本地错题本。正式考试题量和要求以官方当日规定为准。
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href={`/${state.slug}/questions`} className="focus-ring inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">查看全部题目</Link>
