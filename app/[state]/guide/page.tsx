@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BackLink from '@/components/BackLink'
 import JsonLd from '@/components/JsonLd'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import { dmvStates, getLiveStateBySlug } from '@/lib/dmv-data'
@@ -63,62 +64,65 @@ export default async function GuidePage({ params }: Props) {
       <JsonLd data={faqJsonLd(faq)} />
       <JsonLd data={breadcrumbJsonLd([{ name: '首页', path: '/' }, { name: state.nameZh, path: `/${state.slug}` }, { name: '考试指南', path: `/${state.slug}/guide` }])} />
       <section className="bg-white py-12">
-        <div className="page-shell grid gap-8 lg:grid-cols-[1fr_0.75fr]">
-          <article className="prose-copy">
-            <p className="text-sm font-bold text-teal-700">{state.nameEn} Driver Guide</p>
-            <h1 className="mt-2 text-4xl font-black leading-tight text-slate-950">{isCalifornia ? '2026 加州 DMV 驾照考试指南' : `${state.nameZh} DMV 驾照考试指南`}</h1>
-            <div className="mt-6 text-base leading-8 text-slate-700">
-              {isCalifornia ? (
-                <>
-                  <p>准备加州 Class C 驾照知识考试，建议把“官方手册 + 中文练习 + 模拟考试”结合起来。California DMV 官方提供中文版 California Driver’s Handbook，也提供中文 Class C 样题。</p>
-                  <p>本站当前提供 {count} 道练习题，覆盖道路规则、交通标志、安全驾驶和申请流程。做题的目标不是死记答案，而是把让行、车道线、学校区域、行人、自行车、大型车辆和恶劣天气等知识真正理解。</p>
-                  <p>California DMV 的考试和申请方式会因年龄、首次申请或续期等情况不同。正式申请前，应重新核对 California DMV 官方的证件、费用、考试方式与预约信息。</p>
-                </>
-              ) : (
-                <>
-                  <p>{state.nameZh} 的驾照考试准备，最重要的是把中文理解和官方规则结合起来。中文题库可以帮你快速掌握常见题型，但正式申请和考试安排必须以官方页面为准。</p>
-                  <p>建议先从道路规则、交通标志和安全驾驶三类题开始。等正确率稳定后，再做模拟考试，并把错题集中复习。</p>
-                </>
-              )}
-            </div>
-            <div className="mt-8 grid gap-3">
-              {(isCalifornia
-                ? [
-                    '阅读 California DMV 官方中文 Driver’s Handbook。',
-                    '完成中文题库，重点理解路权、标志、车道与安全驾驶。',
-                    '进行多轮随机模拟考试，不只记答案，要阅读解析。',
-                    '打开错题本集中复习薄弱知识点。',
-                    '申请或考试前回到 California DMV 官方页面确认最新材料、费用和预约要求。',
-                  ]
-                : state.guide
-              ).map((item, index) => (
-                <div key={item} className="card p-4">
-                  <p className="text-sm font-black text-blue-700">步骤 {index + 1}</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-700">{item}</p>
+        <div className="page-shell">
+          {isCalifornia ? <BackLink href="/california" label="返回加州 DMV" /> : null}
+          <div className="grid gap-8 lg:grid-cols-[1fr_0.75fr]">
+            <article className="prose-copy">
+              <p className="text-sm font-bold text-teal-700">{state.nameEn} Driver Guide</p>
+              <h1 className="mt-2 text-4xl font-black leading-tight text-slate-950">{isCalifornia ? '2026 加州 DMV 驾照考试指南' : `${state.nameZh} DMV 驾照考试指南`}</h1>
+              <div className="mt-6 text-base leading-8 text-slate-700">
+                {isCalifornia ? (
+                  <>
+                    <p>准备加州 Class C 驾照知识考试，建议把“官方手册 + 中文练习 + 模拟考试”结合起来。California DMV 官方提供中文版 California Driver’s Handbook，也提供中文 Class C 样题。</p>
+                    <p>本站当前提供 {count} 道练习题，覆盖道路规则、交通标志、安全驾驶和申请流程。做题的目标不是死记答案，而是把让行、车道线、学校区域、行人、自行车、大型车辆和恶劣天气等知识真正理解。</p>
+                    <p>California DMV 的考试和申请方式会因年龄、首次申请或续期等情况不同。正式申请前，应重新核对 California DMV 官方的证件、费用、考试方式与预约信息。</p>
+                  </>
+                ) : (
+                  <>
+                    <p>{state.nameZh} 的驾照考试准备，最重要的是把中文理解和官方规则结合起来。中文题库可以帮你快速掌握常见题型，但正式申请和考试安排必须以官方页面为准。</p>
+                    <p>建议先从道路规则、交通标志和安全驾驶三类题开始。等正确率稳定后，再做模拟考试，并把错题集中复习。</p>
+                  </>
+                )}
+              </div>
+              <div className="mt-8 grid gap-3">
+                {(isCalifornia
+                  ? [
+                      '阅读 California DMV 官方中文 Driver’s Handbook。',
+                      '完成中文题库，重点理解路权、标志、车道与安全驾驶。',
+                      '进行多轮随机模拟考试，不只记答案，要阅读解析。',
+                      '打开错题本集中复习薄弱知识点。',
+                      '申请或考试前回到 California DMV 官方页面确认最新材料、费用和预约要求。',
+                    ]
+                  : state.guide
+                ).map((item, index) => (
+                  <div key={item} className="card p-4">
+                    <p className="text-sm font-black text-blue-700">步骤 {index + 1}</p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </article>
+            <aside className="grid content-start gap-4">
+              <div className="card p-5">
+                <h2 className="text-xl font-black text-slate-950">学习入口</h2>
+                <div className="mt-4 grid gap-2">
+                  <Link href={`/${state.slug}/questions`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">中文题库（{count} 题）</Link>
+                  <Link href={`/${state.slug}/practice`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">顺序 / 随机练习</Link>
+                  <Link href={`/${state.slug}/mock-test`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">模拟考试</Link>
+                  <Link href={`/${state.slug}/wrong-questions`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">错题本</Link>
                 </div>
-              ))}
-            </div>
-          </article>
-          <aside className="grid content-start gap-4">
-            <div className="card p-5">
-              <h2 className="text-xl font-black text-slate-950">学习入口</h2>
-              <div className="mt-4 grid gap-2">
-                <Link href={`/${state.slug}/questions`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">中文题库（{count} 题）</Link>
-                <Link href={`/${state.slug}/practice`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">顺序 / 随机练习</Link>
-                <Link href={`/${state.slug}/mock-test`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">模拟考试</Link>
-                <Link href={`/${state.slug}/wrong-questions`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">错题本</Link>
               </div>
-            </div>
-            <div className="card p-5">
-              <h2 className="text-xl font-black text-slate-950">官方入口</h2>
-              <div className="mt-4 grid gap-2 text-sm font-bold text-blue-800">
-                <a href={state.driverManualUrl}>官方 Driver Manual</a>
-                <a href={state.permitUrl}>Permit / License 申请</a>
-                <a href={state.roadTestUrl}>Road Test / Drive Test</a>
-                {isCalifornia ? <a href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/">California DMV 官方样题</a> : null}
+              <div className="card p-5">
+                <h2 className="text-xl font-black text-slate-950">官方入口</h2>
+                <div className="mt-4 grid gap-2 text-sm font-bold text-blue-800">
+                  <a href={state.driverManualUrl}>官方 Driver Manual</a>
+                  <a href={state.permitUrl}>Permit / License 申请</a>
+                  <a href={state.roadTestUrl}>Road Test / Drive Test</a>
+                  {isCalifornia ? <a href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/">California DMV 官方样题</a> : null}
+                </div>
               </div>
-            </div>
-          </aside>
+            </aside>
+          </div>
         </div>
       </section>
       <OpenAACrossLinks />
