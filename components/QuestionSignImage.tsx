@@ -71,7 +71,16 @@ export function getQuestionSignMeta(question: DmvQuestion): SignMeta | null {
   return CALIFORNIA_SIGN_RULES.find((item) => item.test.test(searchable))?.sign ?? null
 }
 
-export default function QuestionSignImage({ question, large = false }: { question: DmvQuestion; large?: boolean }) {
+export default function QuestionSignImage({
+  question,
+  stateSlug,
+  large = false,
+}: {
+  question: DmvQuestion
+  stateSlug: string
+  large?: boolean
+}) {
+  if (stateSlug !== 'california') return null
   const sign = getQuestionSignMeta(question)
   if (!sign) return null
 
