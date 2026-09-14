@@ -4,6 +4,7 @@ import { californiaCoreEnglishById } from './california-english-core'
 import { californiaExpandedEnglishById } from './california-english-expanded'
 import { californiaQualityEnglishById } from './california-english-quality'
 import { newJerseyEnglishById } from './new-jersey-english'
+import { pennsylvaniaEnglishById } from './pennsylvania-english'
 import { getQuestionSourceForLanguage } from './question-bank'
 import { sharedCoreEnglish } from './shared-core-english'
 
@@ -15,7 +16,8 @@ export type BilingualDmvQuestion = DmvQuestion & { en?: DmvEnglishContent; keywo
 export function languageStorageKey(stateSlug: string) { return `openaa-dmv:${stateSlug}:language` }
 
 function externalEnglish(question: DmvQuestion) {
-  return newJerseyEnglishById[question.id]
+  return pennsylvaniaEnglishById[question.id]
+    ?? newJerseyEnglishById[question.id]
     ?? californiaQualityEnglishById[question.id]
     ?? californiaEnglishById[question.id]
     ?? californiaCoreEnglishById[question.id]
