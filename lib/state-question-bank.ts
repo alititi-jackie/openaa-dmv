@@ -3,6 +3,8 @@ import { getQuestionsForState as getBaseQuestionsForState } from './question-ban
 import { newJerseyQuestions } from './new-jersey-questions'
 import { newJerseySignQuestions } from './new-jersey-sign-questions'
 import { pennsylvaniaQuestions } from './pennsylvania-questions'
+import { massachusettsQuestions } from './massachusetts-questions'
+import { massachusettsJolQuestions } from './massachusetts-questions-jol'
 
 function normalize(value: string) {
   return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '')
@@ -43,6 +45,9 @@ export function getStateQuestions(stateSlug: string): DmvQuestion[] {
   }
   if (stateSlug === 'pennsylvania') {
     return dedupe([...pennsylvaniaQuestions, ...shared.filter(isExamQuestion)])
+  }
+  if (stateSlug === 'massachusetts') {
+    return dedupe([...massachusettsQuestions, ...massachusettsJolQuestions, ...shared.filter(isExamQuestion)])
   }
   return shared
 }
