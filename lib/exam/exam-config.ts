@@ -31,6 +31,10 @@ const CONFIGS: Record<string, StateExamConfig> = {
     stateSlug: 'washington', agencyLabel: 'DOL', defaultModeId: 'standard-40',
     modes: [{ id: 'standard-40', label: 'Washington DOL 模拟考试', description: '按 Washington DOL Driving Knowledge Exam 标准：40 题，至少答对 32 题通过。', size: 40, passingCorrect: 32, passingPercent: 80, ruleStatus: 'verified', quotas: { rules: 20, safety: 12, signs: 8 } }],
   },
+  texas: {
+    stateSlug: 'texas', agencyLabel: 'DPS', defaultModeId: 'practice-30',
+    modes: [{ id: 'practice-30', label: 'Texas DPS 30题模拟练习', description: '本站采用 30 题练习模式；Texas DPS 当前官方明确公布的知识考试通过标准为至少 70%，正式考试题量以考试当天 DPS 或授权考试机构为准。', size: 30, passingPercent: 70, ruleStatus: 'practice', quotas: { rules: 14, safety: 10, signs: 6 } }],
+  },
 }
 
 export function getStateExamConfig(stateSlug: string): StateExamConfig {
