@@ -7,6 +7,7 @@ import { massachusettsQuestions } from './massachusetts-questions'
 import { massachusettsJolQuestions } from './massachusetts-questions-jol'
 import { washingtonQuestions } from './washington-questions'
 import { texasQuestions } from './texas-questions'
+import { texasSpeedQuestions } from './texas-questions-speed'
 
 function normalize(value: string) {
   return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '')
@@ -46,7 +47,7 @@ export function getStateQuestions(stateSlug: string): DmvQuestion[] {
   if (stateSlug === 'pennsylvania') return dedupe([...pennsylvaniaQuestions, ...shared.filter(isExamQuestion)])
   if (stateSlug === 'massachusetts') return dedupe([...massachusettsQuestions, ...massachusettsJolQuestions, ...shared.filter(isExamQuestion)])
   if (stateSlug === 'washington') return dedupe([...washingtonQuestions, ...shared.filter(isExamQuestion)])
-  if (stateSlug === 'texas') return dedupe([...texasQuestions, ...shared.filter(isExamQuestion)])
+  if (stateSlug === 'texas') return dedupe([...texasQuestions, ...texasSpeedQuestions, ...shared.filter(isExamQuestion)])
   return shared
 }
 
