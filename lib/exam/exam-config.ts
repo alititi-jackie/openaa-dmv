@@ -19,6 +19,10 @@ const CONFIGS: Record<string, StateExamConfig> = {
     stateSlug: 'new-jersey', agencyLabel: 'MVC', defaultModeId: 'standard-50',
     modes: [{ id: 'standard-50', label: 'New Jersey MVC 模拟考试', description: '50 题，至少答对 40 题通过。', size: 50, passingCorrect: 40, passingPercent: 80, ruleStatus: 'verified' }],
   },
+  pennsylvania: {
+    stateSlug: 'pennsylvania', agencyLabel: 'PennDOT', defaultModeId: 'standard-18',
+    modes: [{ id: 'standard-18', label: 'Pennsylvania PennDOT 模拟考试', description: '按 PennDOT 知识考试标准：18 题，至少答对 15 题通过。', size: 18, passingCorrect: 15, ruleStatus: 'verified', quotas: { rules: 9, safety: 5, signs: 4 } }],
+  },
 }
 
 export function getStateExamConfig(stateSlug: string): StateExamConfig {
