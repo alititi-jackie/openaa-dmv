@@ -27,6 +27,10 @@ const CONFIGS: Record<string, StateExamConfig> = {
     stateSlug: 'massachusetts', agencyLabel: 'RMV', defaultModeId: 'standard-25',
     modes: [{ id: 'standard-25', label: 'Massachusetts RMV 模拟考试', description: '按 RMV Class D learner’s permit exam 标准：25 题，25 分钟，至少答对 18 题通过。', size: 25, passingCorrect: 18, ruleStatus: 'verified', quotas: { rules: 12, safety: 8, signs: 5 } }],
   },
+  washington: {
+    stateSlug: 'washington', agencyLabel: 'DOL', defaultModeId: 'standard-40',
+    modes: [{ id: 'standard-40', label: 'Washington DOL 模拟考试', description: '按 Washington DOL Driving Knowledge Exam 标准：40 题，至少答对 32 题通过。', size: 40, passingCorrect: 32, passingPercent: 80, ruleStatus: 'verified', quotas: { rules: 20, safety: 12, signs: 8 } }],
+  },
 }
 
 export function getStateExamConfig(stateSlug: string): StateExamConfig {
