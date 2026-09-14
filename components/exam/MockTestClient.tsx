@@ -10,12 +10,17 @@ import { examStorageKeys } from '@/lib/exam/exam-storage'
 import type { SavedExamV1, StateExamConfig } from '@/lib/exam/exam-types'
 
 type Category = DmvQuestion['category']
+type Props = { questions: DmvQuestion[]; stateSlug: string; config: StateExamConfig; allowedLanguages?: DmvLanguage[]; defaultLanguage?: DmvLanguage }
 
-export default function MockTestClient({ questions, stateSlug, config }: { questions: DmvQuestion[]; stateSlug: string; config: StateExamConfig }) {
+const ALL_LANGUAGES: [DmvLanguage, string][] = [['zh','中文'],['en','English'],['bilingual','中英对照']]
+
+export default function MockTestClient({ questions, stateSlug, config, allowedLanguages, defaultLanguage = 'zh' }: Props) {
   const keys = useMemo(() => examStorageKeys(stateSlug), [stateSlug])
+  const languageOptions = useMemo(() => ALL_LANGUAGES.filter(([value]) => !allowedLanguages || allowedLanguages.includes(value)), [allowedLanguages])
+  const initialLanguage = languageOptions.some(([value]) => value === defaultLanguage) ? defaultLanguage : languageOptions[0]?.[0] ?? 'zh'
   const hasModeChoice = config.modes.length > 1
   const [modeId, setModeId] = useState<string | null>(hasModeChoice ? null : config.defaultModeId)
-  const [language, setLanguage] = useState<DmvLanguage>('zh')
+  const [language, setLanguage] = useState<DmvLanguage>(initialLanguage)
   const [seed, setSeed] = useState(1)
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState(false)
@@ -52,14 +57,19 @@ export default function MockTestClient({ questions, stateSlug, config }: { quest
         if (parsed.version === 1 && parsed.stateSlug === stateSlug && config.modes.some((m) => m.id === parsed.modeId)) setSavedExam(parsed)
         else localStorage.removeItem(keys.resume)
       }
-      const storedLanguage = localStorage.getItem(keys.language)
-      if (storedLanguage === 'zh' || storedLanguage === 'en' || storedLanguage === 'bilingual') setLanguage(storedLanguage)
+      const storedLanguage = localStorage.getItem(keys.language) as DmvLanguage | null
+      if (storedLanguage && languageOptions.some(([value]) => value === storedLanguage)) setLanguage(storedLanguage)
+      else {
+        setLanguage(initialLanguage)
+        localStorage.setItem(keys.language, initialLanguage)
+      }
     } catch {}
-  }, [keys, stateSlug, config.modes])
+  }, [keys, stateSlug, config.modes, languageOptions, initialLanguage])
 
   useEffect(() => {
-    if (!hasEnglish && language !== 'zh') setLanguage('zh')
-  }, [hasEnglish, language])
+    if (!languageOptions.some(([value]) => value === language)) setLanguage(initialLanguage)
+    else if (!hasEnglish && language !== 'zh' && languageOptions.some(([value]) => value === 'zh')) setLanguage('zh')
+  }, [hasEnglish, language, languageOptions, initialLanguage])
 
   useEffect(() => {
     if (!mode || submitted || reviewIds || !exam.length) return
@@ -71,7 +81,7 @@ export default function MockTestClient({ questions, stateSlug, config }: { quest
   useEffect(() => { if (submitted) requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })) }, [submitted])
 
   function clearResume() { localStorage.removeItem(keys.resume); setSavedExam(null); setResumeQuestionIds(null) }
-  function changeLanguage(next: DmvLanguage) { if (next !== 'zh' && !hasEnglish) return; setLanguage(next); localStorage.setItem(keys.language, next) }
+  function changeLanguage(next: DmvLanguage) { if (!languageOptions.some(([value]) => value === next) || (next !== 'zh' && !hasEnglish)) return; setLanguage(next); localStorage.setItem(keys.language, next) }
   function chooseMode(next: string) { clearResume(); setModeId(next); setSeed((v) => v + 1); setAnswers({}); setSubmitted(false); setReviewIds(null); setCardOpen(false) }
   function resume() { if (!savedExam) return; setModeId(savedExam.modeId); setResumeQuestionIds(savedExam.questionIds); setAnswers(savedExam.answers || {}); setSubmitted(false); setReviewIds(null) }
   function jump(id: string) { setHighlighted(id); document.getElementById(`question-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); setTimeout(() => setHighlighted((x) => x === id ? null : x), 1200) }
@@ -91,7 +101,7 @@ export default function MockTestClient({ questions, stateSlug, config }: { quest
     setSubmitted(true)
   }
 
-  const languageSelector = <section className="card p-4"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="inline-flex items-center text-sm font-black text-slate-950"><Languages size={16} className="mr-1.5 text-blue-700" />考试语言</p><p className="mt-1 text-xs leading-5 text-slate-500">{hasEnglish ? `英文内容已覆盖 ${englishCount}/${questions.length} 题；未覆盖题自动显示中文。` : '当前使用中文。'}</p></div><div className="grid grid-cols-3 rounded-lg bg-slate-100 p-1 sm:w-72">{([['zh','中文'],['en','English'],['bilingual','中英对照']] as [DmvLanguage,string][]).map(([value,label]) => <button key={value} type="button" disabled={value !== 'zh' && !hasEnglish} onClick={() => changeLanguage(value)} className={`focus-ring rounded-md px-2 py-2 text-xs font-black disabled:opacity-40 ${language === value ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>{label}</button>)}</div></div></section>
+  const languageSelector = <section className="card p-4"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="inline-flex items-center text-sm font-black text-slate-950"><Languages size={16} className="mr-1.5 text-blue-700" />考试语言</p><p className="mt-1 text-xs leading-5 text-slate-500">{hasEnglish ? `英文内容已覆盖 ${englishCount}/${questions.length} 题；未覆盖题自动显示中文。` : '当前使用中文。'}</p></div><div className="grid rounded-lg bg-slate-100 p-1 sm:w-72" style={{ gridTemplateColumns: `repeat(${languageOptions.length}, minmax(0, 1fr))` }}>{languageOptions.map(([value,label]) => <button key={value} type="button" disabled={value !== 'zh' && !hasEnglish} onClick={() => changeLanguage(value)} className={`focus-ring rounded-md px-2 py-2 text-xs font-black disabled:opacity-40 ${language === value ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>{label}</button>)}</div></div></section>
 
   if (!mode) return <div className="grid gap-5">{savedExam ? <section className="card border-blue-200 bg-blue-50 p-4"><p className="font-black text-blue-950">发现未完成的模拟考试</p><p className="mt-1 text-sm text-blue-800">已完成 {Object.keys(savedExam.answers || {}).length}/{savedExam.questionIds.length} 题。</p><div className="mt-3 flex gap-2"><button onClick={resume} className="rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">继续考试</button><button onClick={clearResume} className="rounded-md border border-blue-300 bg-white px-4 py-2 text-sm font-bold text-blue-800">放弃记录</button></div></section> : null}{languageSelector}<section className="card p-5"><h1 className="text-2xl font-black">选择模拟考试模式</h1><p className="mt-2 text-sm text-slate-600">考试界面和学习功能全站统一，各州题量、通过标准和组卷规则独立。</p></section><div className="grid gap-4 md:grid-cols-2">{config.modes.map((item) => <button key={item.id} onClick={() => chooseMode(item.id)} className="focus-ring card p-5 text-left"><span className="text-sm font-bold text-blue-700">{item.label}</span><span className="mt-2 block text-3xl font-black">{item.size} 题</span><span className="mt-2 block text-sm text-slate-600">{item.description}</span><span className="mt-4 inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">开始模拟</span></button>)}</div></div>
 
