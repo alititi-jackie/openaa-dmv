@@ -1,12 +1,12 @@
 import type { DmvState } from './dmv-data'
 import { getSiteUrl, OPENAA_URL } from './site'
 
-export function stateTitle(state: DmvState, suffix = '中文题库与模拟考试') {
+export function stateTitle(state: DmvState, suffix = '驾照题库与模拟考试') {
   return `${state.nameZh} DMV ${suffix}`
 }
 
 export function stateDescription(state: DmvState) {
-  return `${state.nameZh} ${state.nameEn} DMV 中文题库、Permit 笔试练习、模拟考试、交通标志和驾照考试指南。OpenAA DMV 提供中文学习辅助，正式要求以官方 ${state.officialName} 为准。`
+  return `${state.nameZh} ${state.nameEn} DMV 驾照笔试题库、练习、模拟考试、交通标志和考试指南。多数已上线内容支持中文、English 和中英对照；正式要求以官方 ${state.officialName} 为准。`
 }
 
 export function webPageJsonLd(name: string, description: string, path: string) {
