@@ -11,7 +11,7 @@ export default function Footer() {
         <div>
           <p className="text-lg font-extrabold text-slate-950">OpenAA DMV</p>
           <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
-            OpenAA DMV 提供中文学习辅助和官方入口整理，不是政府网站。考试规则、费用、预约和证件要求请以各州 DMV 官方页面为准。
+            OpenAA DMV 提供美国各州驾照题库、模拟考试、交通标志学习和官方入口整理；多数已上线内容支持中文、English 和中英对照。本站不是政府网站，正式考试规则、费用、预约和证件要求请以各州官方页面为准。
           </p>
         </div>
         <div>
