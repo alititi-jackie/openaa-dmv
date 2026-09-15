@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CheckCircle2, Languages, XCircle } from 'lucide-react'
 import QuestionSignImage from '@/components/QuestionSignImage'
 import type { DmvQuestion } from '@/lib/dmv-data'
@@ -39,12 +39,21 @@ export default function NewYorkMockTestClient({ questions }: Props) {
   const [submitted, setSubmitted] = useState(false)
   const [reviewIds, setReviewIds] = useState<string[] | null>(null)
   const [language, setLanguage] = useState<DmvLanguage>('zh')
+  const resultRef = useRef<HTMLElement | null>(null)
   const languageKey = languageStorageKey('ny')
 
   useEffect(() => {
     const saved = window.localStorage.getItem(languageKey)
     if (saved === 'zh' || saved === 'en' || saved === 'bilingual') setLanguage(saved)
   }, [languageKey])
+
+  useEffect(() => {
+    if (!submitted) return
+    const frame = window.requestAnimationFrame(() => {
+      resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [submitted])
 
   function changeLanguage(next: DmvLanguage) {
     setLanguage(next)
@@ -108,7 +117,7 @@ export default function NewYorkMockTestClient({ questions }: Props) {
       </div>
     </section>
 
-    {submitted ? <section className={`card p-5 ${passed ? 'border-green-300 bg-green-50' : 'border-amber-300 bg-amber-50'}`}>
+    {submitted ? <section ref={resultRef} className={`card scroll-mt-24 p-5 ${passed ? 'border-green-300 bg-green-50' : 'border-amber-300 bg-amber-50'}`}>
       <div className="flex items-center gap-2">{passed ? <CheckCircle2 className="text-green-700"/> : <XCircle className="text-amber-700"/>}<h2 className="text-2xl font-black">{passed ? '通过 PASS' : '未通过 NOT PASSED'}</h2></div>
       <p className="mt-3 text-lg font-black">总题：{correct}/{active.length} 正确</p>
       {isFullExam ? <div className="mt-3 grid gap-2 sm:grid-cols-2"><div className="rounded-lg border bg-white p-3"><p className="text-xs font-bold text-slate-500">总题要求</p><p className={`mt-1 font-black ${correct >= 14 ? 'text-green-700' : 'text-rose-700'}`}>{correct}/20 · 要求至少 14</p></div><div className="rounded-lg border bg-white p-3"><p className="text-xs font-bold text-slate-500">交通标志要求</p><p className={`mt-1 font-black ${signCorrect >= 2 ? 'text-green-700' : 'text-rose-700'}`}>{signCorrect}/4 · 要求至少 2</p></div></div> : null}
