@@ -9,8 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const state of dmvStates) {
     if (state.status === 'external') continue
     routes.push(`/${state.slug}`)
-    const isLive = state.status === 'live' || state.slug === 'florida'
-    if (isLive) {
+    if (state.status === 'live') {
       routes.push(`/${state.slug}/questions`, `/${state.slug}/practice`, `/${state.slug}/mock-test`, `/${state.slug}/signs`, `/${state.slug}/wrong-questions`, `/${state.slug}/guide`)
     }
   }
