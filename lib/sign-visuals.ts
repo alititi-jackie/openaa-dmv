@@ -12,11 +12,11 @@ const QUESTION_SIGN_KEYS: Record<string, string> = {
   'nj-sign-001':'R1-1','nj-sign-002':'R1-2','nj-sign-003':'R5-1','nj-sign-004':'R5-1a','nj-sign-005':'R3-4','nj-sign-006':'R6-1','nj-sign-007':'R4-7','nj-sign-008':'W8-5','nj-sign-009':'W10-1','nj-sign-010':'S1-1','nj-sign-011':'W20-1','nj-sign-012':'R2-1','nj-sign-013':'W2-1','nj-sign-014':'W4-1','nj-sign-015':'W6-1','nj-sign-016':'W11-2','nj-sign-017':'W3-3','nj-sign-018':'W1-2','nj-sign-019':'W1-5','nj-sign-020':'W6-3','nj-sign-021':'W14-3','nj-sign-022':'W4-2','nj-sign-023':'W3-1','nj-sign-024':'W3-2','nj-sign-025':'R15-1',
   'ca2-signs-001':'R1-1','ca2-signs-002':'R1-2','ca2-signs-003':'W1-2','ca2-signs-004':'W20-1','ca2-signs-005':'R2-1','ca2-signs-009':'S1-1','ca2-signs-010':'W10-1','ca2-signs-011':'R15-1','ca2-signs-018':'R5-1','ca2-signs-019':'R5-1a','ca2-signs-020':'W1-2',
 
-  // OpenAA New York visual-sign questions. Reuse the audited local sign library
-  // instead of hotlinking the legacy image URLs from the source JSON.
+  // New York visual sign questions 1-16.
   'ny-openaa-1':'R1-1',
   'ny-openaa-2':'R1-2',
   'ny-openaa-3':'W3-3',
+  'ny-openaa-4':'R3-2',
   'ny-openaa-5':'R3-4',
   'ny-openaa-6':'R4-7',
   'ny-openaa-7':'R5-1',
@@ -25,7 +25,22 @@ const QUESTION_SIGN_KEYS: Record<string, string> = {
   'ny-openaa-10':'S1-1',
   'ny-openaa-11':'W6-3',
   'ny-openaa-12':'W4-2',
+  'ny-openaa-13':'W6-2',
+  'ny-openaa-14':'W7-1',
   'ny-openaa-16':'W4-1',
+
+  // Sign-theory questions and their legacy review variants. These use a
+  // representative sign so the dedicated signs page never renders an empty
+  // visual slot for questions about sign color/shape.
+  'ny-openaa-57':'R5-1',
+  'ny-openaa-58':'W1-2',
+  'ny-openaa-59':'R1-1',
+  'ny-openaa-100':'R5-1',
+  'ny-openaa-101':'W1-2',
+  'ny-openaa-102':'R1-1',
+  'ny-openaa-143':'R5-1',
+  'ny-openaa-144':'W1-2',
+  'ny-openaa-145':'R1-1',
 }
 
 const CUSTOM_VISUALS: Record<string, SignMeta> = {
