@@ -26,9 +26,9 @@ export default function StateSearch({ states }: { states: DmvState[] }) {
           <div className="flex items-start justify-between gap-3"><div><h3 className="text-xl font-black text-slate-950">{state.nameZh}</h3><p className="mt-1 text-sm font-semibold text-slate-500">{state.nameEn} · {state.code}</p></div><span className="rounded-md bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">{statusText}</span></div>
           <p className="mt-3 text-sm leading-6 text-slate-600">{summary}</p>
         </div>
-        <div className="grid grid-cols-2 gap-px border-t border-blue-100 bg-blue-100">
-          <a href={href} className="focus-ring inline-flex min-h-14 items-center justify-center bg-blue-50 px-3 py-3 hover:bg-blue-100"><span className="inline-flex items-center text-sm font-bold text-blue-700">进入中文题库<ArrowRight size={15} className="ml-1.5 shrink-0" /></span></a>
-          <Link href="/ny" className="focus-ring inline-flex min-h-14 items-center justify-center bg-sky-50 px-3 py-3 hover:bg-sky-100"><span className="inline-flex items-center text-sm font-bold text-blue-700">English / 中英练习<ArrowRight size={15} className="ml-1.5 shrink-0" /></span></Link>
+        <div className="grid grid-cols-2 gap-2 p-4 pt-0">
+          <a href={href} className="focus-ring inline-flex min-h-14 items-center justify-center rounded-md border border-blue-200 bg-blue-50 px-3 py-3 hover:bg-blue-100"><span className="inline-flex items-center text-sm font-bold text-blue-700">进入中文题库<ArrowRight size={15} className="ml-1.5 shrink-0" /></span></a>
+          <Link href="/ny" className="focus-ring inline-flex min-h-14 items-center justify-center rounded-md border border-blue-200 bg-sky-50 px-3 py-3 hover:bg-sky-100"><span className="inline-flex items-center text-sm font-bold text-blue-700">English / 中英练习<ArrowRight size={15} className="ml-1.5 shrink-0" /></span></Link>
         </div>
       </div>
     }
