@@ -1,3 +1,4 @@
+// Deployment refresh trigger: 2026-09-15
 import Link from 'next/link'
 import { ArrowRight, BookOpenCheck, FileQuestion, Globe2, ShieldCheck } from 'lucide-react'
 import JsonLd from '@/components/JsonLd'
