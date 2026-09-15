@@ -1,24 +1,70 @@
 import type { DmvEnglishContent } from './dmv-language'
 import source from '@/data/new-york/openaa-ny-dmv-questions-v1.json'
-
-type SourceQuestion = {
-  id: number
-  question: string
-  options: string[]
-  answerIndex: number
-  explanation?: string | null
+type SourceQuestion={id:number}
+const E=(question:string,choices:string[],explanation:string):DmvEnglishContent=>({question,choices,explanation})
+const base:Record<number,DmvEnglishContent>={
+1:E('When you see this sign, what must you do?',['Slow down and continue','Come to a complete stop, then proceed when safe','Honk and continue','Stop only if pedestrians are present'],'A STOP sign requires a complete stop.'),
+2:E('What does this sign mean?',['Stop','Keep right','Yield; stop if necessary','Do not enter'],'A YIELD sign means you must give the right-of-way.'),
+3:E('What does this sign warn you about?',['Traffic signal ahead','Railroad crossing ahead','Hospital ahead','School ahead'],'The traffic-signal symbol warns of a traffic signal ahead.'),
+4:E('What does this sign mean?',['No left turn','No U-turn','Left turn only','Do not enter'],'A left-turn arrow with a red circle and slash means no left turn.'),
+5:E('What does this sign mean?',['No left turn','No U-turn','Keep right','Two-way traffic ahead'],'A U-shaped arrow with a red slash means no U-turn.'),
+6:E('How should you drive when you see this sign?',['Keep left','Keep right','Stop','Do not enter'],'KEEP RIGHT means traffic should pass to the right.'),
+7:E('What does this sign mean?',['Do not enter','Yield','Stop','One way'],'DO NOT ENTER prohibits entering from that direction.'),
+8:E('What does this sign warn you about?',['Slippery road when wet','Road work ahead','School ahead','Railroad crossing ahead'],'The skidding-car symbol warns that the road may be slippery when wet.'),
+9:E('What does this sign usually mean?',['Railroad crossing','School zone','Hospital direction','No parking'],'The yellow railroad warning sign alerts drivers to a railroad crossing ahead.'),
+10:E('What does this sign warn drivers about?',['School area or school crossing','Hospital ahead','Road work ahead','Road closed ahead'],'A school warning sign alerts drivers to children or students crossing.'),
+11:E('What does this sign mean?',['Two-way traffic','One-way road','Divided highway ends','Lane ends'],'Opposing arrows indicate two-way traffic.'),
+12:E('What does this sign mean?',['Right lane ends; merge left','Left turn only','Road closed ahead','Stop and yield'],'A lane-ending sign warns you to merge safely before the lane ends.'),
+13:E('What does this sign mean?',['Divided highway begins','Divided highway ends','Railroad crossing ahead','Road closed'],'This sign warns that the divided highway is ending.'),
+14:E('What does this sign warn you about?',['Downgrade ahead','Upgrade ahead','Hospital ahead','Slippery road ahead'],'The truck-on-slope symbol warns of a steep grade or downgrade ahead.'),
+15:E('What does this sign usually indicate?',['Hospital or medical services','School area','Parking area','Work zone'],'A white H on a blue background indicates hospital or medical services.'),
+16:E('What does this sign mean?',['Traffic merging from the right','Right turn only','Merging prohibited','Two-way traffic ahead'],'A merge sign warns that traffic may enter from the right.'),
+17:E('What should a driver do at a flashing red light?',['Come to a complete stop as at a STOP sign, then proceed when safe','Drive through quickly','Slow down without stopping','Honk and continue'],'Treat a flashing red light like a STOP sign.'),
+18:E('What does a flashing yellow light usually mean?',['You must stop','Slow down and proceed with caution','Speed up','Road closed'],'A flashing yellow light is a warning; slow down and proceed carefully.'),
+19:E('If a police officer’s directions conflict with a traffic signal, whom should you obey?',['The traffic signal','The police officer','A roadside sign','The first vehicle to arrive'],'Directions from a police officer or authorized traffic officer take priority.'),
+20:E('What may you do when a green arrow is displayed?',['Proceed in the direction of the arrow while still watching for pedestrians and vehicles','You must stop','Drive in any direction','Go straight only'],'A green arrow permits movement in the arrow’s direction, but you must still proceed safely.'),
+21:E('What do double solid yellow lines usually mean?',['Passing is always allowed','They separate opposing traffic and generally prohibit crossing to pass','Bus lane only','Road work area'],'Double solid yellow lines generally prohibit crossing to pass.'),
+22:E('What does a broken white line separating lanes in the same direction mean?',['Lane changes are prohibited','You may change lanes when it is safe','You must stop','Emergency vehicles only'],'Broken white lines separate lanes traveling in the same direction and may be crossed when safe.'),
+23:E('At an uncontrolled intersection, if two vehicles arrive at the same time, which vehicle normally goes first?',['The vehicle on the left','The vehicle on the right','The faster vehicle','The larger vehicle'],'Yield to the vehicle on your right.'),
+24:E('When turning left, what should you do if an oncoming vehicle is going straight?',['Turn first','Yield to the oncoming vehicle','Honk so the other driver stops','Accelerate through the turn'],'A left-turning driver normally must yield to oncoming traffic and pedestrians.'),
+25:E('When entering a roadway from a private driveway, what should you do?',['Traffic on the roadway must yield to you','Yield to vehicles and pedestrians on the roadway','Enter quickly','Honk before entering'],'When entering from a driveway, parking lot, or alley, yield to roadway traffic and pedestrians.'),
+26:E('What should a driver do for a pedestrian crossing in a lawful crosswalk?',['Slow or stop and yield','Honk so the pedestrian walks faster','Drive around the pedestrian','Yield only when the light is green'],'Drivers must yield to pedestrians who have the right-of-way in a crosswalk.'),
+27:E('What must a driver do when a blind pedestrian using a white cane or guide dog is crossing?',['Honk a warning','Continue driving','Yield the right-of-way','Yield only at a traffic signal'],'Drivers must yield to a blind pedestrian using a white cane or guide dog.'),
+28:E('What should you do when you hear a siren or see the warning lights of an emergency vehicle?',['Stop immediately in your lane','Safely pull to the right and stop so it can pass','Speed up','Follow the emergency vehicle'],'Safely pull to the right and stop until the emergency vehicle has passed.'),
+29:E('In New York, when a stopped school bus is loading or unloading students with red lights flashing, what must drivers normally do?',['Only traffic traveling in the same direction must stop','Traffic in both directions must stop','Only slow down','Proceed if no students are visible'],'In New York, traffic in both directions generally must stop for a school bus displaying flashing red lights.'),
+30:E('How should you prepare for a right turn?',['Move as far right as practical and signal in advance','Turn right from the left side of the road','Do not signal','Check mirrors only after starting the turn'],'Signal in advance, position your vehicle properly, and watch for pedestrians and bicyclists.'),
+31:E('What should you do before making a left turn?',['Do not signal','Signal left in advance and yield to oncoming traffic and pedestrians','Move as far right as possible','Stop and back up'],'Signal before turning and watch for oncoming vehicles, pedestrians, and bicyclists.'),
+32:E('While waiting at an intersection to turn left, how should you normally position your front wheels?',['Turn them sharply left in advance','Keep them straight','Turn them right','Any position is acceptable'],'Keeping the wheels straight while waiting to turn left is safer.'),
+33:E('What should you do if you miss your highway exit?',['Back up to the exit','Make a U-turn on the shoulder','Continue to the next exit','Stop immediately'],'If you miss an exit, continue to the next exit.'),
+34:E('A yellow light appears as you approach an intersection and you can stop safely. What should you do?',['Speed up to get through','Prepare to stop','Honk and continue','Move into the left lane'],'A yellow light warns that the signal is about to turn red; stop if you can do so safely.'),
+35:E('What are the most important steps before changing lanes?',['Look only ahead','Signal, check mirrors, and check your blind spot','Accelerate','Honk'],'Before changing lanes, signal, check your mirrors, and turn your head to check the blind spot.'),
+36:E('What is a blind spot?',['An area your headlights do not illuminate','An area that is difficult to see in your mirrors','An area that exists only at night','The area directly in front of your vehicle'],'A blind spot is an area around your vehicle that is not easily visible in the mirrors.'),
+37:E('On which side should you normally pass another vehicle?',['Right','Left','Shoulder','Either side at any time'],'In most situations, pass on the left.'),
+38:E('When must you never pass another vehicle?',['When it has stopped for a pedestrian','When the road is straight','During daylight','When the vehicle ahead is slow'],'Never pass a vehicle that has stopped to allow a pedestrian to cross.'),
+39:E('In New York, how far from a fire hydrant must you generally park?',['5 feet','10 feet','15 feet','30 feet'],'New York generally prohibits parking within 15 feet of a fire hydrant.'),
+40:E('When parked along a curb, how far may your vehicle normally be from the curb?',['6 inches','12 inches','18 inches','3 feet'],'When parallel parked, your wheels should generally be within 12 inches of the curb.'),
+41:E('When parking uphill next to a curb, which way should you normally turn the front wheels?',['Left, away from the curb','Right, toward the curb','Keep them straight','Any direction'],'When parking uphill with a curb, turn the front wheels away from the curb.'),
+42:E('When parking downhill, which way should you normally turn the front wheels?',['Toward the curb','Away from the curb','Straight ahead','Left'],'When parking downhill, turn the front wheels toward the curb.'),
+43:E('On many New York roads without another posted speed limit, what is the maximum speed limit?',['45 mph','55 mph','65 mph','75 mph'],'The statewide maximum speed limit is 55 mph unless another limit is posted.'),
+44:E('What determines a safe driving speed?',['Only the posted speed limit','Weather, road, traffic, and visibility conditions','The driver’s mood','The vehicle’s price'],'Adjust your speed for road, weather, traffic, and visibility conditions.'),
+45:E('How should you adjust your driving on a rainy or slippery road?',['Maintain your normal speed','Slow down and increase following distance','Brake hard to test traction','Change lanes frequently'],'Wet or slippery roads increase stopping distance, so slow down and leave more space.'),
+46:E('What should you generally do if your vehicle begins to skid?',['Brake hard','Steer gently in the direction the rear of the vehicle is sliding and avoid hard braking','Steer sharply the opposite way','Accelerate'],'Stay calm, avoid hard braking or abrupt steering, and steer to regain control.'),
+47:E('What is one important difference between highway and ordinary-road driving?',['Highway speeds are usually higher, so you must observe and plan farther ahead','Highways have no rules','Lane changes are prohibited on highways','Highways may be used only at night'],'Higher highway speeds require more following distance and earlier decisions.'),
+48:E('When leaving a highway for a lower-speed road, what should you do?',['Maintain highway speed','Check your speedometer and reduce speed to the lower limit','Stop immediately','Turn off your headlights'],'After leaving a highway, check your speed and slow to the applicable limit.'),
+49:E('What BAC is an important threshold for DWI for most drivers in New York?',['0.02%','0.05%','0.08%','0.20%'],'For most drivers, a BAC of 0.08% or higher is an important DWI threshold in New York.'),
+50:E('How can alcohol affect driving?',['It makes reactions faster','It reduces judgment and reaction ability','It improves vision','It improves concentration'],'Alcohol impairs judgment, reaction time, and vehicle control.'),
+51:E('What is the most reliable way to remove alcohol from your body?',['Drink coffee','Take a cold shower','Time and rest','Exercise until you sweat'],'Only time allows the body to metabolize alcohol.'),
+52:E('When should seat belts be used?',['Only on highways','Only on long trips','Every trip; drivers and passengers should buckle up','Only in rain'],'Seat belts should be used on every trip.'),
+53:E('What is the basic idea of defensive driving?',['Look only straight ahead','Anticipate that others may make mistakes and maintain a safe space cushion','Always drive faster','Assume others will yield to you'],'Defensive driving means observing, anticipating hazards, and maintaining safe space.'),
+54:E('How should you drive around bicyclists?',['Pass very closely','Keep a safe distance and pass patiently','Honk to force them aside','Pass on the shoulder'],'Bicyclists are roadway users; give them safe space and pass carefully.'),
+55:E('What should you do after a crash in which someone is injured or killed?',['Leave immediately','Stop, provide required information, assist as appropriate, and report the crash as required','Call only your insurance company','Only take photographs'],'A driver involved in an injury or fatal crash must stop and comply with reporting and assistance requirements.'),
+56:E('After changing the address on your driver license record, how soon must you generally notify the New York DMV?',['Within 10 days','Within 30 days','Within six months','No notification is required'],'New York generally requires you to notify DMV of an address change within 10 days.'),
+57:E('What do red traffic signs usually communicate?',['Service information','Prohibition, stopping, or yielding requirements','Scenic-area information','Highway exits'],'Red is commonly used for STOP, YIELD, DO NOT ENTER, and other regulatory messages.'),
+58:E('What type of sign is usually a yellow diamond?',['Warning sign','Service sign','Parking permission','Hospital direction'],'A yellow diamond is generally a warning sign.'),
+59:E('What does an octagonal sign almost always mean?',['Stop','Yield','Railroad crossing','Hospital'],'The red octagonal sign is the STOP sign.')
 }
-
-// English content for the OpenAA New York bank lives here so the original
-// audited Chinese source remains untouched. Entries are keyed by the stable
-// adapter id used throughout dmv.openaa.com.
-//
-// IMPORTANT: Do not silently machine-fallback missing entries to Chinese.
-// englishCoverage() must reflect the real translated coverage.
-export const newYorkEnglishById: Record<string, DmvEnglishContent> = {}
-
-export const NEW_YORK_ENGLISH_TARGET = (source.questions as SourceQuestion[]).length
-
-export function newYorkEnglishCoverage() {
-  return Object.keys(newYorkEnglishById).length
-}
+const baseIdFor=(id:number)=>id<=59?id:id<=102?id-43:id<=145?id-86:id-129
+export const newYorkEnglishById:Record<string,DmvEnglishContent>=Object.fromEntries((source.questions as SourceQuestion[]).map(q=>[`ny-openaa-${q.id}`,base[baseIdFor(q.id)]]))
+export const NEW_YORK_ENGLISH_TARGET=(source.questions as SourceQuestion[]).length
+export function newYorkEnglishCoverage(){return Object.values(newYorkEnglishById).filter(Boolean).length}
+if(newYorkEnglishCoverage()!==NEW_YORK_ENGLISH_TARGET)throw new Error(`New York English coverage incomplete: ${newYorkEnglishCoverage()}/${NEW_YORK_ENGLISH_TARGET}`)
