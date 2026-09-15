@@ -1,14 +1,10 @@
 import type { DmvQuestion } from './dmv-data'
 import { newYorkQuestions } from './new-york-questions'
 
+// New York is intentionally an independent OpenAA bank. Preserve the 150
+// source entries and their stable order exactly; do not text-dedupe or mix in
+// Shared Core questions here. The legacy OpenAA source itself contains review
+// variants, and parity with OpenAA.com/dmv takes priority for this bank.
 export function getNewYorkQuestions(): DmvQuestion[] {
-  const ids = new Set<string>()
-  const texts = new Set<string>()
-  return newYorkQuestions.filter((question) => {
-    const text = question.question.toLowerCase().replace(/\s+/g, '')
-    if (ids.has(question.id) || texts.has(text)) return false
-    ids.add(question.id)
-    texts.add(text)
-    return true
-  })
+  return [...newYorkQuestions]
 }
