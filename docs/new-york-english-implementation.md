@@ -1,0 +1,1 @@
+Implementation is additive: the Chinese JSON remains source-of-truth for IDs and answer indices; `new-york-english.ts` supplies presentation-only English content and maps repeated legacy variants to a reviewed semantic base.
