@@ -1,0 +1,1 @@
+QA gates: 150 public bank items, 150 English mappings, matching choice counts, non-empty English questions/explanations, and successful production build.

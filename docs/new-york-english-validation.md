@@ -1,0 +1,1 @@
+Validation contract: production import asserts 150 mapped English entries; `lib/new-york-english-audit.ts` additionally checks the public NY bank count, English coverage, non-empty question/explanation text, and choice-count alignment.
