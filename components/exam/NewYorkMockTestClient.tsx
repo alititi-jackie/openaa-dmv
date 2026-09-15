@@ -1,9 +1,17 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import { CheckCircle2, XCircle } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { CheckCircle2, Languages, XCircle } from 'lucide-react'
 import QuestionSignImage from '@/components/QuestionSignImage'
 import type { DmvQuestion } from '@/lib/dmv-data'
+import {
+  getChoiceText,
+  getEnglishContent,
+  getExplanationText,
+  getQuestionText,
+  languageStorageKey,
+  type DmvLanguage,
+} from '@/lib/dmv-language'
 
 type Props = { questions: DmvQuestion[] }
 
@@ -30,6 +38,19 @@ export default function NewYorkMockTestClient({ questions }: Props) {
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState(false)
   const [reviewIds, setReviewIds] = useState<string[] | null>(null)
+  const [language, setLanguage] = useState<DmvLanguage>('zh')
+  const languageKey = languageStorageKey('ny')
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem(languageKey)
+    if (saved === 'zh' || saved === 'en' || saved === 'bilingual') setLanguage(saved)
+  }, [languageKey])
+
+  function changeLanguage(next: DmvLanguage) {
+    setLanguage(next)
+    window.localStorage.setItem(languageKey, next)
+  }
+
   const exam = useMemo(() => buildNyExam(questions, seed), [questions, seed])
   const active = reviewIds ? exam.filter((q) => reviewIds.includes(q.id)) : exam
   const unanswered = active.filter((q) => answers[q.id] === undefined)
@@ -79,6 +100,12 @@ export default function NewYorkMockTestClient({ questions }: Props) {
         <button type="button" onClick={restart} className="rounded-md border border-slate-300 px-3 py-2 text-sm font-bold">重新组卷</button>
       </div>
       {isFullExam ? <p className="mt-3 text-sm leading-6 text-slate-600">按纽约 DMV 规则组卷：20 题，其中固定 4 道交通标志题。通过必须同时满足总题答对至少 14 道、4 道标志题至少答对 2 道。</p> : null}
+      <div className="mt-4 flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between">
+        <div><p className="inline-flex items-center text-sm font-black text-slate-950"><Languages size={16} className="mr-1.5 text-blue-700"/>题目语言</p><p className="mt-1 text-xs text-slate-500">纽约 150 题已提供完整 English 映射，可随时切换。</p></div>
+        <div className="grid grid-cols-3 rounded-lg bg-white p-1 ring-1 ring-slate-200 sm:w-72">
+          {([['zh','中文'],['en','English'],['bilingual','中英对照']] as const).map(([value,label])=><button key={value} type="button" onClick={()=>changeLanguage(value)} className={`rounded-md px-2 py-2 text-xs font-black ${language===value?'bg-blue-700 text-white':'text-slate-600'}`}>{label}</button>)}
+        </div>
+      </div>
     </section>
 
     {submitted ? <section className={`card p-5 ${passed ? 'border-green-300 bg-green-50' : 'border-amber-300 bg-amber-50'}`}>
@@ -90,7 +117,7 @@ export default function NewYorkMockTestClient({ questions }: Props) {
 
     <section className="card p-3"><div className="grid grid-cols-8 gap-2 md:grid-cols-10">{active.map((q, index) => { const a=answers[q.id]; const ok=submitted&&a===q.answerIndex; const bad=submitted&&a!==q.answerIndex; return <button key={q.id} onClick={() => document.getElementById(`ny-question-${q.id}`)?.scrollIntoView({behavior:'smooth',block:'center'})} className={`aspect-square rounded-md border text-xs font-black ${ok?'border-green-300 bg-green-100 text-green-800':bad?'border-rose-300 bg-rose-100 text-rose-800':a!==undefined?'border-blue-400 bg-blue-100 text-blue-800':'border-slate-300 bg-white text-slate-600'}`}>{index+1}</button>})}</div></section>
 
-    <div className="grid gap-4">{active.map((q,index)=><section id={`ny-question-${q.id}`} key={q.id} className="card scroll-mt-24 p-5"><div className="flex items-center justify-between gap-2"><p className="text-xs font-bold text-slate-500">第 {index+1} / {active.length} 题</p>{q.category==='signs'?<span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-black text-amber-900">交通标志</span>:null}</div><h2 className="mt-2 text-lg font-black leading-7">{q.question}</h2><QuestionSignImage question={q}/><div className="mt-4 grid gap-2">{q.choices.map((choice,choiceIndex)=>{const chosen=answers[q.id]===choiceIndex;const correctChoice=submitted&&choiceIndex===q.answerIndex;const wrongChoice=submitted&&chosen&&choiceIndex!==q.answerIndex;return <button key={choiceIndex} type="button" disabled={submitted} onClick={()=>setAnswers((old)=>({...old,[q.id]:choiceIndex}))} className={`rounded-lg border p-3 text-left text-sm font-bold ${correctChoice?'border-green-400 bg-green-50 text-green-900':wrongChoice?'border-rose-400 bg-rose-50 text-rose-900':chosen?'border-blue-500 bg-blue-50 text-blue-900':'border-slate-200 bg-white text-slate-800'}`}>{String.fromCharCode(65+choiceIndex)}. {choice}</button>})}</div>{submitted?<div className="mt-4 rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-700"><span className="font-black">解析：</span>{q.explanation}</div>:null}</section>)}</div>
+    <div className="grid gap-4">{active.map((q,index)=>{const english=getEnglishContent(q);return <section id={`ny-question-${q.id}`} key={q.id} className="card scroll-mt-24 p-5"><div className="flex items-center justify-between gap-2"><p className="text-xs font-bold text-slate-500">第 {index+1} / {active.length} 题</p>{q.category==='signs'?<span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-black text-amber-900">交通标志</span>:null}</div>{language==='bilingual'&&english?<div className="mt-2"><h2 className="text-lg font-black leading-7">{q.question}</h2><p className="mt-1 text-sm font-semibold leading-6 text-slate-600">{english.question}</p></div>:<h2 className="mt-2 text-lg font-black leading-7">{getQuestionText(q,language)}</h2>}<QuestionSignImage question={q} stateSlug="ny"/><div className="mt-4 grid gap-2">{q.choices.map((choice,choiceIndex)=>{const chosen=answers[q.id]===choiceIndex;const correctChoice=submitted&&choiceIndex===q.answerIndex;const wrongChoice=submitted&&chosen&&choiceIndex!==q.answerIndex;const englishChoice=english?.choices[choiceIndex];return <button key={choiceIndex} type="button" disabled={submitted} onClick={()=>setAnswers((old)=>({...old,[q.id]:choiceIndex}))} className={`rounded-lg border p-3 text-left text-sm font-bold ${correctChoice?'border-green-400 bg-green-50 text-green-900':wrongChoice?'border-rose-400 bg-rose-50 text-rose-900':chosen?'border-blue-500 bg-blue-50 text-blue-900':'border-slate-200 bg-white text-slate-800'}`}>{language==='bilingual'&&englishChoice?<span><span className="block">{String.fromCharCode(65+choiceIndex)}. {choice}</span><span className="mt-1 block text-xs font-semibold text-slate-500">{englishChoice}</span></span>:<>{String.fromCharCode(65+choiceIndex)}. {getChoiceText(q,choiceIndex,language)}</>}</button>})}</div>{submitted?<div className="mt-4 rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-700">{language==='bilingual'&&english?<><p><span className="font-black">解析：</span>{q.explanation}</p><p className="mt-1 text-slate-600"><span className="font-black">Explanation: </span>{english.explanation}</p></>:<><span className="font-black">{language==='en'?'Explanation: ':'解析：'}</span>{getExplanationText(q,language)}</>}</div>:null}</section>})}</div>
 
     {!submitted ? <section className="sticky bottom-3 z-10 rounded-xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur"><div className="flex items-center justify-between gap-3"><p className="text-sm font-bold">未答 {unanswered.length} 题</p><button type="button" onClick={submit} className={`rounded-md px-5 py-2.5 text-sm font-black text-white ${unanswered.length?'bg-amber-600':'bg-blue-700'}`}>{unanswered.length?'前往下一道未答':'提交考试'}</button></div></section> : null}
   </div>
