@@ -8,11 +8,11 @@ import { SITE_URL } from '@/lib/site'
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: '美国 DMV 中文题库｜各州驾照笔试练习 - OpenAA DMV',
+    default: '美国 DMV 驾照题库｜中文 English 中英对照练习 - OpenAA DMV',
     template: '%s | OpenAA DMV',
   },
-  description: '美国各州 DMV 中文题库与驾照笔试练习平台。按州练习 Permit 笔试、模拟考试、交通标志和错题，并提供各州 DMV 官方入口。',
-  keywords: ['DMV中文题库', '美国驾照中文考试', 'DMV中文考试', 'Permit中文题库', '美国驾照笔试', 'DMV模拟考试', 'OpenAA DMV'],
+  description: '美国各州 DMV 驾照笔试学习平台。按州练习题库、模拟考试、交通标志和错题，多数已上线州支持中文、English 和中英对照，并提供官方 DMV 入口。',
+  keywords: ['DMV中文题库', '美国驾照中文考试', 'DMV中文考试', 'Permit中文题库', '美国驾照笔试', 'DMV模拟考试', 'DMV English practice', 'DMV中英对照', 'OpenAA DMV'],
   manifest: '/manifest.webmanifest',
   alternates: { canonical: '/' },
   openGraph: {
@@ -20,13 +20,13 @@ export const metadata: Metadata = {
     locale: 'zh_CN',
     siteName: 'OpenAA DMV',
     url: SITE_URL,
-    title: '美国 DMV 中文题库｜各州驾照笔试练习 - OpenAA DMV',
-    description: '选择所在州，开始 DMV 中文题库、Permit 笔试、模拟考试和交通标志练习。',
+    title: '美国 DMV 驾照题库｜中文 English 中英对照练习 - OpenAA DMV',
+    description: '选择考试州，开始驾照题库、模拟考试和交通标志学习，多数州支持中文、English 和中英对照。',
   },
   twitter: {
     card: 'summary',
-    title: '美国 DMV 中文题库 - OpenAA DMV',
-    description: '美国各州 DMV 中文驾照笔试练习、模拟考试和交通标志。',
+    title: '美国 DMV 驾照题库 - OpenAA DMV',
+    description: '美国各州 DMV 驾照笔试题库、模拟考试和交通标志学习。',
   },
   robots: {
     index: true,
