@@ -11,16 +11,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     routes.push(`/${state.slug}`)
     const isLive = state.status === 'live' || state.slug === 'florida'
     if (isLive) {
-      routes.push(
-        `/${state.slug}/questions`,
-        `/${state.slug}/practice`,
-        `/${state.slug}/mock-test`,
-        `/${state.slug}/signs`,
-        `/${state.slug}/wrong-questions`,
-        `/${state.slug}/guide`
-      )
+      routes.push(`/${state.slug}/questions`, `/${state.slug}/practice`, `/${state.slug}/mock-test`, `/${state.slug}/signs`, `/${state.slug}/wrong-questions`, `/${state.slug}/guide`)
     }
   }
+
+  routes.push('/ny','/ny/questions','/ny/practice','/ny/mock-test','/ny/signs','/ny/wrong-questions','/ny/guide')
 
   return routes.map((route) => ({
     url: getSiteUrl(route),
