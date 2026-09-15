@@ -13,7 +13,7 @@ export default function Header() {
           <Image src="/openaa-logo.png" alt="" width={36} height={36} className="h-9 w-9 rounded-md object-contain" priority />
           <span className="min-w-0">
             <span className="block text-base font-extrabold leading-5 text-slate-950">OpenAA DMV</span>
-            <span className="block text-xs font-medium text-slate-500">美国驾照中文题库</span>
+            <span className="block text-xs font-medium text-slate-500">美国驾照题库</span>
           </span>
         </Link>
         <nav className="flex shrink-0 items-center gap-2 text-sm font-semibold">
