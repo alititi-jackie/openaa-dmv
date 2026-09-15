@@ -1,0 +1,7 @@
+- [x] Preserve Chinese source
+- [x] Preserve answer indices
+- [x] Map all 150 stable IDs
+- [x] Provide English question, choices, explanation
+- [x] Wire common language layer
+- [x] Add build-time coverage assertion
+- [x] Add bank/choice audit
