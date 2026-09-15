@@ -4,7 +4,7 @@ import BackLink from '@/components/BackLink'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import { getNewYorkQuestions } from '@/lib/new-york-bank'
 
-export const metadata: Metadata = { title:'2026 纽约 DMV 中文题库｜20题 Permit 模拟考试', description:'New York DMV Class D/DJ/E learner permit 中文学习入口，提供中文、English 和中英对照题库、顺序/随机练习、20题模拟考试、交通标志和错题复习。', alternates:{ canonical:'/ny' } }
+export const metadata: Metadata = { title:'2026 纽约 DMV 驾照题库｜20题 Permit 模拟考试', description:'New York DMV Class D/DJ/E learner permit 学习入口，提供中文、English 和中英对照题库、顺序/随机练习、20题模拟考试、交通标志和错题复习。', alternates:{ canonical:'/ny' } }
 
 export default function NewYorkPage(){
   const questions=getNewYorkQuestions()
