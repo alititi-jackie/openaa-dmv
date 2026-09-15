@@ -1,0 +1,1 @@
+The New York English audit is intentionally dependency-free. It can be invoked by any TypeScript runner already used in development, and the production module also performs a 150/150 coverage assertion at import time. The Next.js production build therefore fails if any stable NY source ID lacks mapped English content.
