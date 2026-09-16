@@ -4,9 +4,8 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Search } from 'lucide-react'
 import type { DmvState } from '@/lib/dmv-data'
-import { getStateQuestionCount } from '@/lib/state-question-bank'
 
-export default function StateSearch({ states }: { states: DmvState[] }) {
+export default function StateSearch({ states }: { states: (DmvState & { actualCount: number })[] }) {
   const [query, setQuery] = useState('')
   const filteredStates = useMemo(() => { const keyword=query.trim().toLowerCase(); if(!keyword) return states; return states.filter((state)=>[state.nameZh,state.shortZh,state.nameEn,state.code,state.slug].some((value)=>value.toLowerCase().includes(keyword))) }, [query,states])
 
@@ -16,7 +15,7 @@ export default function StateSearch({ states }: { states: DmvState[] }) {
     const isLive=state.status==='live'
     const isExternal=state.status==='external'
     const href=isExternal?state.externalUrl||'/':`/${state.slug}`
-    const actualCount=isLive?getStateQuestionCount(state.slug):state.questionCount
+    const actualCount=state.actualCount
     const statusText=isLive?`${actualCount} 题 · 已上线`:isExternal?`${state.questionCount}+ 题 · 已上线`:'即将上线'
     const summary=isExternal?'纽约 DMV 驾照题库已在 OpenAA 主站上线，提供题库练习、模拟考试、交通标志和错题复习。':state.summary
 

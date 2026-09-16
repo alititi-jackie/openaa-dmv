@@ -1,9 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowUp } from 'lucide-react'
 
 export default function GlobalNavigationButtons() {
+  const router = useRouter()
   const [showTop, setShowTop] = useState(false)
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function GlobalNavigationButtons() {
           <ArrowUp size={20} />
         </button>
       )}
-      <button type="button" onClick={() => { if (window.history.length > 1) window.history.back(); else window.location.href = '/' }} className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-lg backdrop-blur transition hover:bg-slate-50" aria-label="返回上一页" title="返回上一页">
+      <button type="button" onClick={() => { if (window.history.length > 1) window.history.back(); else router.push('/') }} className="focus-ring inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-700 shadow-lg backdrop-blur transition hover:bg-slate-50" aria-label="返回上一页" title="返回上一页">
         <ArrowLeft size={20} />
       </button>
     </div>

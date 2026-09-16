@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import StorageNotice from '@/components/StorageNotice'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import GlobalNavigationButtons from '@/components/GlobalNavigationButtons'
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh-CN">
       <body>
         <Header />
+        <StorageNotice />
         <main>{children}</main>
         <Footer />
         <GlobalNavigationButtons />

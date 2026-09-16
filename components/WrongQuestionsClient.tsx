@@ -1,14 +1,16 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { browserStorage } from '@/lib/browser-storage'
+
+import { useCallback, useMemo, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { Trash2 } from 'lucide-react'
 import QuestionsClient from './QuestionsClient'
 import type { DmvQuestion } from '@/lib/dmv-data'
 
-function readWrongIds(storageKey: string) {
+function parseWrongIds(raw: string) {
   try {
-    const value = JSON.parse(window.localStorage.getItem(storageKey) || '[]')
+    const value = JSON.parse(raw)
     return Array.isArray(value) ? value.filter((id): id is string => typeof id === 'string') : []
   } catch {
     return []
@@ -16,12 +18,7 @@ function readWrongIds(storageKey: string) {
 }
 
 export default function WrongQuestionsClient({ questions, stateSlug, storageKey }: { questions: DmvQuestion[]; stateSlug: string; storageKey: string }) {
-  const [wrongIds, setWrongIds] = useState<string[]>([])
-
-  const refresh = useCallback(() => setWrongIds(readWrongIds(storageKey)), [storageKey])
-
-  useEffect(() => {
-    refresh()
+  const subscribe = useCallback((refresh: () => void) => {
     function handleStorage(event: StorageEvent) {
       if (!event.key || event.key === storageKey) refresh()
     }
@@ -31,13 +28,15 @@ export default function WrongQuestionsClient({ questions, stateSlug, storageKey 
       window.removeEventListener('storage', handleStorage)
       window.removeEventListener('openaa-dmv-wrong-update', refresh)
     }
-  }, [refresh, storageKey])
+  }, [storageKey])
+  const getSnapshot = useCallback(() => browserStorage.getItem(storageKey) || '[]', [storageKey])
+  const raw = useSyncExternalStore(subscribe, getSnapshot, () => '[]')
+  const wrongIds = useMemo(() => parseWrongIds(raw), [raw])
 
   const wrongQuestions = useMemo(() => questions.filter((question) => wrongIds.includes(question.id)), [questions, wrongIds])
 
   function clearWrongQuestions() {
-    window.localStorage.setItem(storageKey, JSON.stringify([]))
-    setWrongIds([])
+    browserStorage.setItem(storageKey, JSON.stringify([]))
     window.dispatchEvent(new Event('openaa-dmv-wrong-update'))
   }
 

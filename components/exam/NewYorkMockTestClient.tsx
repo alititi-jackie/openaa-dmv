@@ -1,5 +1,11 @@
 'use client'
 
+import { browserStorage, readIds, writeIds } from '@/lib/browser-storage'
+import ClientStudy from '@/components/ClientStudy'
+import { buildNyExam, nyExamPassed } from '@/lib/exam/new-york-engine'
+import { newExamSeed } from '@/lib/exam/random-seed'
+import { examStorageKeys } from '@/lib/exam/exam-storage'
+
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CheckCircle2, Languages, XCircle } from 'lucide-react'
 import QuestionSignImage from '@/components/QuestionSignImage'
@@ -15,37 +21,18 @@ import {
 
 type Props = { questions: DmvQuestion[] }
 
-function shuffled<T>(items: T[], seed: number) {
-  const out = [...items]
-  let value = seed || 1
-  for (let i = out.length - 1; i > 0; i--) {
-    value = (value * 9301 + 49297) % 233280
-    const j = Math.floor((value / 233280) * (i + 1))
-    ;[out[i], out[j]] = [out[j], out[i]]
-  }
-  return out
+export default function NewYorkMockTestClient(props: Props) {
+  return <ClientStudy><NewYorkExamSession {...props} /></ClientStudy>
 }
 
-function buildNyExam(questions: DmvQuestion[], seed: number) {
-  const signs = shuffled(questions.filter((q) => q.category === 'signs'), seed * 17 + 3).slice(0, 4)
-  const signIds = new Set(signs.map((q) => q.id))
-  const others = shuffled(questions.filter((q) => !signIds.has(q.id) && q.category !== 'signs'), seed * 31 + 7).slice(0, 16)
-  return shuffled([...signs, ...others], seed * 43 + 11)
-}
-
-export default function NewYorkMockTestClient({ questions }: Props) {
-  const [seed, setSeed] = useState(1)
+function NewYorkExamSession({ questions }: Props) {
+  const [seed, setSeed] = useState(newExamSeed)
   const [answers, setAnswers] = useState<Record<string, number>>({})
   const [submitted, setSubmitted] = useState(false)
   const [reviewIds, setReviewIds] = useState<string[] | null>(null)
-  const [language, setLanguage] = useState<DmvLanguage>('zh')
+  const [language, setLanguage] = useState<DmvLanguage>(() => { const saved = browserStorage.getItem(languageStorageKey('ny')); return saved === 'en' || saved === 'bilingual' ? saved : 'zh' })
   const resultRef = useRef<HTMLElement | null>(null)
   const languageKey = languageStorageKey('ny')
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem(languageKey)
-    if (saved === 'zh' || saved === 'en' || saved === 'bilingual') setLanguage(saved)
-  }, [languageKey])
 
   useEffect(() => {
     if (!submitted) return
@@ -57,7 +44,7 @@ export default function NewYorkMockTestClient({ questions }: Props) {
 
   function changeLanguage(next: DmvLanguage) {
     setLanguage(next)
-    window.localStorage.setItem(languageKey, next)
+    browserStorage.setItem(languageKey, next)
   }
 
   const exam = useMemo(() => buildNyExam(questions, seed), [questions, seed])
@@ -67,11 +54,11 @@ export default function NewYorkMockTestClient({ questions }: Props) {
   const signQuestions = active.filter((q) => q.category === 'signs')
   const signCorrect = signQuestions.filter((q) => answers[q.id] === q.answerIndex).length
   const isFullExam = !reviewIds
-  const passed = isFullExam ? correct >= 14 && signCorrect >= 2 : correct === active.length
+  const passed = isFullExam ? nyExamPassed(correct, signCorrect) : correct === active.length
   const wrong = submitted ? active.filter((q) => answers[q.id] !== q.answerIndex) : []
 
   function restart() {
-    setSeed((v) => v + 1)
+    setSeed(newExamSeed())
     setAnswers({})
     setSubmitted(false)
     setReviewIds(null)
@@ -84,13 +71,10 @@ export default function NewYorkMockTestClient({ questions }: Props) {
       return
     }
     const wrongIds = active.filter((q) => answers[q.id] !== q.answerIndex).map((q) => q.id)
-    try {
-      const key = 'openaa-dmv:ny:wrong'
-      const old = JSON.parse(localStorage.getItem(key) || '[]') as string[]
-      localStorage.setItem(key, JSON.stringify(Array.from(new Set([...old, ...wrongIds]))))
-      if (isFullExam) localStorage.setItem('openaa-dmv:ny:last-score', String(Math.round((correct / active.length) * 100)))
-      window.dispatchEvent(new Event('openaa-dmv-wrong-update'))
-    } catch {}
+    const keys = examStorageKeys('ny')
+    writeIds(keys.wrong, [...readIds(keys.wrong), ...wrongIds])
+    if (isFullExam && language !== 'bilingual') browserStorage.setItem(keys.lastScore, String(Math.round((correct / active.length) * 100)))
+    window.dispatchEvent(new Event('openaa-dmv-wrong-update'))
     setSubmitted(true)
   }
 
@@ -118,7 +102,7 @@ export default function NewYorkMockTestClient({ questions }: Props) {
     </section>
 
     {submitted ? <section ref={resultRef} className={`card scroll-mt-24 p-5 ${passed ? 'border-green-300 bg-green-50' : 'border-amber-300 bg-amber-50'}`}>
-      <div className="flex items-center gap-2">{passed ? <CheckCircle2 className="text-green-700"/> : <XCircle className="text-amber-700"/>}<h2 className="text-2xl font-black">{passed ? '通过 PASS' : '未通过 NOT PASSED'}</h2></div>
+      <div className="flex items-center gap-2">{passed ? <CheckCircle2 className="text-green-700"/> : <XCircle className="text-amber-700"/>}<h2 className="text-2xl font-black">{!isFullExam ? '错题复习完成' : passed ? '通过 PASS' : '未通过 NOT PASSED'}</h2></div>
       <p className="mt-3 text-lg font-black">总题：{correct}/{active.length} 正确</p>
       {isFullExam ? <div className="mt-3 grid gap-2 sm:grid-cols-2"><div className="rounded-lg border bg-white p-3"><p className="text-xs font-bold text-slate-500">总题要求</p><p className={`mt-1 font-black ${correct >= 14 ? 'text-green-700' : 'text-rose-700'}`}>{correct}/20 · 要求至少 14</p></div><div className="rounded-lg border bg-white p-3"><p className="text-xs font-bold text-slate-500">交通标志要求</p><p className={`mt-1 font-black ${signCorrect >= 2 ? 'text-green-700' : 'text-rose-700'}`}>{signCorrect}/4 · 要求至少 2</p></div></div> : null}
       <div className="mt-4 flex flex-wrap gap-2"><button onClick={restart} className="rounded-md bg-slate-950 px-4 py-2 text-sm font-black text-white">重新模拟</button>{wrong.length ? <button onClick={reviewWrong} className="rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">重新练习 {wrong.length} 道错题</button> : null}</div>

@@ -9,6 +9,7 @@ export type ExamModeConfig = {
   passingCorrect?: number
   quotas?: Partial<Record<DmvQuestion['category'], number>>
   ruleStatus?: 'verified' | 'practice'
+  timeLimitMinutes?: number
 }
 
 export type StateExamConfig = {
@@ -25,4 +26,5 @@ export type SavedExamV1 = {
   questionIds: string[]
   answers: Record<string, number>
   savedAt: number
+  startedAt?: number
 }

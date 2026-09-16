@@ -512,10 +512,15 @@ export function getQuestionsByCategory(stateSlug: string, category: DmvQuestion[
 }
 
 export function shuffleQuestions(questions: DmvQuestion[], seed = Date.now()) {
-  let value = seed || 1
+  let value = Math.abs(Math.trunc(seed)) % 233280 || 1
   const random = () => {
     value = (value * 9301 + 49297) % 233280
     return value / 233280
   }
-  return [...questions].sort(() => random() - 0.5)
+  const result = [...questions]
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1))
+    ;[result[i], result[j]] = [result[j], result[i]]
+  }
+  return result
 }

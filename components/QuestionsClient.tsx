@@ -1,6 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { browserStorage, readIds, writeIds } from '@/lib/browser-storage'
+
+import { useMemo, useState } from 'react'
+import ClientStudy from './ClientStudy'
 import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Languages, Star, XCircle } from 'lucide-react'
 import QuestionSignImage from './QuestionSignImage'
 import { categoryLabels, type DmvQuestion } from '@/lib/dmv-data'
@@ -26,35 +29,38 @@ type ProgressState = {
 
 const PAGE_SIZE = 20
 
-function readIds(key: string) {
-  try {
-    return JSON.parse(window.localStorage.getItem(key) || '[]') as string[]
-  } catch {
-    return []
-  }
-}
-
-function writeIds(key: string, ids: string[]) {
-  window.localStorage.setItem(key, JSON.stringify(Array.from(new Set(ids))))
-}
-
-export default function QuestionsClient({
-  questions,
-  storageKey,
-  stateSlug,
-  removeFromWrongOnMastery = false,
-}: {
+type Props = {
   questions: DmvQuestion[]
   storageKey: string
   stateSlug: string
   removeFromWrongOnMastery?: boolean
-}) {
+}
+
+export default function QuestionsClient(props: Props) {
+  return <ClientStudy fallback={<QuestionsSession {...props} restore={false} />}><QuestionsSession key={props.stateSlug} {...props} restore /></ClientStudy>
+}
+
+function QuestionsSession({
+  questions,
+  storageKey,
+  stateSlug,
+  removeFromWrongOnMastery = false,
+  restore,
+}: Props & { restore: boolean }) {
   const [filter, setFilter] = useState<Filter>('all')
-  const [studyMode, setStudyMode] = useState<StudyMode>('practice')
-  const [language, setLanguage] = useState<DmvLanguage>('zh')
+  const [studyMode, setStudyMode] = useState<StudyMode>(() => restore && browserStorage.getItem(`${storageKey}:questions-mode`) === 'study' ? 'study' : 'practice')
+  const [language, setLanguage] = useState<DmvLanguage>(() => {
+    const saved = restore ? browserStorage.getItem(languageStorageKey(stateSlug)) : null
+    return saved === 'en' || saved === 'bilingual' ? saved : 'zh'
+  })
   const [revealed, setRevealed] = useState<Record<string, number>>({})
-  const [page, setPage] = useState(1)
-  const [progress, setProgress] = useState<ProgressState>({ answered: [], correct: [], mastered: [], favorites: [] })
+  const [requestedPage, setPage] = useState(1)
+  const [progress, setProgress] = useState<ProgressState>(() => ({
+    answered: restore ? readIds(`${storageKey}:answered`) : [],
+    correct: restore ? readIds(`${storageKey}:correct`) : [],
+    mastered: restore ? readIds(`${storageKey}:mastered`) : [],
+    favorites: restore ? readIds(`${storageKey}:favorites`) : [],
+  }))
 
   const answeredKey = `${storageKey}:answered`
   const correctKey = `${storageKey}:correct`
@@ -65,25 +71,6 @@ export default function QuestionsClient({
   const englishCount = englishCoverage(questions)
   const hasEnglishContent = englishCount > 0
 
-  useEffect(() => {
-    setProgress({
-      answered: readIds(answeredKey),
-      correct: readIds(correctKey),
-      mastered: readIds(masteredKey),
-      favorites: readIds(favoritesKey),
-    })
-    const savedMode = window.localStorage.getItem(studyModeKey)
-    if (savedMode === 'study' || savedMode === 'practice') setStudyMode(savedMode)
-    const savedLanguage = window.localStorage.getItem(languageKey)
-    if (savedLanguage === 'zh' || savedLanguage === 'en' || savedLanguage === 'bilingual') {
-      setLanguage(savedLanguage)
-    }
-  }, [answeredKey, correctKey, masteredKey, favoritesKey, studyModeKey, languageKey])
-
-  useEffect(() => {
-    if (!hasEnglishContent && language !== 'zh') setLanguage('zh')
-  }, [hasEnglishContent, language])
-
   const filteredQuestions = useMemo(() => {
     if (filter === 'all') return questions
     if (filter === 'favorites') return questions.filter((question) => progress.favorites.includes(question.id))
@@ -91,6 +78,7 @@ export default function QuestionsClient({
   }, [filter, questions, progress.favorites])
 
   const totalPages = Math.max(1, Math.ceil(filteredQuestions.length / PAGE_SIZE))
+  const page = Math.min(requestedPage, totalPages)
   const pageQuestions = useMemo(
     () => filteredQuestions.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
     [filteredQuestions, page],
@@ -156,13 +144,13 @@ export default function QuestionsClient({
 
   function changeStudyMode(next: StudyMode) {
     setStudyMode(next)
-    window.localStorage.setItem(studyModeKey, next)
+    browserStorage.setItem(studyModeKey, next)
   }
 
   function changeLanguage(next: DmvLanguage) {
     if (next !== 'zh' && !hasEnglishContent) return
     setLanguage(next)
-    window.localStorage.setItem(languageKey, next)
+    browserStorage.setItem(languageKey, next)
   }
 
   return (

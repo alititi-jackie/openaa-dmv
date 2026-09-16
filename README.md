@@ -27,6 +27,8 @@ The first version does not require Supabase to run. Supabase can be added later 
 - `/massachusetts`
 - `/washington`
 - `/texas`
+- `/florida`
+- `/ny` and its learning routes use an independent 150-question New York bank
 - `/:state/questions`
 - `/:state/practice`
 - `/:state/mock-test`
@@ -54,7 +56,23 @@ npm run dev
 npm run build
 ```
 
-## Deployment Notes
+## Regression Checks
+
+Run `npm run check` for lint, question-bank/storage/score checks, and a production build.
+For browser regression tests, install Chromium with `npx playwright install chromium`,
+start the built site with `npm run start -- --port 3100`, then run `npm run test:browser`.
+The browser suite only accepts a local server and uses isolated test storage.
+
+New York remains independent: `new-york-bank.ts` provides its questions and
+`exam/new-york-engine.ts` preserves its 20-question / 4-sign exam and dual pass rule.
+Do not route New York through the shared question bank or generic pass calculation.
+Learning records remain scoped by state. Legacy score keys are read as fallbacks;
+new scores use `openaa-dmv:<state>:exam:last-score`. Legacy records are not deleted.
+
+`lib/*audit*.ts`, the New York audit script, verification files and image source
+notes are retained as maintenance resources even when not imported by pages.
+
+## Deployment Checklist
 
 Before production deployment:
 

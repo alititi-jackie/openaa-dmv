@@ -1,13 +1,7 @@
 import { californiaQuestions } from './california-questions'
 import { californiaExpandedQuestions } from './california-questions-expanded'
 import { getLiveStateBySlug, type DmvQuestion } from './dmv-data'
-import { sharedCoreQuestions } from './shared-core-questions'
-import { sharedCoreReplacements } from './shared-core-replacements'
-import { sharedCoreSupplement } from './shared-core-supplement'
-import { validateSharedCoreBank } from './shared-core-audit-production'
-
-const sharedCoreBase = sharedCoreQuestions.filter((question) => !/^shared-core-\d+b$/.test(question.id))
-const sharedCoreBank = validateSharedCoreBank([...sharedCoreBase, ...sharedCoreReplacements, ...sharedCoreSupplement])
+import { sharedCoreBank } from './shared-core-bank'
 
 const overrides: Record<string, Partial<DmvQuestion>> = {
   'ca2-rules-001': { question: '接近没有信号灯的人行横道时，看到行人已经准备进入横道，最合适的做法是什么？', choices: ['保持车速，只要行人还没踏上车道即可', '减速并准备停车让行，确认行人安全通过', '轻按喇叭提醒行人后继续通过'], answerIndex: 1, explanation: '接近人行横道时应主动观察并为行人留出安全通行空间，必要时停车让行。' },
@@ -53,7 +47,11 @@ function dedupeCaliforniaSigns(questions: DmvQuestion[]) {
   return questions.filter((question) => question.category !== 'signs' || californiaCanonicalSignId.test(question.id))
 }
 
-export function getQuestionSourceForLanguage(questionId: string): DmvQuestion | null { const question = [...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank].find((item) => item.id === questionId); return question ? applyOverride(question) : null }
+const languageSources = new Map<string, DmvQuestion>()
+for (const question of [...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank]) {
+  if (!languageSources.has(question.id)) languageSources.set(question.id, applyOverride(question))
+}
+export function getQuestionSourceForLanguage(questionId: string): DmvQuestion | null { return languageSources.get(questionId) ?? null }
 export function getQuestionsForState(stateSlug: string): DmvQuestion[] { if (!getLiveStateBySlug(stateSlug)) return []; if (stateSlug === 'california') return dedupeCaliforniaSigns(prepareQuestions([...californiaQuestions, ...californiaExpandedQuestions, ...sharedCoreBank])); return prepareQuestions(sharedCoreBank) }
 export function getQuestionsByCategory(stateSlug: string, category: DmvQuestion['category']) { return getQuestionsForState(stateSlug).filter((question) => question.category === category) }
 export function getQuestionCountForState(stateSlug: string) { return getQuestionsForState(stateSlug).length }

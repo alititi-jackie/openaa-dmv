@@ -1,5 +1,9 @@
 'use client'
 
+import { browserStorage, readIds, writeIds, readLastExamScore } from '@/lib/browser-storage'
+import { newExamSeed } from '@/lib/exam/random-seed'
+import ClientStudy from './ClientStudy'
+
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, CheckCircle2, Languages, RotateCcw, Star, XCircle } from 'lucide-react'
@@ -15,40 +19,42 @@ import {
   type DmvLanguage,
 } from '@/lib/dmv-language'
 
-function readIds(key: string) { try { return JSON.parse(window.localStorage.getItem(key) || '[]') as string[] } catch { return [] } }
-function writeIds(key: string, ids: string[]) { window.localStorage.setItem(key, JSON.stringify(Array.from(new Set(ids)))) }
-
 export default function PracticeClient({ questions, stateSlug, storageKey }: { questions: DmvQuestion[]; stateSlug: string; storageKey: string }) {
-  const [index, setIndex] = useState(0)
+  return <ClientStudy><PracticeSession key={stateSlug} questions={questions} stateSlug={stateSlug} storageKey={storageKey} /></ClientStudy>
+}
+
+function PracticeSession({ questions, stateSlug, storageKey }: { questions: DmvQuestion[]; stateSlug: string; storageKey: string }) {
+  const [requestedIndex, setIndex] = useState(() => {
+    const saved = Number(browserStorage.getItem(`${storageKey}:practice-index`) || '0')
+    return Number.isInteger(saved) && saved >= 0 && saved < questions.length ? saved : 0
+  })
   const [selected, setSelected] = useState<number | null>(null)
   const [mode, setMode] = useState<'order' | 'random'>('order')
   const [scope, setScope] = useState<'all' | 'favorites'>('all')
-  const [language, setLanguage] = useState<DmvLanguage>('zh')
+  const [language, setLanguage] = useState<DmvLanguage>(() => {
+    const saved = browserStorage.getItem(languageStorageKey(stateSlug))
+    return saved === 'en' || saved === 'bilingual' ? saved : 'zh'
+  })
   const [seed, setSeed] = useState(0)
-  const [answeredIds, setAnsweredIds] = useState<string[]>([])
-  const [correctIds, setCorrectIds] = useState<string[]>([])
-  const [masteredIds, setMasteredIds] = useState<string[]>([])
-  const [favoriteIds, setFavoriteIds] = useState<string[]>([])
-  const [autoNext, setAutoNext] = useState(false)
-  const [lastMockScore, setLastMockScore] = useState(0)
+  const [answeredIds, setAnsweredIds] = useState(() => readIds(`${storageKey}:answered`))
+  const [correctIds, setCorrectIds] = useState(() => readIds(`${storageKey}:correct`))
+  const [masteredIds, setMasteredIds] = useState(() => readIds(`${storageKey}:mastered`))
+  const [favoriteIds, setFavoriteIds] = useState(() => readIds(`${storageKey}:favorites`))
+  const [autoNext, setAutoNext] = useState(() => browserStorage.getItem(`${storageKey}:auto-next`) === '1')
+  const [lastMockScore] = useState(() => readLastExamScore(stateSlug))
   const autoNextTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const answeredKey = `${storageKey}:answered`, correctKey = `${storageKey}:correct`, masteredKey = `${storageKey}:mastered`, favoritesKey = `${storageKey}:favorites`, resumeKey = `${storageKey}:practice-index`, autoNextKey = `${storageKey}:auto-next`, mockScoreKey = `${storageKey}:last-mock-score`, languageKey = languageStorageKey(stateSlug)
+  const answeredKey = `${storageKey}:answered`, correctKey = `${storageKey}:correct`, masteredKey = `${storageKey}:mastered`, favoritesKey = `${storageKey}:favorites`, resumeKey = `${storageKey}:practice-index`, autoNextKey = `${storageKey}:auto-next`, languageKey = languageStorageKey(stateSlug)
   const englishCount = englishCoverage(questions)
   const hasEnglishContent = englishCount > 0
 
   useEffect(() => {
-    setAnsweredIds(readIds(answeredKey)); setCorrectIds(readIds(correctKey)); setMasteredIds(readIds(masteredKey)); setFavoriteIds(readIds(favoritesKey)); setAutoNext(window.localStorage.getItem(autoNextKey) === '1')
-    setLastMockScore(Number(window.localStorage.getItem(mockScoreKey) || '0'))
-    const savedLanguage = window.localStorage.getItem(languageKey)
-    if (savedLanguage === 'zh' || savedLanguage === 'en' || savedLanguage === 'bilingual') setLanguage(savedLanguage)
-    const savedIndex = Number(window.localStorage.getItem(resumeKey) || '0'); if (Number.isFinite(savedIndex) && savedIndex >= 0 && savedIndex < questions.length) setIndex(savedIndex)
     return () => { if (autoNextTimer.current) clearTimeout(autoNextTimer.current) }
-  }, [answeredKey, correctKey, masteredKey, favoritesKey, resumeKey, autoNextKey, mockScoreKey, languageKey, questions.length])
+  }, [])
 
   const scopedQuestions = useMemo(() => scope === 'favorites' ? questions.filter((q) => favoriteIds.includes(q.id)) : questions, [scope, questions, favoriteIds])
   const orderedQuestions = useMemo(() => mode === 'order' ? scopedQuestions : shuffleQuestions(scopedQuestions, seed), [mode, scopedQuestions, seed])
-  useEffect(() => { if (index >= orderedQuestions.length) { setIndex(0); setSelected(null) } }, [index, orderedQuestions.length])
+  const index = Math.min(requestedIndex, Math.max(0, orderedQuestions.length - 1))
 
   const scopedIds = useMemo(() => new Set(questions.map((q) => q.id)), [questions])
   const completedCount = answeredIds.filter((id) => scopedIds.has(id)).length
@@ -60,26 +66,28 @@ export default function PracticeClient({ questions, stateSlug, storageKey }: { q
   const mastery = completedCount ? masteredCount / completedCount : 0
   const readiness = Math.min(100, Math.round(coverage * 40 + (lastMockScore / 100) * 40 + mastery * 20))
 
-  function changeScope(next: 'all' | 'favorites') { setScope(next); setIndex(0); setSelected(null) }
-  function toggleAutoNext() { const next = !autoNext; setAutoNext(next); window.localStorage.setItem(autoNextKey, next ? '1' : '0') }
-  function changeLanguage(next: DmvLanguage) { if (next !== 'zh' && !hasEnglishContent) return; setLanguage(next); window.localStorage.setItem(languageKey, next) }
+  function changeScope(next: 'all' | 'favorites') { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setScope(next); setIndex(0); setSelected(null) }
+  function toggleAutoNext() { const next = !autoNext; setAutoNext(next); browserStorage.setItem(autoNextKey, next ? '1' : '0') }
+  function changeLanguage(next: DmvLanguage) { if (next !== 'zh' && !hasEnglishContent) return; setLanguage(next); browserStorage.setItem(languageKey, next) }
 
   if (scope === 'favorites' && orderedQuestions.length === 0) return <div className="card p-6 text-center"><Star size={28} className="mx-auto text-amber-500" /><h1 className="mt-3 text-2xl font-black text-slate-950">还没有收藏题目</h1><p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">在练习或题库中点击“收藏”，以后可以只练这些重点题。</p><button type="button" onClick={() => changeScope('all')} className="focus-ring mt-5 rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">返回全部练习</button></div>
 
+  if (!orderedQuestions.length) return <div className="card p-6 text-sm text-slate-600">当前暂无可练习题目。</div>
   const question = orderedQuestions[index], answered = selected !== null, isCorrect = answered && selected === question.answerIndex, isFavorite = favoriteIds.includes(question.id), isMastered = masteredIds.includes(question.id)
   const english = getEnglishContent(question)
   const effectiveLanguage: DmvLanguage = language === 'en' && !english ? 'zh' : language
 
-  function goNext() { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setSelected(null); const next = Math.min(index + 1, orderedQuestions.length - 1); setIndex(next); if (scope === 'all' && mode === 'order') window.localStorage.setItem(resumeKey, String(next)) }
+  function goNext() { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setSelected(null); const next = Math.min(index + 1, orderedQuestions.length - 1); setIndex(next); if (scope === 'all' && mode === 'order') browserStorage.setItem(resumeKey, String(next)) }
   function answer(choiceIndex: number) {
+    if (autoNextTimer.current) clearTimeout(autoNextTimer.current)
     setSelected(choiceIndex); const nextAnswered = Array.from(new Set([...answeredIds, question.id])); setAnsweredIds(nextAnswered); writeIds(answeredKey, nextAnswered)
     if (choiceIndex === question.answerIndex) { const nextCorrect = Array.from(new Set([...correctIds, question.id])); setCorrectIds(nextCorrect); writeIds(correctKey, nextCorrect) } else { const nextCorrect = correctIds.filter((id) => id !== question.id); setCorrectIds(nextCorrect); writeIds(correctKey, nextCorrect); writeIds(storageKey, [...readIds(storageKey), question.id]); window.dispatchEvent(new Event('openaa-dmv-wrong-update')) }
     if (autoNext && index < orderedQuestions.length - 1) autoNextTimer.current = setTimeout(goNext, 1600)
   }
-  function toggleFavorite() { const next = isFavorite ? favoriteIds.filter((id) => id !== question.id) : [...favoriteIds, question.id]; setFavoriteIds(next); writeIds(favoritesKey, next) }
+  function toggleFavorite() { if (scope === 'favorites') { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setSelected(null) }; const next = isFavorite ? favoriteIds.filter((id) => id !== question.id) : [...favoriteIds, question.id]; setFavoriteIds(next); writeIds(favoritesKey, next) }
   function toggleMastered() { const next = isMastered ? masteredIds.filter((id) => id !== question.id) : [...masteredIds, question.id]; setMasteredIds(next); writeIds(masteredKey, next) }
-  function goPrev() { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setSelected(null); const next = Math.max(index - 1, 0); setIndex(next); if (scope === 'all' && mode === 'order') window.localStorage.setItem(resumeKey, String(next)) }
-  function restart(nextMode = mode) { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setMode(nextMode); setSeed((c) => c + 1); setIndex(0); setSelected(null); if (scope === 'all' && nextMode === 'order') window.localStorage.setItem(resumeKey, '0') }
+  function goPrev() { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setSelected(null); const next = Math.max(index - 1, 0); setIndex(next); if (scope === 'all' && mode === 'order') browserStorage.setItem(resumeKey, String(next)) }
+  function restart(nextMode = mode) { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setMode(nextMode); setSeed(newExamSeed()); setIndex(0); setSelected(null); if (scope === 'all' && nextMode === 'order') browserStorage.setItem(resumeKey, '0') }
 
   return <div className="grid gap-4">
     <section className="card p-4"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="inline-flex items-center text-sm font-black text-slate-950"><Languages size={16} className="mr-1.5 text-blue-700" />题目语言</p><p className="mt-1 text-xs leading-5 text-slate-500">{hasEnglishContent ? `英文内容已覆盖 ${englishCount}/${questions.length} 题。` : '英文内容正在准备中。'}</p></div><div className="grid grid-cols-3 rounded-lg bg-slate-100 p-1 sm:w-72"><button type="button" onClick={() => changeLanguage('zh')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black ${language === 'zh' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>中文</button><button type="button" disabled={!hasEnglishContent} onClick={() => changeLanguage('en')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black disabled:opacity-40 ${language === 'en' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>English</button><button type="button" disabled={!hasEnglishContent} onClick={() => changeLanguage('bilingual')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black disabled:opacity-40 ${language === 'bilingual' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}>中英对照</button></div></div></section>
