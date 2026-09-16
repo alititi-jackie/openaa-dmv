@@ -6,12 +6,14 @@ const { getNewYorkQuestions } = require('../lib/new-york-bank.ts')
 const { getEnglishContent } = require('../lib/dmv-language.ts')
 const { getStateExamConfig } = require('../lib/exam/exam-config.ts')
 const { buildExam, examPassed } = require('../lib/exam/exam-engine.ts')
-const { parseSavedExam, examStorageKeys } = require('../lib/exam/exam-storage.ts')
+const { examStorageKeys } = require('../lib/exam/exam-storage.ts')
 const { buildNyExam, nyExamPassed } = require('../lib/exam/new-york-engine.ts')
 const { browserStorage, readIds, writeIds, readLastExamScore } = require('../lib/browser-storage.ts')
 const { renderToStaticMarkup } = require('react-dom/server')
 const React = require('react')
 const JsonLd = require('../components/JsonLd.tsx').default
+const ExamProgressCard = require('../components/exam/ExamProgressCard.tsx').default
+const MobileExamAction = require('../components/exam/MobileExamAction.tsx').default
 
 let checks = 0
 function check(name, fn) { fn(); checks++; console.log(`PASS ${name}`) }
@@ -26,18 +28,13 @@ for (const [slug, count] of Object.entries(counts)) {
       assert.equal(getEnglishContent(q)?.choices.length, q.choices.length)
     }
   })
-  check(`${slug}: all modes produce full unique exams and restore safely`, () => {
+  check(`${slug}: all modes produce full unique exams with correct scoring`, () => {
     const questions = getStateQuestions(slug), config = getStateExamConfig(slug)
     for (const mode of config.modes) {
       const exam = buildExam(questions, mode, 123)
       assert.equal(exam.length, mode.size)
       assert.equal(new Set(exam.map((q) => q.id)).size, mode.size)
       assert.notDeepEqual(exam.map((q) => q.id), buildExam(questions, mode, 456).map((q) => q.id))
-      const saved = { version: 1, stateSlug: slug, modeId: mode.id, questionIds: exam.map((q) => q.id), answers: { [exam[0].id]: 0 }, savedAt: 100, startedAt: 50 }
-      assert.deepEqual(parseSavedExam(JSON.stringify(saved), slug, config, questions), saved)
-      for (const invalid of [null, {}, { ...saved, stateSlug: 'ny' }, { ...saved, answers: [] }, { ...saved, answers: { [exam[0].id]: 999 } }, { ...saved, questionIds: ['removed-id'] }, { ...saved, startedAt: 'bad' }]) {
-        assert.equal(parseSavedExam(JSON.stringify(invalid), slug, config, questions), null)
-      }
       assert.ok(examPassed(mode.size, mode.size, mode))
       assert.equal(examPassed(0, mode.size, mode), false)
     }
@@ -86,6 +83,25 @@ check('blocked storage preserves session data without throwing', () => {
   assert.deepEqual(readIds('openaa-dmv:texas:wrong'), [])
   browserStorage.removeItem('openaa-dmv:ny:wrong')
   assert.deepEqual(readIds('openaa-dmv:ny:wrong'), [])
+})
+check('shared exam progress and mobile action render the expected controls', () => {
+  const questions = getStateQuestions('new-jersey').slice(0, 3)
+  const progress = renderToStaticMarkup(React.createElement(ExamProgressCard, {
+    questions,
+    answers: { [questions[0].id]: 0 },
+    submitted: false,
+    cardOpen: true,
+    onToggleCard() {},
+    onJump() {},
+    onNextUnanswered() {},
+  }))
+  assert.ok(progress.includes('答题进度 1/3'))
+  assert.ok(progress.includes('下一道未答'))
+  assert.ok(progress.includes('前往第 3 题'))
+  const nextAction = renderToStaticMarkup(React.createElement(MobileExamAction, { unansweredCount: 2, onNextUnanswered() {}, onSubmit() {} }))
+  const submitAction = renderToStaticMarkup(React.createElement(MobileExamAction, { unansweredCount: 0, onNextUnanswered() {}, onSubmit() {} }))
+  assert.ok(nextAction.includes('fixed') && nextAction.includes('md:hidden') && nextAction.includes('下一道未答（2）'))
+  assert.ok(submitAction.includes('提交考试'))
 })
 check('JSON-LD cannot close its script element', () => {
   const html = renderToStaticMarkup(React.createElement(JsonLd, { data: { text: '</script><script>alert(1)</script>' } }))

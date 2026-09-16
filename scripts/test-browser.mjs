@@ -7,16 +7,11 @@ if (!['localhost', '127.0.0.1'].includes(new URL(base).hostname)) throw Error('R
 const { getStateQuestions } = require('../lib/state-question-bank.ts')
 const { getNewYorkQuestions } = require('../lib/new-york-bank.ts')
 const { getStateExamConfig } = require('../lib/exam/exam-config.ts')
-const { buildExam } = require('../lib/exam/exam-engine.ts')
 const browser = await chromium.launch({ headless: true, executablePath: process.env.TEST_CHROMIUM_PATH })
 const errors = []
 let checks = 0
 async function check(name, fn) { await fn(); checks++; console.log(`PASS ${name}`) }
 function recordErrors(page) { page.on('pageerror', (error) => errors.push(`${page.url()}: ${error.message}`)) }
-async function save(page, values) {
-  await page.evaluate((entries) => { for (const [key, value] of Object.entries(entries)) localStorage.setItem(key, JSON.stringify(value)) }, values)
-}
-
 try {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } })
   const page = await context.newPage()
@@ -36,40 +31,51 @@ try {
   })
 
   const states = ['california', 'new-jersey', 'pennsylvania', 'massachusetts', 'washington', 'texas', 'florida']
-  for (const slug of states) {
-    await check(`${slug}: refresh preserves saved questions, answers and timer start`, async () => {
-      const questions = getStateQuestions(slug), config = getStateExamConfig(slug), mode = config.modes[0]
-      const exam = buildExam(questions, mode, 17)
-      const saved = { version: 1, stateSlug: slug, modeId: mode.id, questionIds: exam.map((q) => q.id), answers: { [exam[0].id]: 0 }, savedAt: Date.now(), startedAt: Date.now() - 90000 }
-      await save(page, { [`openaa-dmv:${slug}:exam:resume`]: saved })
+  const directStates = states.filter((slug) => slug !== 'california')
+  for (const slug of directStates) {
+    await check(`${slug}: opens directly and discards unfinished work on refresh`, async () => {
+      const mode = getStateExamConfig(slug).modes[0]
+      const resumeKey = `openaa-dmv:${slug}:exam:resume`
+      await page.goto(base)
+      await page.evaluate((key) => localStorage.setItem(key, '{"legacy":true}'), resumeKey)
       await page.goto(`${base}/${slug}/mock-test`)
-      await page.getByRole('button', { name: '继续考试', exact: true }).waitFor()
-      let raw = await page.evaluate((key) => localStorage.getItem(key), `openaa-dmv:${slug}:exam:resume`)
-      assert.deepEqual(JSON.parse(raw).answers, saved.answers)
-      await page.getByRole('button', { name: '继续考试', exact: true }).click()
       await page.locator('[id^="question-"]').first().waitFor()
+      assert.equal(await page.getByRole('button', { name: '继续考试', exact: true }).count(), 0)
       assert.equal(await page.locator('[id^="question-"]').count(), mode.size)
+      await page.locator('[id^="question-"]').first().locator('button').first().click()
+      await page.getByText(`答题进度 1/${mode.size}`, { exact: true }).waitFor()
+      assert.equal(await page.evaluate((key) => localStorage.getItem(key), resumeKey), null)
       await page.reload()
-      await page.getByRole('button', { name: '继续考试', exact: true }).waitFor()
-      raw = await page.evaluate((key) => localStorage.getItem(key), `openaa-dmv:${slug}:exam:resume`)
-      assert.deepEqual(JSON.parse(raw).questionIds, saved.questionIds)
-      assert.deepEqual(JSON.parse(raw).answers, saved.answers)
-      assert.equal(JSON.parse(raw).startedAt, saved.startedAt)
+      await page.getByText(`答题进度 0/${mode.size}`, { exact: true }).waitFor()
+      assert.equal(await page.evaluate((key) => localStorage.getItem(key), resumeKey), null)
+      await page.getByRole('button', { name: new RegExp(`下一道未答（${mode.size}）`) }).waitFor()
     })
   }
+  await check('California keeps mode choice and discards an unfinished selected exam', async () => {
+    await page.goto(`${base}/california/mock-test`)
+    await page.getByRole('heading', { name: '选择模拟考试模式', exact: true }).waitFor()
+    await page.locator('button').filter({ hasText: '36 题' }).click()
+    await page.getByText('答题进度 0/36', { exact: true }).waitFor()
+    await page.locator('[id^="question-"]').first().locator('button').first().click()
+    await page.reload()
+    await page.getByRole('heading', { name: '选择模拟考试模式', exact: true }).waitFor()
+  })
   await check('New Jersey: full exam score, 3-question review and readiness use the same record', async () => {
-    const questions = getStateQuestions('new-jersey'), config = getStateExamConfig('new-jersey'), mode = config.modes[0]
-    const exam = buildExam(questions, mode, 55), wrong = exam.slice(-3)
-    const answers = Object.fromEntries(exam.map((q, i) => [q.id, i < 47 ? q.answerIndex : (q.answerIndex + 1) % q.choices.length]))
-    await save(page, { 'openaa-dmv:new-jersey:exam:resume': { version: 1, stateSlug: 'new-jersey', modeId: mode.id, questionIds: exam.map((q) => q.id), answers, savedAt: Date.now() } })
+    const byId = new Map(getStateQuestions('new-jersey').map((q) => [q.id, q]))
     await page.goto(`${base}/new-jersey/mock-test`)
-    await page.getByRole('button', { name: '继续考试', exact: true }).click()
-    await page.getByRole('button', { name: '提交并查看成绩', exact: true }).click()
+    const ids = await page.locator('[id^="question-"]').evaluateAll((nodes) => nodes.map((node) => node.id.slice('question-'.length)))
+    const wrong = ids.slice(-3).map((id) => byId.get(id))
+    for (const [index, id] of ids.entries()) {
+      const question = byId.get(id)
+      const answer = index < 47 ? question.answerIndex : (question.answerIndex + 1) % question.choices.length
+      await page.locator(`[id="question-${id}"] button`).nth(answer).click()
+    }
+    await page.getByRole('button', { name: '提交考试', exact: true }).click()
     await page.getByRole('heading', { name: '通过 PASS', exact: true }).waitFor()
     assert.equal(await page.evaluate(() => localStorage.getItem('openaa-dmv:new-jersey:exam:last-score')), '94')
     await page.getByRole('button', { name: '重新练习 3 道错题', exact: true }).click()
     for (const q of wrong) await page.locator(`[id="question-${q.id}"] button`).nth(q.answerIndex).click()
-    await page.getByRole('button', { name: '提交并查看成绩', exact: true }).click()
+    await page.getByRole('button', { name: '提交考试', exact: true }).click()
     await page.getByRole('heading', { name: '错题复习完成', exact: true }).waitFor()
     assert.equal(await page.getByText('未通过 NOT PASSED', { exact: true }).count(), 0)
     assert.equal(await page.evaluate(() => localStorage.getItem('openaa-dmv:new-jersey:exam:last-score')), '94')
@@ -79,20 +85,22 @@ try {
   })
   await check('Massachusetts timer resets on restart and stops after submission', async () => {
     await page.goto(`${base}/massachusetts/mock-test`)
-    await page.getByRole('button', { name: '继续考试', exact: true }).click()
-    const old = await page.evaluate(() => JSON.parse(localStorage.getItem('openaa-dmv:massachusetts:exam:resume')).startedAt)
+    await page.getByText('25:00', { exact: true }).waitFor()
     await page.getByRole('button', { name: '重新组卷', exact: true }).click()
     await page.getByText('25:00', { exact: true }).waitFor()
-    const fresh = await page.evaluate(() => JSON.parse(localStorage.getItem('openaa-dmv:massachusetts:exam:resume')))
-    assert.ok(fresh.startedAt > old)
     const byId = new Map(getStateQuestions('massachusetts').map((q) => [q.id, q]))
-    for (const id of fresh.questionIds) await page.locator(`[id="question-${id}"] button`).nth(byId.get(id).answerIndex).click()
-    await page.getByRole('button', { name: '提交并查看成绩', exact: true }).click()
+    const ids = await page.locator('[id^="question-"]').evaluateAll((nodes) => nodes.map((node) => node.id.slice('question-'.length)))
+    for (const id of ids) await page.locator(`[id="question-${id}"] button`).nth(byId.get(id).answerIndex).click()
+    await page.getByRole('button', { name: '提交考试', exact: true }).click()
     await page.getByText('考试倒计时（已停止）', { exact: true }).waitFor()
   })
   await check('New York uses only its independent bank and still rejects insufficient sign answers', async () => {
     await page.goto(`${base}/ny/mock-test`)
     await page.locator('[id^="ny-question-"]').first().waitFor()
+    await page.getByText('答题进度 0/20', { exact: true }).waitFor()
+    await page.getByRole('button', { name: '展开答题卡', exact: true }).click()
+    assert.equal(await page.getByRole('button', { name: '前往第 20 题', exact: true }).count(), 1)
+    await page.getByRole('button', { name: '下一道未答（20）', exact: true }).waitFor()
     const ids = await page.locator('[id^="ny-question-"]').evaluateAll((nodes) => nodes.map((node) => node.id.slice('ny-question-'.length)))
     assert.equal(ids.length, 20)
     const byId = new Map(getNewYorkQuestions().map((q) => [q.id, q]))
@@ -109,8 +117,20 @@ try {
     assert.equal(await page.evaluate(() => localStorage.getItem('openaa-dmv:ny:exam:last-score')), '85')
     assert.equal(await page.evaluate(() => localStorage.getItem('openaa-dmv:new-jersey:exam:last-score')), '94')
   })
+  await check('New York discards unfinished answers on refresh', async () => {
+    await page.goto(`${base}/ny/mock-test`)
+    await page.locator('[id^="ny-question-"]').first().locator('button').first().click()
+    await page.getByText('答题进度 1/20', { exact: true }).waitFor()
+    await page.reload()
+    await page.getByText('答题进度 0/20', { exact: true }).waitFor()
+  })
   await check('corrupt records do not crash practice or questions', async () => {
-    await save(page, { 'openaa-dmv:ny:wrong:answered': null, 'openaa-dmv:ny:wrong:favorites': {}, 'openaa-dmv:ny:wrong:correct': 5 })
+    await page.goto(base)
+    await page.evaluate(() => {
+      localStorage.setItem('openaa-dmv:ny:wrong:answered', 'null')
+      localStorage.setItem('openaa-dmv:ny:wrong:favorites', '{}')
+      localStorage.setItem('openaa-dmv:ny:wrong:correct', '5')
+    })
     await page.goto(`${base}/ny/practice`)
     await page.getByText('准备度', { exact: true }).waitFor()
     await page.goto(`${base}/ny/questions`)
@@ -128,6 +148,14 @@ try {
     await p.getByText('已答 1/50 · 未答 49', { exact: true }).waitFor()
     await p.getByText(/浏览器暂时无法保存学习记录/).waitFor()
     await blocked.close()
+  })
+  await check('mobile exam action stays hidden on desktop', async () => {
+    const desktop = await browser.newContext({ viewport: { width: 1280, height: 900 } })
+    const p = await desktop.newPage(); recordErrors(p)
+    await p.goto(`${base}/new-jersey/mock-test`)
+    await p.locator('[id^="question-"]').first().waitFor()
+    assert.equal(await p.locator('.fixed.md\\:hidden').isVisible(), false)
+    await desktop.close()
   })
   await check('all 57 public learning routes load on desktop and mobile without horizontal overflow', async () => {
     const routes = ['/', ...[...states, 'ny'].flatMap((slug) => ['', '/guide', '/questions', '/practice', '/mock-test', '/signs', '/wrong-questions'].map((suffix) => `/${slug}${suffix}`))]

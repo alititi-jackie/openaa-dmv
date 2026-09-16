@@ -18,13 +18,3 @@ export type StateExamConfig = {
   modes: ExamModeConfig[]
   defaultModeId: string
 }
-
-export type SavedExamV1 = {
-  version: 1
-  stateSlug: string
-  modeId: string
-  questionIds: string[]
-  answers: Record<string, number>
-  savedAt: number
-  startedAt?: number
-}

@@ -67,7 +67,10 @@ New York remains independent: `new-york-bank.ts` provides its questions and
 `exam/new-york-engine.ts` preserves its 20-question / 4-sign exam and dual pass rule.
 Do not route New York through the shared question bank or generic pass calculation.
 Learning records remain scoped by state. Legacy score keys are read as fallbacks;
-new scores use `openaa-dmv:<state>:exam:last-score`. Legacy records are not deleted.
+new scores use `openaa-dmv:<state>:exam:last-score`. Mock tests do not save
+unfinished exams; leaving or refreshing abandons the current paper, while submitted
+scores and wrong answers remain available for study. Obsolete resume records are
+removed when a generic mock-test page opens.
 
 `lib/*audit*.ts`, the New York audit script, verification files and image source
 notes are retained as maintenance resources even when not imported by pages.
