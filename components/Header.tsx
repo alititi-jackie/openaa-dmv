@@ -2,10 +2,16 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { BookOpenCheck, ExternalLink, MapPinned } from 'lucide-react'
 import { OPENAA_URL } from '@/lib/site'
 
+const STATE_SLUGS = new Set(['california', 'new-jersey', 'pennsylvania', 'massachusetts', 'washington', 'texas', 'florida', 'ny'])
+
 export default function Header() {
+  const pathname = usePathname()
+  const segment = pathname.split('/').filter(Boolean)[0]
+  const practiceHref = segment && STATE_SLUGS.has(segment) ? `/${segment}/practice` : null
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="page-shell flex h-16 items-center justify-between gap-4">
@@ -21,10 +27,10 @@ export default function Header() {
             <MapPinned size={16} className="mr-1.5" />
             选择州
           </Link>
-          <Link href="/california/practice" className="focus-ring hidden rounded-md px-3 py-2 text-slate-700 hover:bg-slate-100 sm:inline-flex">
+          {practiceHref ? <Link href={practiceHref} className="focus-ring hidden rounded-md px-3 py-2 text-slate-700 hover:bg-slate-100 sm:inline-flex">
             <BookOpenCheck size={16} className="mr-1.5" />
-            开始练习
-          </Link>
+            当前州练习
+          </Link> : null}
           <a
             href={OPENAA_URL}
             className="focus-ring inline-flex items-center rounded-md border border-slate-200 px-3 py-2 text-slate-800 hover:bg-slate-100"

@@ -1,3 +1,5 @@
+import RuleSection from './RuleSection'
+
 export default function MassachusettsRules() {
   const items = [
     ['正式考试', 'Class D learner’s permit exam 共 25 题，考试时间 25 分钟，至少答对 18 题通过。'],
@@ -9,5 +11,5 @@ export default function MassachusettsRules() {
     ['White Cane Law', '遇到使用白手杖或导盲犬的视障行人过街时必须完全停车，并等待其安全通过。'],
   ]
 
-  return <section className="bg-white py-10"><div className="page-shell"><div className="card p-5"><div className="max-w-3xl"><p className="text-sm font-bold text-teal-700">Massachusetts RMV 重点规则</p><h2 className="mt-2 text-2xl font-black text-slate-950">麻州考试规则与高频考点</h2><p className="mt-2 text-sm leading-6 text-slate-600">下面是学习说明，不混入题库充当说明题。题库只保留适合 Class D Permit 知识考试练习的规则、标志和安全驾驶题目。</p></div><div className="mt-5 grid gap-3 md:grid-cols-2">{items.map(([title,text]) => <div key={title} className="rounded-lg border border-slate-200 bg-slate-50 p-4"><p className="font-black text-slate-950">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{text}</p></div>)}</div><p className="mt-4 text-xs leading-5 text-slate-500">考试和驾照要求可能调整，正式规定请以 Massachusetts RMV 当前 Driver’s Manual 和官方页面为准。</p></div></div></section>
+  return <RuleSection eyebrow="Massachusetts RMV 重点规则" title="麻州考试规则与高频考点" description="下面是学习说明，不混入题库充当说明题。题库只保留适合 Class D Permit 知识考试练习的规则、标志和安全驾驶题目。" items={items} footnote="考试和驾照要求可能调整，正式规定请以 Massachusetts RMV 当前 Driver’s Manual 和官方页面为准。" />
 }

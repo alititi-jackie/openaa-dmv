@@ -6,7 +6,8 @@ import ClientStudy from './ClientStudy'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, CheckCircle2, Languages, RotateCcw, Star, XCircle } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCircle2, RotateCcw, Star, XCircle } from 'lucide-react'
+import LanguageSelector from './LanguageSelector'
 import QuestionSignImage from './QuestionSignImage'
 import { shuffleQuestions, type DmvQuestion } from '@/lib/dmv-data'
 import {
@@ -24,18 +25,15 @@ export default function PracticeClient({ questions, stateSlug, storageKey }: { q
 }
 
 function PracticeSession({ questions, stateSlug, storageKey }: { questions: DmvQuestion[]; stateSlug: string; storageKey: string }) {
-  const [requestedIndex, setIndex] = useState(() => {
-    const saved = Number(browserStorage.getItem(`${storageKey}:practice-index`) || '0')
-    return Number.isInteger(saved) && saved >= 0 && saved < questions.length ? saved : 0
-  })
+  const [requestedIndex, setIndex] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
-  const [mode, setMode] = useState<'order' | 'random'>('order')
+  const [mode, setMode] = useState<'order' | 'random'>('random')
   const [scope, setScope] = useState<'all' | 'favorites'>('all')
   const [language, setLanguage] = useState<DmvLanguage>(() => {
     const saved = browserStorage.getItem(languageStorageKey(stateSlug))
     return saved === 'en' || saved === 'bilingual' ? saved : 'zh'
   })
-  const [seed, setSeed] = useState(0)
+  const [seed, setSeed] = useState(newExamSeed)
   const [answeredIds, setAnsweredIds] = useState(() => readIds(`${storageKey}:answered`))
   const [correctIds, setCorrectIds] = useState(() => readIds(`${storageKey}:correct`))
   const [masteredIds, setMasteredIds] = useState(() => readIds(`${storageKey}:mastered`))
@@ -90,7 +88,7 @@ function PracticeSession({ questions, stateSlug, storageKey }: { questions: DmvQ
   function restart(nextMode = mode) { if (autoNextTimer.current) clearTimeout(autoNextTimer.current); setMode(nextMode); setSeed(newExamSeed()); setIndex(0); setSelected(null); if (scope === 'all' && nextMode === 'order') browserStorage.setItem(resumeKey, '0') }
 
   return <div className="grid gap-4">
-    <section className="card p-4"><div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div><p className="inline-flex items-center text-sm font-black text-slate-950"><Languages size={16} className="mr-1.5 text-blue-700" />题目语言</p><p className="mt-1 text-xs leading-5 text-slate-500">{hasEnglishContent ? `英文内容已覆盖 ${englishCount}/${questions.length} 题。` : '英文内容正在准备中。'}</p></div><div className="grid grid-cols-3 rounded-lg bg-slate-100 p-1 sm:w-72"><button type="button" onClick={() => changeLanguage('zh')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black ${language === 'zh' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>中文</button><button type="button" disabled={!hasEnglishContent} onClick={() => changeLanguage('en')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black disabled:opacity-40 ${language === 'en' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>English</button><button type="button" disabled={!hasEnglishContent} onClick={() => changeLanguage('bilingual')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black disabled:opacity-40 ${language === 'bilingual' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}>中英对照</button></div></div></section>
+    <LanguageSelector language={language} onChange={changeLanguage} englishCount={englishCount} total={questions.length} />
     <div className="card p-4 md:p-6">
       <div className="grid grid-cols-4 gap-2 border-b border-slate-200 pb-3"><div className="rounded-md bg-slate-50 p-2"><p className="text-[10px] font-bold text-slate-500">已完成</p><p className="text-base font-black">{completedCount}/{questions.length}</p></div><div className="rounded-md bg-slate-50 p-2"><p className="text-[10px] font-bold text-slate-500">正确率</p><p className="text-base font-black">{accuracy}%</p></div><div className="rounded-md bg-blue-50 p-2"><p className="text-[10px] font-bold text-blue-600">准备度</p><p className="text-base font-black text-blue-900">{readiness}%</p></div><button type="button" onClick={() => changeScope('favorites')} className="focus-ring rounded-md bg-amber-50 p-2 text-left"><p className="text-[10px] font-bold text-amber-700">收藏题</p><p className="text-base font-black text-amber-900">{favoriteCount}</p></button></div>
       <p className="mt-2 text-[11px] text-slate-500">准备度综合题库完成、已掌握题和最近一次模拟成绩，仅用于学习参考。</p>

@@ -30,6 +30,17 @@ try {
     assert.notEqual(result.rounded, '0px')
   })
 
+  await check('state hero has exactly the three agreed actions and practice defaults to random', async () => {
+    await page.goto(`${base}/pennsylvania`)
+    const hero = page.locator('section.bg-slate-950').first()
+    await hero.getByRole('link', { name: /开始模拟考试/ }).waitFor()
+    await hero.getByRole('button', { name: /下载到桌面练习|已添加到桌面/ }).waitFor()
+    await hero.getByRole('button', { name: /分享/ }).waitFor()
+    assert.equal(await hero.getByRole('link').count(), 1)
+    await page.goto(`${base}/pennsylvania/practice`)
+    await page.getByRole('button', { name: '切换顺序', exact: true }).waitFor()
+  })
+
   const states = ['california', 'new-jersey', 'pennsylvania', 'massachusetts', 'washington', 'texas', 'florida']
   const directStates = states.filter((slug) => slug !== 'california')
   for (const slug of directStates) {
@@ -156,6 +167,15 @@ try {
     await p.locator('[id^="question-"]').first().waitFor()
     assert.equal(await p.locator('.fixed.md\\:hidden').isVisible(), false)
     await desktop.close()
+  })
+  await check('mobile exam action does not overlap the global back button', async () => {
+    await page.goto(`${base}/new-jersey/mock-test`)
+    const examAction = page.getByRole('button', { name: /下一道未答（50）/ })
+    const backAction = page.getByRole('button', { name: '返回上一页' })
+    const boxes = await Promise.all([examAction, backAction].map((item) => item.evaluate((element) => {
+      const box = element.getBoundingClientRect(); return { top: box.top, bottom: box.bottom, left: box.left, right: box.right }
+    })))
+    assert.ok(boxes[1].bottom <= boxes[0].top || boxes[1].top >= boxes[0].bottom || boxes[1].right <= boxes[0].left || boxes[1].left >= boxes[0].right)
   })
   await check('all 57 public learning routes load on desktop and mobile without horizontal overflow', async () => {
     const routes = ['/', ...[...states, 'ny'].flatMap((slug) => ['', '/guide', '/questions', '/practice', '/mock-test', '/signs', '/wrong-questions'].map((suffix) => `/${slug}${suffix}`))]

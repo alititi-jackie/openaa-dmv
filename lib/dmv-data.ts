@@ -248,7 +248,7 @@ export function getLiveStateBySlug(slug: string) {
 
 export const dmvTools: ToolLink[] = [
   { title: '中文题库', description: '按分类查看规则、标志和安全驾驶题。', href: 'questions', icon: FileQuestion },
-  { title: '顺序练习', description: '从第一题开始，逐题确认答案和解释。', href: 'practice', icon: BookOpenCheck },
+  { title: '随机 / 顺序练习', description: '默认随机刷题，也可切换为顺序练习。', href: 'practice', icon: BookOpenCheck },
   { title: '模拟考试', description: '随机抽题，提交后查看通过情况。', href: 'mock-test', icon: ClipboardList },
   { title: '交通标志', description: '集中练习标志、信号和道路标线。', href: 'signs', icon: Signpost },
 ]

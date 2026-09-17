@@ -14,6 +14,7 @@ const React = require('react')
 const JsonLd = require('../components/JsonLd.tsx').default
 const ExamProgressCard = require('../components/exam/ExamProgressCard.tsx').default
 const MobileExamAction = require('../components/exam/MobileExamAction.tsx').default
+const ExamResultCard = require('../components/exam/ExamResultCard.tsx').default
 
 let checks = 0
 function check(name, fn) { fn(); checks++; console.log(`PASS ${name}`) }
@@ -102,6 +103,26 @@ check('shared exam progress and mobile action render the expected controls', () 
   const submitAction = renderToStaticMarkup(React.createElement(MobileExamAction, { unansweredCount: 0, onNextUnanswered() {}, onSubmit() {} }))
   assert.ok(nextAction.includes('fixed') && nextAction.includes('md:hidden') && nextAction.includes('下一道未答（2）'))
   assert.ok(submitAction.includes('提交考试'))
+})
+check('shared exam result supports standard and New York dual requirements', () => {
+  const result = renderToStaticMarkup(React.createElement(ExamResultCard, {
+    passed: false,
+    review: false,
+    correct: 18,
+    total: 20,
+    score: 90,
+    requirements: [
+      { label: '总题要求', value: '18/20 · 要求至少 14', met: true },
+      { label: '交通标志要求', value: '1/4 · 要求至少 2', met: false },
+    ],
+    categories: [{ label: '交通标志', correct: 1, total: 4, score: 25 }],
+    wrongCount: 2,
+    onRestart() {},
+    onReviewWrong() {},
+  }))
+  assert.ok(result.includes('未通过 NOT PASSED'))
+  assert.ok(result.includes('总题要求') && result.includes('交通标志要求'))
+  assert.ok(result.includes('重新练习 2 道错题'))
 })
 check('JSON-LD cannot close its script element', () => {
   const html = renderToStaticMarkup(React.createElement(JsonLd, { data: { text: '</script><script>alert(1)</script>' } }))

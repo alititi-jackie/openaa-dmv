@@ -4,7 +4,8 @@ import { browserStorage, readIds, writeIds } from '@/lib/browser-storage'
 
 import { useMemo, useState } from 'react'
 import ClientStudy from './ClientStudy'
-import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Languages, Star, XCircle } from 'lucide-react'
+import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Star, XCircle } from 'lucide-react'
+import LanguageSelector from './LanguageSelector'
 import QuestionSignImage from './QuestionSignImage'
 import { categoryLabels, type DmvQuestion } from '@/lib/dmv-data'
 import {
@@ -155,8 +156,8 @@ function QuestionsSession({
 
   return (
     <div>
-      <section className="mb-4 grid gap-3 rounded-lg border border-slate-200 bg-white p-3 lg:grid-cols-2">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:border-r lg:border-slate-200 lg:pr-4">
+      <div className="mb-4 grid gap-3 lg:grid-cols-2">
+        <section className="card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-black text-slate-950">题库模式</p>
             <p className="mt-1 text-xs leading-5 text-slate-500">
@@ -169,22 +170,9 @@ function QuestionsSession({
             <button type="button" onClick={() => changeStudyMode('practice')} className={`focus-ring rounded-md px-3 py-2 text-sm font-black ${studyMode === 'practice' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>练习模式</button>
             <button type="button" onClick={() => changeStudyMode('study')} className={`focus-ring rounded-md px-3 py-2 text-sm font-black ${studyMode === 'study' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}>学习模式</button>
           </div>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:pl-1">
-          <div>
-            <p className="inline-flex items-center text-sm font-black text-slate-950"><Languages size={16} className="mr-1.5 text-blue-700" />题目语言</p>
-            <p className="mt-1 text-xs leading-5 text-slate-500">
-              {hasEnglishContent ? `英文内容已覆盖 ${englishCount}/${questions.length} 题；没有英文内容的题会自动显示中文。` : '双语结构已准备好，英文题目正在分批校对，当前先使用中文。'}
-            </p>
-          </div>
-          <div className="grid grid-cols-3 rounded-lg bg-slate-100 p-1 sm:w-72">
-            <button type="button" onClick={() => changeLanguage('zh')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black ${language === 'zh' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>中文</button>
-            <button type="button" disabled={!hasEnglishContent} onClick={() => changeLanguage('en')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black disabled:cursor-not-allowed disabled:opacity-40 ${language === 'en' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-600'}`}>English</button>
-            <button type="button" disabled={!hasEnglishContent} onClick={() => changeLanguage('bilingual')} className={`focus-ring rounded-md px-2 py-2 text-xs font-black disabled:cursor-not-allowed disabled:opacity-40 ${language === 'bilingual' ? 'bg-white text-teal-700 shadow-sm' : 'text-slate-600'}`}>中英对照</button>
-          </div>
-        </div>
-      </section>
+        </section>
+        <LanguageSelector language={language} onChange={changeLanguage} englishCount={englishCount} total={questions.length} />
+      </div>
 
       <section className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-lg border border-slate-200 bg-white p-3"><p className="text-xs font-bold text-slate-500">已完成</p><p className="mt-1 text-xl font-black text-slate-950">{answeredCount} / {questions.length}</p></div>

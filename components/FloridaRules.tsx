@@ -1,3 +1,5 @@
+import RuleSection from './RuleSection'
+
 export default function FloridaRules() {
   const items = [
     ['Class E Knowledge Exam', '正式知识考试为 50 道选择题，内容覆盖 Florida traffic laws、安全驾驶和 traffic controls。'],
@@ -10,5 +12,5 @@ export default function FloridaRules() {
     ['School Bus', '普通双向道路两侧车辆都要停车；真正被 5 ft+ 未铺装中间带、raised median 或实体 barrier 分隔时，对向车辆通常可谨慎继续。'],
     ['标准限速', 'Municipal / Business / Residential 通常 30 mph；Streets and Highways 55 mph；Limited Access Highways 70 mph。'],
   ]
-  return <section className="bg-white py-10"><div className="page-shell"><div className="card p-5"><p className="text-sm font-bold text-teal-700">Florida FLHSMV 重点规则</p><h2 className="mt-2 text-2xl font-black text-slate-950">佛州 Class E 高频考点</h2><p className="mt-2 text-sm leading-6 text-slate-600">以下是学习说明，不把申请材料、费用或预约信息混入考题。题库只保留适合 Class E Knowledge Exam 练习的规则、标志和安全驾驶内容。</p><div className="mt-5 grid gap-3 md:grid-cols-2">{items.map(([title,text])=><div key={title} className="rounded-lg border border-slate-200 bg-slate-50 p-4"><p className="font-black text-slate-950">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{text}</p></div>)}</div></div></div></section>
+  return <RuleSection eyebrow="Florida FLHSMV 重点规则" title="佛州 Class E 高频考点" description="以下是学习说明，不把申请材料、费用或预约信息混入考题。题库只保留适合 Class E Knowledge Exam 练习的规则、标志和安全驾驶内容。" items={items} />
 }

@@ -1,13 +1,27 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import BackLink from '@/components/BackLink'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
+import PageStructuredData from '@/components/PageStructuredData'
+import StateHero from '@/components/StateHero'
+import ToolGrid from '@/components/ToolGrid'
+import { getStateBySlug } from '@/lib/dmv-data'
 import { getNewYorkQuestions } from '@/lib/new-york-bank'
 
-export const metadata: Metadata = { title:'2026 纽约 DMV 驾照题库｜20题 Permit 模拟考试', description:'New York DMV Class D/DJ/E learner permit 学习入口，提供中文、English 和中英对照题库、顺序/随机练习、20题模拟考试、交通标志和错题复习。', alternates:{ canonical:'/ny' } }
+export const metadata: Metadata = { title:'2026 纽约 DMV 驾照题库｜20题 Permit 模拟考试', description:'New York DMV Class D/DJ/E learner permit 学习入口，提供中文、English 和中英对照题库、随机/顺序练习、20题模拟考试、交通标志和错题复习。', alternates:{ canonical:'/ny' } }
 
 export default function NewYorkPage(){
   const questions=getNewYorkQuestions()
-  const tools=[['完整题库',`查看全部 ${questions.length} 道纽约 DMV 练习题`,'/ny/questions'],['顺序/随机练习','按自己的节奏刷题','/ny/practice'],['20题模拟考试','20题中至少答对14题，并注意交通标志要求','/ny/mock-test'],['交通标志','集中复习正式考试要求掌握的道路标志','/ny/signs'],['错题本','集中复习做错的题目','/ny/wrong-questions'],['考试指南','查看 NY DMV 官方考试规则和学习范围','/ny/guide']]
-  return <><div className="bg-white pt-6"><div className="page-shell"><BackLink href="/" label="返回美国 DMV 首页"/></div></div><section className="bg-slate-950 text-white"><div className="page-shell py-12"><p className="text-sm font-bold text-cyan-100">New York · NY DMV</p><h1 className="mt-3 text-4xl font-black md:text-5xl">纽约 DMV 驾照笔试练习</h1><p className="mt-4 max-w-3xl text-base leading-7 text-slate-200">提供中文、English 和中英对照题库，支持顺序/随机练习、20题模拟考试、交通标志专项和错题复习，帮助准备 New York learner permit 知识考试。</p><div className="mt-6 flex flex-wrap gap-3"><Link href="/ny/mock-test" className="rounded-md bg-cyan-400 px-4 py-2.5 text-sm font-black text-slate-950">开始20题模拟考试</Link><Link href="/ny/questions" className="rounded-md border border-white/20 px-4 py-2.5 text-sm font-bold">查看完整题库</Link></div></div></section><section className="bg-[#f4f7fb] py-10"><div className="page-shell grid gap-4 md:grid-cols-3"><div className="card p-5"><p className="text-sm font-bold text-teal-700">当前题库</p><p className="mt-2 text-3xl font-black">{questions.length} 题</p><p className="mt-2 text-sm text-slate-600">覆盖道路规则、交通标志和安全驾驶等考试知识点。</p></div><div className="card p-5"><p className="text-sm font-bold text-teal-700">正式笔试</p><p className="mt-2 text-3xl font-black">20 题</p><p className="mt-2 text-sm text-slate-600">至少答对14题；4道交通标志题至少答对2道。</p></div><div className="card p-5"><p className="text-sm font-bold text-teal-700">学习范围</p><p className="mt-2 text-xl font-black">Chapter 4–11 + Road Signs</p></div></div></section><section className="bg-white py-10"><div className="page-shell"><h2 className="text-2xl font-black">学习入口</h2><div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{tools.map(([title,description,href])=><Link key={href} href={href} className="card p-5"><h3 className="text-lg font-black">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{description}</p></Link>)}</div></div></section><OpenAACrossLinks/></>
+  const state=getStateBySlug('new-york')!
+  return <>
+    <PageStructuredData title="2026 纽约 DMV 驾照题库" description="纽约独立 DMV 题库、随机与顺序练习、20题模拟考试、交通标志和错题复习。" path="/ny" stateName="纽约州" statePath="/ny"/>
+    <div className="bg-white pt-6"><div className="page-shell"><BackLink href="/" label="返回美国 DMV 首页"/></div></div>
+    <StateHero state={state} basePath="/ny" title="纽约州 DMV 驾照题库" summary="提供独立的纽约 DMV 中文、English 和中英对照题库，支持随机 / 顺序练习、20题模拟考试、交通标志专项和错题复习。" examRule="New York DMV Class D/DJ/E learner permit 笔试共 20 题。" passRule="至少答对 14 题；其中 4 道交通标志题至少答对 2 题。"/>
+    <ToolGrid state={state} basePath="/ny"/>
+    <section className="bg-[#f4f7fb] py-10"><div className="page-shell grid gap-4 md:grid-cols-3">
+      <div className="card p-5"><p className="text-sm font-bold text-teal-700">当前题库</p><p className="mt-2 text-3xl font-black">{questions.length} 题</p><p className="mt-2 text-sm text-slate-600">纽约独立题库，不混入其它州公共题库。</p></div>
+      <div className="card p-5"><p className="text-sm font-bold text-teal-700">正式笔试</p><p className="mt-2 text-3xl font-black">20 题</p><p className="mt-2 text-sm text-slate-600">至少答对14题；4道交通标志题至少答对2道。</p></div>
+      <div className="card p-5"><p className="text-sm font-bold text-teal-700">学习范围</p><p className="mt-2 text-xl font-black">Chapter 4–11 + Road Signs</p></div>
+    </div></section>
+    <OpenAACrossLinks/>
+  </>
 }

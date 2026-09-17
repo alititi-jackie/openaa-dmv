@@ -3,7 +3,7 @@ import { dmvStates } from '@/lib/dmv-data'
 import { getOpenAAUrl, OPENAA_DMV_URL } from '@/lib/site'
 
 export default function Footer() {
-  const liveStates = dmvStates.filter((state) => state.status === 'live').slice(0, 6)
+  const liveStates = dmvStates.filter((state) => state.status === 'live')
 
   return (
     <footer className="border-t border-slate-200 bg-white">
@@ -15,7 +15,7 @@ export default function Footer() {
           </p>
         </div>
         <div>
-          <p className="text-sm font-bold text-slate-950">热门州</p>
+          <p className="text-sm font-bold text-slate-950">已上线州</p>
           <div className="mt-3 grid gap-2 text-sm text-slate-600">
             {liveStates.map((state) => (
               <Link key={state.slug} href={`/${state.slug}`} className="hover:text-slate-950">

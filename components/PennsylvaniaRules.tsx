@@ -1,3 +1,5 @@
+import RuleSection from './RuleSection'
+
 export default function PennsylvaniaRules() {
   const rules = [
     ['正式知识考试', 'PennDOT Knowledge Test 共 18 题，至少答对 15 题通过。'],
@@ -9,22 +11,5 @@ export default function PennsylvaniaRules() {
     ['积分制度', '驾驶记录达到 6 points 时，PennDOT 会按规定启动相应纠正措施。'],
   ]
 
-  return <section className="bg-white py-10">
-    <div className="page-shell">
-      <div className="card p-5">
-        <div className="max-w-3xl">
-          <p className="text-sm font-bold text-teal-700">PennDOT 重点规则</p>
-          <h2 className="mt-1 text-2xl font-black text-slate-950">宾州笔试先记住这些规则</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">下面是学习说明，不混入题库充当考题。题库只保留适合知识考试练习的题目。</p>
-        </div>
-        <div className="mt-5 grid gap-3 md:grid-cols-2">
-          {rules.map(([title, text]) => <div key={title} className="rounded-md border border-slate-200 bg-slate-50 p-4">
-            <h3 className="font-black text-slate-950">{title}</h3>
-            <p className="mt-1 text-sm leading-6 text-slate-600">{text}</p>
-          </div>)}
-        </div>
-        <p className="mt-4 text-xs leading-5 text-slate-500">规则依据 PennDOT 官方 Driver’s Manual 与 Driver and Vehicle Services 公布信息整理；正式考试及法规变化以 PennDOT 最新内容为准。</p>
-      </div>
-    </div>
-  </section>
+  return <RuleSection eyebrow="PennDOT 重点规则" title="宾州笔试先记住这些规则" description="下面是学习说明，不混入题库充当考题。题库只保留适合知识考试练习的题目。" items={rules} footnote="规则依据 PennDOT 官方 Driver’s Manual 与 Driver and Vehicle Services 公布信息整理；正式考试及法规变化以 PennDOT 最新内容为准。" />
 }

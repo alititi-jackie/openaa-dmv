@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import BackLink from '@/components/BackLink'
 import JsonLd from '@/components/JsonLd'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
+import StateGuideLayout from '@/components/StateGuideLayout'
 import { dmvStates, getLiveStateBySlug } from '@/lib/dmv-data'
 import { getStateQuestionCount } from '@/lib/state-question-bank'
+import { stateBackLabel } from '@/lib/state-ui'
 import { breadcrumbJsonLd, faqJsonLd, stateDescription, webPageJsonLd } from '@/lib/seo'
 
 type Props = { params: Promise<{ state: string }> }
@@ -30,7 +30,6 @@ export default async function GuidePage({ params }: Props) {
   const state = getLiveStateBySlug(stateSlug)
   if (!state) notFound()
   const isCalifornia = state.slug === 'california'
-  const isNJ = state.slug === 'new-jersey'
   const isPennsylvania = state.slug === 'pennsylvania'
   const isMassachusetts = state.slug === 'massachusetts'
   const isWashington = state.slug === 'washington'
@@ -65,5 +64,6 @@ export default async function GuidePage({ params }: Props) {
   const guideTitle = isCalifornia ? '2026 加州 DMV 驾照考试指南' : isPennsylvania ? '2026 宾州 PennDOT 驾照笔试指南' : isMassachusetts ? '2026 麻州 RMV Class D Permit 考试指南' : isWashington ? '2026 华盛顿州 DOL Driving Knowledge Exam 指南' : `${state.nameZh} DMV 驾照考试指南`
   const jsonDescription = isMassachusetts ? 'Massachusetts RMV Class D Permit 中文、English 和中英对照考试指南，覆盖 25题/18题通过规则、JOL、Hands-Free、校车、White Cane 与 4 英尺安全超车。' : isWashington ? 'Washington DOL Driving Knowledge Exam 中文、English 和中英对照指南，覆盖 40题/32题通过、school zone、校车、Intermediate License、40+10 小时和车灯规则。' : stateDescription(state)
 
-  return <><JsonLd data={webPageJsonLd(guideTitle, jsonDescription, `/${state.slug}/guide`)} /><JsonLd data={faqJsonLd(faq)} /><JsonLd data={breadcrumbJsonLd([{ name: '首页', path: '/' }, { name: state.nameZh, path: `/${state.slug}` }, { name: '考试指南', path: `/${state.slug}/guide` }])} /><section className="bg-white py-12"><div className="page-shell"><BackLink href={`/${state.slug}`} label={`返回${state.nameZh}${isNJ ? ' MVC' : isMassachusetts ? ' RMV' : isWashington ? ' DOL' : ' DMV'}`} /><div className="grid gap-8 lg:grid-cols-[1fr_0.75fr]"><article className="prose-copy"><p className="text-sm font-bold text-teal-700">{state.nameEn} Driver Guide</p><h1 className="mt-2 text-4xl font-black leading-tight text-slate-950">{guideTitle}</h1><div className="mt-6 text-base leading-8 text-slate-700">{body}</div><div className="mt-8 grid gap-3">{guideSteps.map((item,index)=><div key={item} className="card p-4"><p className="text-sm font-black text-blue-700">步骤 {index+1}</p><p className="mt-2 text-sm leading-6 text-slate-700">{item}</p></div>)}</div></article><aside className="grid content-start gap-4"><div className="card p-5"><h2 className="text-xl font-black text-slate-950">学习入口</h2><div className="mt-4 grid gap-2"><Link href={`/${state.slug}/questions`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">DMV 题库（{count} 题）</Link><Link href={`/${state.slug}/practice`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">顺序 / 随机练习</Link><Link href={`/${state.slug}/mock-test`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">{isPennsylvania ? '18 题模拟考试' : isMassachusetts ? '25 题模拟考试' : isWashington ? '40 题模拟考试' : '模拟考试'}</Link><Link href={`/${state.slug}/wrong-questions`} className="rounded-md bg-slate-100 px-3 py-2 text-sm font-bold text-slate-800">错题本</Link></div></div><div className="card p-5"><h2 className="text-xl font-black text-slate-950">官方入口</h2><div className="mt-4 grid gap-2 text-sm font-bold text-blue-800"><a href={state.driverManualUrl}>官方 Driver Manual</a><a href={state.permitUrl}>Permit / License 申请</a><a href={state.roadTestUrl}>Road Test / Drive Test</a>{isCalifornia ? <a href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/">California DMV 官方样题</a> : null}</div></div></aside></div></div></section><OpenAACrossLinks /></>
+  const examLabel = isPennsylvania ? '18 题模拟考试' : isMassachusetts ? '25 题模拟考试' : isWashington ? '40 题模拟考试' : '模拟考试'
+  return <><JsonLd data={webPageJsonLd(guideTitle, jsonDescription, `/${state.slug}/guide`)} /><JsonLd data={faqJsonLd(faq)} /><JsonLd data={breadcrumbJsonLd([{ name: '首页', path: '/' }, { name: state.nameZh, path: `/${state.slug}` }, { name: '考试指南', path: `/${state.slug}/guide` }])} /><StateGuideLayout state={state} backLabel={stateBackLabel(state)} eyebrow={`${state.nameEn} Driver Guide`} title={guideTitle} intro={body} steps={guideSteps} questionCount={count} examLabel={examLabel} /><OpenAACrossLinks /></>
 }

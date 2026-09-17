@@ -1,3 +1,5 @@
+import RuleSection from './RuleSection'
+
 export default function TexasRules() {
   const items = [
     ['官方通过标准', 'Texas DPS 当前官方 Driver Handbook 明确要求 Knowledge Exam 至少达到 70% 才通过。本站采用 30 题模拟练习，但不把 30 题冒充为当前 DPS 官方固定题量。'],
@@ -10,5 +12,5 @@ export default function TexasRules() {
     ['School Bus', '校车交替闪红灯时必须停车；只有道路被实体 median、barrier 或明显空间分隔时，对向车辆通常才可继续。中心左转车道不算实体分隔。'],
     ['Under 21 Alcohol', '德州对未满 21 岁实行 Zero Tolerance，检测到任何酒精都可能触发 DUI by a Minor 后果。'],
   ]
-  return <section className="bg-white py-10"><div className="page-shell"><div className="card p-5"><div className="max-w-3xl"><p className="text-sm font-bold text-teal-700">Texas DPS 重点规则</p><h2 className="mt-2 text-2xl font-black text-slate-950">德州考试规则与高频考点</h2><p className="mt-2 text-sm leading-6 text-slate-600">以下内容用于学习说明。预约、费用、考试语言和考试地点等办事信息不混入知识考试题库；题库只保留真正适合 Knowledge Test 练习的道路规则、交通标志和安全驾驶内容。</p></div><div className="mt-5 grid gap-3 md:grid-cols-2">{items.map(([title,text]) => <div key={title} className="rounded-lg border border-slate-200 bg-slate-50 p-4"><p className="font-black text-slate-950">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{text}</p></div>)}</div><p className="mt-4 text-xs leading-5 text-slate-500">正式考试安排与驾照要求请以 Texas DPS 当前 Driver Handbook、DPS 页面或授权考试机构当日说明为准。</p></div></div></section>
+  return <RuleSection eyebrow="Texas DPS 重点规则" title="德州考试规则与高频考点" description="以下内容用于学习说明。预约、费用、考试语言和考试地点等办事信息不混入知识考试题库；题库只保留真正适合 Knowledge Test 练习的道路规则、交通标志和安全驾驶内容。" items={items} footnote="正式考试安排与驾照要求请以 Texas DPS 当前 Driver Handbook、DPS 页面或授权考试机构当日说明为准。" />
 }

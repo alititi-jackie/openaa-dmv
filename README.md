@@ -18,6 +18,8 @@
 
 The first version does not require Supabase to run. Supabase can be added later for login, synced progress, favorites, or admin-managed question banks.
 
+The site can be added to a desktop or mobile home screen through its web app manifest. It remains an online study site and does not cache the question banks for offline use.
+
 ## Routes
 
 - `/` state selector and OpenAA DMV home
