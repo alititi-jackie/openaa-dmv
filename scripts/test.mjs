@@ -56,6 +56,29 @@ check('New York remains independent: 150 questions, 20 per exam, exactly 4 signs
   assert.equal(nyExamPassed(18, 1), false)
   assert.equal(nyExamPassed(13, 4), false)
 })
+check('Florida Shared Core signs keep their generic English instead of California visual variants', () => {
+  const questions = new Map(getStateQuestions('florida').map((question) => [question.id, question]))
+  const expected = {
+    'signs-003': ['What kind of information is usually shown on a yellow diamond-shaped sign?', 'A warning about road conditions ahead'],
+    'signs-004': ['What do rectangular white signs with black lettering usually indicate?', 'Regulations or restrictions'],
+    'signs-005': ['Where are orange signs most commonly used?', 'Construction or maintenance zones'],
+    'signs-007': ['What information do green road signs usually provide?', 'Directions, exits, or distances'],
+    'signs-008': ['What do blue road signs usually indicate?', 'Motorist services or facilities'],
+  }
+  for (const [id, [questionText, correctChoice]] of Object.entries(expected)) {
+    const question = questions.get(id)
+    assert.ok(question)
+    const english = getEnglishContent(question)
+    assert.equal(english?.question, questionText)
+    assert.equal(english?.choices[question.answerIndex], correctChoice)
+  }
+})
+check('New York hill sign uses precise steep-grade wording in its independent bank', () => {
+  const question = getNewYorkQuestions().find((item) => item.id === 'ny-openaa-14')
+  assert.ok(question)
+  assert.equal(question.choices[question.answerIndex], '前方陡坡')
+  assert.match(question.explanation, /陡坡/)
+})
 
 const values = new Map()
 globalThis.window = { localStorage: {

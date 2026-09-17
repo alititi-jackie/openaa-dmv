@@ -299,14 +299,14 @@
       "question": "这个标志提醒什么？",
       "image": "https://img.openaa.com/img/dmv/ny/signs/hill-ahead.png",
       "options": [
-        "前方下坡",
+        "前方陡坡",
         "前方上坡",
         "前方医院",
         "前方湿滑"
       ],
       "answerIndex": 0,
-      "answerText": "前方下坡",
-      "explanation": "卡车下坡图案提醒前方坡道。",
+      "answerText": "前方陡坡",
+      "explanation": "卡车位于斜坡上的图案提醒前方有陡坡或下坡路段。",
       "reference": "NY DMV Driver's Manual",
       "difficulty": "easy",
       "tags": [

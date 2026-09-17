@@ -16,11 +16,31 @@ export type BilingualDmvQuestion = DmvQuestion & { en?: DmvEnglishContent; keywo
 
 export function languageStorageKey(stateSlug: string) { return `openaa-dmv:${stateSlug}:language` }
 
+function matchesLanguageSource(question: DmvQuestion) {
+  const source = getQuestionSourceForLanguage(question.id)
+  if (!source || source.question !== question.question || source.choices.length !== question.choices.length) return false
+  return question.choices.every((choice) => source.choices.includes(choice))
+}
+
 function externalEnglish(question: DmvQuestion) {
-  return newYorkEnglishById[question.id]
+  const stateSpecific = newYorkEnglishById[question.id]
     ?? pennsylvaniaEnglishById[question.id]
     ?? newJerseyEnglishById[question.id]
-    ?? californiaQualityEnglishById[question.id]
+  if (stateSpecific) return stateSpecific
+
+  // Some states keep the canonical Shared Core wording while California uses
+  // a visual, image-specific variant with the same stable ID. Select English
+  // by the actual Chinese variant as well as the ID so those banks cannot
+  // accidentally inherit California's picture-specific question and answers.
+  if (!matchesLanguageSource(question)) {
+    return californiaCoreEnglishById[question.id]
+      ?? sharedCoreEnglish[question.id]
+      ?? californiaQualityEnglishById[question.id]
+      ?? californiaEnglishById[question.id]
+      ?? californiaExpandedEnglishById[question.id]
+  }
+
+  return californiaQualityEnglishById[question.id]
     ?? californiaEnglishById[question.id]
     ?? californiaCoreEnglishById[question.id]
     ?? californiaExpandedEnglishById[question.id]
@@ -29,7 +49,7 @@ function externalEnglish(question: DmvQuestion) {
 
 function alignChoices(question: DmvQuestion, english: DmvEnglishContent): DmvEnglishContent {
   const source = getQuestionSourceForLanguage(question.id)
-  if (!source || source.choices.length !== english.choices.length || question.choices.length !== english.choices.length) return english
+  if (!source || !matchesLanguageSource(question) || source.choices.length !== english.choices.length || question.choices.length !== english.choices.length) return english
   const aligned = question.choices.map((choice, index) => {
     const sourceIndex = source.choices.indexOf(choice)
     return sourceIndex >= 0 ? english.choices[sourceIndex] : english.choices[index]
