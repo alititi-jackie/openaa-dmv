@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import { dmvStates } from '@/lib/dmv-data'
-import { getOpenAAUrl, OPENAA_DMV_URL } from '@/lib/site'
+import { getOpenAAUrl, NUMBERMOBI_URL, OPENAA_DMV_URL, TOOLKU_URL } from '@/lib/site'
 
 export default function Footer() {
   const liveStates = dmvStates.filter((state) => state.status === 'live')
 
   return (
     <footer className="border-t border-slate-200 bg-white">
-      <div className="page-shell grid gap-8 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="page-shell grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <p className="text-lg font-extrabold text-slate-950">OpenAA DMV</p>
           <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">
@@ -31,6 +31,13 @@ export default function Footer() {
             <a href={getOpenAAUrl('/jobs')} className="hover:text-slate-950">招聘</a>
             <a href={getOpenAAUrl('/housing')} className="hover:text-slate-950">租房</a>
             <a href={getOpenAAUrl('/news')} className="hover:text-slate-950">生活资讯</a>
+          </div>
+        </div>
+        <div>
+          <p className="text-sm font-bold text-slate-950">实用服务</p>
+          <div className="mt-3 grid gap-2 text-sm text-slate-600">
+            <a href={TOOLKU_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-950">Toolku 工具库</a>
+            <a href={NUMBERMOBI_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-950">NumberMobi 美国靓号</a>
           </div>
         </div>
       </div>

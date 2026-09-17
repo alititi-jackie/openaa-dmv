@@ -15,6 +15,7 @@ const JsonLd = require('../components/JsonLd.tsx').default
 const ExamProgressCard = require('../components/exam/ExamProgressCard.tsx').default
 const MobileExamAction = require('../components/exam/MobileExamAction.tsx').default
 const ExamResultCard = require('../components/exam/ExamResultCard.tsx').default
+const EcosystemServices = require('../components/EcosystemServices.tsx').default
 
 let checks = 0
 function check(name, fn) { fn(); checks++; console.log(`PASS ${name}`) }
@@ -128,5 +129,13 @@ check('JSON-LD cannot close its script element', () => {
   const html = renderToStaticMarkup(React.createElement(JsonLd, { data: { text: '</script><script>alert(1)</script>' } }))
   assert.equal((html.match(/<script/g) || []).length, 1)
   assert.ok(html.includes('\\u003c/script>'))
+})
+check('ecosystem services use descriptive tracked external links', () => {
+  const html = renderToStaticMarkup(React.createElement(EcosystemServices))
+  assert.ok(html.includes('Toolku 美国生活工具'))
+  assert.ok(html.includes('NumberMobi 美国手机靓号'))
+  assert.ok(html.includes('utm_source=dmv.openaa.com'))
+  assert.equal((html.match(/target="_blank"/g) || []).length, 2)
+  assert.equal((html.match(/rel="noopener noreferrer"/g) || []).length, 2)
 })
 console.log(`\n${checks} regression checks passed.`)

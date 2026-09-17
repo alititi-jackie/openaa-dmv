@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { ArrowRight, BookOpenCheck, FileQuestion, Globe2, ShieldCheck } from 'lucide-react'
 import JsonLd from '@/components/JsonLd'
+import EcosystemServices from '@/components/EcosystemServices'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import ShareButton from '@/components/ShareButton'
 import StateSearch from '@/components/StateSearch'
@@ -26,5 +27,6 @@ export default function HomePage() {
     <section className="bg-slate-50 py-12"><div className="page-shell"><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{[{ title: '完整题库', desc: '按州整理道路规则、安全驾驶和交通标志练习，并提供答案解析。', icon: FileQuestion },{ title: '模拟考试', desc: '按各州规则或练习模式随机组卷、提交评分，并保存错题。', icon: BookOpenCheck },{ title: '官方信息', desc: '提供各州 DMV 官方手册、申请和路考入口方便核对。', icon: ShieldCheck },{ title: '美国生活服务', desc: '考完驾照后，可继续使用 OpenAA 找工作、租房和查看生活资讯。', icon: Globe2 }].map(({ title, desc, icon: Icon }) => <div key={title} className="card p-4"><Icon size={25} className="text-teal-700" /><h2 className="mt-4 text-lg font-black text-slate-950">{title}</h2><p className="mt-2 text-sm leading-6 text-slate-600">{desc}</p></div>)}</div></div></section>
     <section className="bg-white py-12"><div className="page-shell grid gap-4 lg:grid-cols-2"><div className="card p-5"><h2 className="text-2xl font-black text-slate-950">第一次考美国驾照？</h2><div className="prose-copy mt-3 text-sm leading-7 text-slate-700"><p>先选择所在州，用完整题库理解常见交通规则和标志，再通过模拟考试检查掌握程度。</p><p>各州考试题量、证件、费用和预约政策可能调整，正式申请前请使用州页面提供的官方链接确认最新要求。</p></div></div><div className="card overflow-hidden p-0"><div className="p-5"><h2 className="text-2xl font-black text-slate-950">纽约 DMV 驾照题库</h2><p className="mt-3 text-sm leading-7 text-slate-700">纽约驾照笔试题库已在 OpenAA 主站上线，提供题库练习、模拟考试、交通标志和错题复习。</p></div><div className="grid grid-cols-2 gap-px border-t border-blue-100 bg-blue-100"><a href={OPENAA_DMV_URL} className="focus-ring inline-flex min-h-14 items-center justify-center bg-blue-50 px-3 py-3 text-center text-xs font-black text-blue-800 hover:bg-blue-100 sm:text-sm">进入中文题库<ArrowRight size={15} className="ml-1.5 shrink-0" /></a><Link href="/ny" className="focus-ring inline-flex min-h-14 items-center justify-center bg-sky-50 px-3 py-3 text-center text-xs font-black text-sky-800 hover:bg-sky-100 sm:text-sm">English / 中英练习<ArrowRight size={15} className="ml-1.5 shrink-0" /></Link></div></div></div></section>
     <OpenAACrossLinks />
+    <EcosystemServices />
   </>
 }
