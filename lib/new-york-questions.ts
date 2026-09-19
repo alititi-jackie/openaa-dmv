@@ -3,6 +3,7 @@ import source from '@/data/new-york/openaa-ny-dmv-questions-v1.json'
 
 type SourceQuestion = {
   id: number
+  conceptId?: string
   category: string
   question: string
   options: string[]
@@ -22,6 +23,7 @@ function categoryOf(question: SourceQuestion): DmvQuestion['category'] {
 
 export const newYorkQuestions: DmvQuestion[] = (source.questions as SourceQuestion[]).map((question) => ({
   id: `ny-openaa-${question.id}`,
+  conceptId: question.conceptId,
   category: categoryOf(question),
   question: question.question,
   choices: question.options,

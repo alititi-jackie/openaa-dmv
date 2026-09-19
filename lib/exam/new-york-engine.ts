@@ -11,10 +11,28 @@ function shuffled<T>(items: T[], seed: number) {
   return out
 }
 
+function normalizedQuestion(question: DmvQuestion) {
+  return question.question.replace(/[\s，。！？、：；“”‘’（）()]/g, '').toLowerCase()
+}
+
+function uniqueConcepts(questions: DmvQuestion[]) {
+  const seenConcepts = new Set<string>()
+  const seenText = new Set<string>()
+  return questions.filter((question) => {
+    const concept = question.conceptId ?? normalizedQuestion(question)
+    const text = normalizedQuestion(question)
+    if (seenConcepts.has(concept) || seenText.has(text)) return false
+    seenConcepts.add(concept)
+    seenText.add(text)
+    return true
+  })
+}
+
 export function buildNyExam(questions: DmvQuestion[], seed: number) {
-  const signs = shuffled(questions.filter((q) => q.category === 'signs'), seed * 17 + 3).slice(0, 4)
-  const signIds = new Set(signs.map((q) => q.id))
-  const others = shuffled(questions.filter((q) => !signIds.has(q.id) && q.category !== 'signs'), seed * 31 + 7).slice(0, 16)
+  const bank = uniqueConcepts(questions)
+  const signs = shuffled(bank.filter((q) => q.category === 'signs'), seed * 17 + 3).slice(0, 4)
+  const others = shuffled(bank.filter((q) => q.category !== 'signs'), seed * 31 + 7).slice(0, 16)
+  if (signs.length !== 4 || others.length !== 16) throw new Error('New York bank does not have enough unique concepts to build an exam')
   return shuffled([...signs, ...others], seed * 43 + 11)
 }
 

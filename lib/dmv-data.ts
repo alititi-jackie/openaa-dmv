@@ -40,6 +40,7 @@ export type DmvState = {
 
 export type DmvQuestion = {
   id: string
+  conceptId?: string
   category: 'rules' | 'signs' | 'safety' | 'documents'
   question: string
   choices: string[]

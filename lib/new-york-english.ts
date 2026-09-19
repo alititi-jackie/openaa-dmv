@@ -1,6 +1,6 @@
 import type { DmvEnglishContent } from './dmv-language'
 import source from '@/data/new-york/openaa-ny-dmv-questions-v1.json'
-type SourceQuestion={id:number}
+type SourceQuestion={id:number;english?:DmvEnglishContent}
 const E=(question:string,choices:string[],explanation:string):DmvEnglishContent=>({question,choices,explanation})
 const base:Record<number,DmvEnglishContent>={
 1:E('When you see this sign, what must you do?',['Slow down and continue','Come to a complete stop, then proceed when safe','Honk and continue','Stop only if pedestrians are present'],'A STOP sign requires a complete stop.'),
@@ -63,8 +63,11 @@ const base:Record<number,DmvEnglishContent>={
 58:E('What type of sign is usually a yellow diamond?',['Warning sign','Service sign','Parking permission','Hospital direction'],'A yellow diamond is generally a warning sign.'),
 59:E('What does an octagonal sign almost always mean?',['Stop','Yield','Railroad crossing','Hospital'],'The red octagonal sign is the STOP sign.')
 }
-const baseIdFor=(id:number)=>id<=59?id:id<=102?id-43:id<=145?id-86:id-129
-export const newYorkEnglishById:Record<string,DmvEnglishContent>=Object.fromEntries((source.questions as SourceQuestion[]).map(q=>[`ny-openaa-${q.id}`,base[baseIdFor(q.id)]]))
+export const newYorkEnglishById:Record<string,DmvEnglishContent>=Object.fromEntries((source.questions as SourceQuestion[]).map(q=>{
+  const content=q.english??base[q.id]
+  if(!content)throw new Error(`Missing independent English content for New York question ${q.id}`)
+  return [`ny-openaa-${q.id}`,content]
+}))
 export const NEW_YORK_ENGLISH_TARGET=(source.questions as SourceQuestion[]).length
 export function newYorkEnglishCoverage(){return Object.values(newYorkEnglishById).filter(Boolean).length}
 if(newYorkEnglishCoverage()!==NEW_YORK_ENGLISH_TARGET)throw new Error(`New York English coverage incomplete: ${newYorkEnglishCoverage()}/${NEW_YORK_ENGLISH_TARGET}`)

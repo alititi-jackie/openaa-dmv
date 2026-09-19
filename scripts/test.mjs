@@ -6,6 +6,7 @@ process.env.NEXT_PUBLIC_SITE_URL = 'https://ny.openaa.com'
 const { getStateQuestions } = require('../lib/state-question-bank.ts')
 const { getNewYorkQuestions } = require('../lib/new-york-bank.ts')
 const { getEnglishContent } = require('../lib/dmv-language.ts')
+const { auditNewYorkEnglish } = require('../lib/new-york-english-audit.ts')
 const { SITE_URL, getSiteUrl } = require('../lib/site.ts')
 const { getStateExamConfig } = require('../lib/exam/exam-config.ts')
 const { buildExam, examPassed } = require('../lib/exam/exam-engine.ts')
@@ -53,15 +54,29 @@ check('New York remains independent: 150 questions, 20 per exam, exactly 4 signs
   const questions = getNewYorkQuestions()
   assert.equal(questions.length, 150)
   assert.ok(questions.every((q) => !q.id.startsWith('shared-core-')))
-  for (const seed of [1, 20, 300, 4000]) {
+  assert.equal(new Set(questions.map((q) => q.conceptId)).size, 150)
+  assert.equal(questions.filter((q) => q.category === 'signs').length, 25)
+  for (let seed = 1; seed <= 1000; seed++) {
     const exam = buildNyExam(questions, seed)
     assert.equal(exam.length, 20)
     assert.equal(exam.filter((q) => q.category === 'signs').length, 4)
     assert.equal(new Set(exam.map((q) => q.id)).size, 20)
+    assert.equal(new Set(exam.map((q) => q.conceptId)).size, 20)
+    assert.equal(new Set(exam.map((q) => q.question.replace(/[\s，。！？、：；“”‘’（）()]/g, '').toLowerCase())).size, 20)
   }
   assert.ok(nyExamPassed(14, 2))
   assert.equal(nyExamPassed(18, 1), false)
   assert.equal(nyExamPassed(13, 4), false)
+})
+check('New York has complete one-to-one bilingual content without repeated non-sign text', () => {
+  const result = auditNewYorkEnglish()
+  assert.deepEqual(result, { total: 150, covered: 150, invalid: 0, uniqueChinese: 125, uniqueEnglish: 125 })
+  for (const question of getNewYorkQuestions()) {
+    const english = getEnglishContent(question)
+    assert.ok(english)
+    assert.equal(english.choices.length, question.choices.length)
+    assert.ok(english.choices[question.answerIndex].trim())
+  }
 })
 check('Florida Shared Core signs keep their generic English instead of California visual variants', () => {
   const questions = new Map(getStateQuestions('florida').map((question) => [question.id, question]))
