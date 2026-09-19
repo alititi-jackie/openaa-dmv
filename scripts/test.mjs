@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict'
 import { require } from './register-typescript.mjs'
 
+process.env.NEXT_PUBLIC_SITE_URL = 'https://ny.openaa.com'
+
 const { getStateQuestions } = require('../lib/state-question-bank.ts')
 const { getNewYorkQuestions } = require('../lib/new-york-bank.ts')
 const { getEnglishContent } = require('../lib/dmv-language.ts')
+const { SITE_URL, getSiteUrl } = require('../lib/site.ts')
 const { getStateExamConfig } = require('../lib/exam/exam-config.ts')
 const { buildExam, examPassed } = require('../lib/exam/exam-engine.ts')
 const { examStorageKeys } = require('../lib/exam/exam-storage.ts')
@@ -19,6 +22,10 @@ const EcosystemServices = require('../components/EcosystemServices.tsx').default
 
 let checks = 0
 function check(name, fn) { fn(); checks++; console.log(`PASS ${name}`) }
+check('canonical site URL cannot be overwritten by a stale deployment variable', () => {
+  assert.equal(SITE_URL, 'https://dmv.openaa.com')
+  assert.equal(getSiteUrl('/sitemap.xml'), 'https://dmv.openaa.com/sitemap.xml')
+})
 const counts = { california: 263, 'new-jersey': 188, pennsylvania: 187, massachusetts: 195, washington: 190, texas: 180, florida: 197 }
 for (const [slug, count] of Object.entries(counts)) {
   check(`${slug}: unchanged bank, IDs, answers and bilingual structure`, () => {

@@ -1,4 +1,7 @@
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://dmv.openaa.com').replace(/\/+$/, '')
+// This project has one public canonical origin. Keep it deterministic so a
+// stale deployment environment variable cannot point metadata and sitemaps at
+// a retired hostname.
+export const SITE_URL = 'https://dmv.openaa.com'
 
 export const OPENAA_URL = 'https://openaa.com'
 export const OPENAA_DMV_URL = 'https://openaa.com/dmv'
