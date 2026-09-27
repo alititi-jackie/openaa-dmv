@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Check, Share2 } from 'lucide-react'
 
-export default function ShareButton({ title, text, className = '' }: { title: string; text?: string; className?: string }) {
+export default function ShareButton({ title, text, className = '', iconOnly = false }: { title: string; text?: string; className?: string; iconOnly?: boolean }) {
   const [copied, setCopied] = useState(false)
 
   async function share() {
@@ -27,9 +27,9 @@ export default function ShareButton({ title, text, className = '' }: { title: st
   }
 
   return (
-    <button type="button" onClick={share} className={`focus-ring inline-flex items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50 ${className}`} aria-label={`分享${title}`}>
-      {copied ? <Check size={16} className="mr-1.5 text-green-700" /> : <Share2 size={16} className="mr-1.5" />}
-      {copied ? '链接已复制' : '分享'}
+    <button type="button" onClick={share} className={`focus-ring inline-flex items-center justify-center rounded-md border border-slate-300 bg-white text-sm font-black text-slate-700 transition hover:bg-slate-50 ${iconOnly ? 'h-10 w-10 shrink-0' : 'px-4 py-2.5'} ${className}`} aria-label={copied ? '链接已复制' : `分享${title}`} title={copied ? '链接已复制' : '分享'}>
+      {copied ? <Check size={17} className="text-green-700" /> : <Share2 size={17} className={iconOnly ? '' : 'mr-1.5'} />}
+      {iconOnly ? <span className="sr-only" aria-live="polite">{copied ? '链接已复制' : '分享'}</span> : copied ? '链接已复制' : '分享'}
     </button>
   )
 }
