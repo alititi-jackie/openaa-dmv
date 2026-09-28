@@ -12,7 +12,8 @@ import StateHero from '@/components/StateHero'
 import ToolGrid from '@/components/ToolGrid'
 import { dmvStates, getStateBySlug } from '@/lib/dmv-data'
 import { getStateQuestions } from '@/lib/state-question-bank'
-import { breadcrumbJsonLd, faqJsonLd, stateDescription, stateTitle, webPageJsonLd } from '@/lib/seo'
+import { getStateLandingCopy } from '@/lib/state-landing-copy'
+import { breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from '@/lib/seo'
 
 type Props = { params: Promise<{ state: string }> }
 
@@ -24,27 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { state: stateSlug } = await params
   const state = getStateBySlug(stateSlug)
   if (!state || state.status === 'external') return {}
-  const isPennsylvania = state.slug === 'pennsylvania'
-  const isMassachusetts = state.slug === 'massachusetts'
-  const isWashington = state.slug === 'washington'
-  const title = state.slug === 'california'
-    ? '2026 加州 DMV 驾照题库｜中英对照练习与模拟考试'
-    : isPennsylvania
-      ? '2026 宾州 DMV 驾照题库｜PennDOT 18题模拟考试'
-      : isMassachusetts
-        ? '2026 麻州 DMV 驾照题库｜Massachusetts RMV 25题模拟考试'
-        : isWashington
-          ? '2026 华盛顿州 DOL 驾照题库｜40题模拟考试'
-          : stateTitle(state)
-  const description = state.slug === 'california'
-    ? '加州 DMV Class C 驾照知识考试学习入口，支持中文、English 和中英对照练习，包含模拟考试、交通标志、错题本、官方 Driver Handbook 和申请入口。'
-    : isPennsylvania
-      ? '宾夕法尼亚州 PennDOT 驾照知识考试学习入口，提供中文、English 和中英对照练习、交通标志、错题本和 18 题模拟考试。'
-      : isMassachusetts
-        ? 'Massachusetts RMV Class D learner’s permit 学习入口，提供中文、English 和中英对照题库、25题模拟考试，并按答对18题通过进行练习。'
-        : isWashington
-          ? 'Washington DOL Driving Knowledge Exam 学习入口，提供中文、English 和中英对照题库、40题模拟考试，并按答对32题通过进行练习。'
-          : stateDescription(state)
+  const { homeMetadata: { title, description } } = getStateLandingCopy(state)
   return { title, description, alternates: { canonical: `/${state.slug}` }, openGraph: { title, description, url: `/${state.slug}` } }
 }
 
@@ -89,16 +70,8 @@ export default async function StatePage({ params }: Props) {
     { question: `${state.shortZh} DMV 练习需要登录吗？`, answer: '不需要，练习和错题默认保存在当前浏览器本地。' },
   ]
 
-  const pageTitle = isCalifornia ? '2026 加州 DMV 驾照题库' : isPennsylvania ? '2026 宾州 PennDOT 驾照题库' : isMassachusetts ? '2026 麻州 Massachusetts RMV 驾照题库' : isWashington ? '2026 华盛顿州 Washington DOL 驾照题库' : stateTitle(state)
-  const pageDescription = isCalifornia
-    ? `当前提供 ${questions.length} 道练习题，支持中文、English 和中英对照，覆盖道路规则、交通标志和安全驾驶，并配套模拟考试、错题本和官方 California DMV 学习入口。`
-    : isPennsylvania
-      ? `当前提供 ${questions.length} 道练习题，覆盖宾州道路规则、交通标志和安全驾驶，并配套 PennDOT 18 题模拟考试、错题本和官方学习入口。`
-      : isMassachusetts
-        ? `当前提供 ${questions.length} 道练习题，支持中文、English 和中英对照，并配套 RMV 25题 / 18题通过模拟考试。`
-        : isWashington
-          ? `当前提供 ${questions.length} 道练习题，支持中文、English 和中英对照，并配套 DOL 40题 / 32题通过模拟考试。`
-          : stateDescription(state)
+  const { homeHeading: pageTitle, homeSummary } = getStateLandingCopy(state)
+  const pageDescription = homeSummary(questions.length)
 
   return <>
     <JsonLd data={webPageJsonLd(pageTitle, pageDescription, `/${state.slug}`)} />
@@ -119,7 +92,7 @@ export default async function StatePage({ params }: Props) {
     {isWashington ? <WashingtonRules /> : null}
 
     <section className="bg-[#f4f7fb] py-10"><div className="page-shell grid gap-5 lg:grid-cols-[1fr_0.8fr]">
-      <div className="card p-5"><h2 className="text-2xl font-black text-slate-950">{state.nameZh} 考试准备步骤</h2><div className="mt-4 grid gap-3">{(isCalifornia ? ['先阅读 California DMV 官方 Driver’s Handbook；官方提供中文版本。','使用本站题库熟悉路权、车道线、交通标志、行人、自行车和安全驾驶，可切换中文、English 或中英对照。','完成多次模拟考试，把答错题目集中到错题本反复复习。','申请或预约前再次到 California DMV 官方页面核对证件、费用、考试方式和最新规定。','通过知识考试取得相应许可后，再按年龄和申请类型准备驾驶训练及路考。'] : isPennsylvania ? ['先阅读 PennDOT Driver’s Manual，并在本页先熟悉宾州高频规则。','使用题库练习宾州道路规则、交通标志和安全驾驶知识。','完成 18 题模拟考试，目标至少答对 15 题；把错题集中到错题本反复复习。','正式考试前再次到 PennDOT 官方页面核对证件、考试地点和最新规定。'] : isMassachusetts ? ['先阅读 Massachusetts RMV Class D Driver’s Manual；官方提供简体中文、繁体中文和 English 版本。','使用题库重点掌握 JOL、Hands-Free、校车 100 英尺、4 英尺安全超车、White Cane、路权与交通标志。','完成 25 题模拟考试，目标至少答对 18 题；把错题集中到错题本反复复习。','预约、费用、线上考试环境等办事信息放在考试指南中核对。','正式考试前再次核对 Massachusetts RMV 当前规则和 Driver’s Manual。'] : isWashington ? ['先阅读 Washington DOL Driver Guide，并用中文版本建立华州规则框架。','使用题库重点掌握 school zone 20 mph、校车、Intermediate License、40+10 小时、车灯 500/300 ft、行人和 DUI 规则。','完成 40 题模拟考试，目标至少答对 32 题；把错题集中到错题本反复复习。','预约、费用、测试地点和未来生效的新课程放在考试指南中核对。','正式考试前再次核对 Washington DOL 当前 Driver Guide 和考试页面。'] : state.guide).map((item,index)=><div key={item} className="flex gap-3 rounded-md bg-slate-50 p-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-blue-700 text-sm font-black text-white">{index+1}</span><p className="text-sm leading-6 text-slate-700">{item}</p></div>)}</div><Link href={`/${state.slug}/guide`} className="focus-ring mt-5 inline-flex rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-800">查看完整考试指南</Link></div>
+      <div className="card p-5"><h2 className="text-2xl font-black text-slate-950">{state.nameZh} 考试准备步骤</h2><div className="mt-4 grid gap-3">{(isCalifornia ? ['先阅读 California DMV 官方 Driver’s Handbook；官方提供中文版本。','使用本站题库熟悉路权、车道线、交通标志、行人、自行车和安全驾驶，可切换中文、English 或中英对照。','完成多次模拟考试，把答错题目集中到错题本反复复习。','申请或预约前再次到 California DMV 官方页面核对证件、费用、考试方式和最新规定。','通过知识考试取得相应许可后，再按年龄和申请类型准备驾驶训练及路考。'] : isPennsylvania ? ['先阅读 PennDOT Driver’s Manual，并在本页先熟悉宾州高频规则。','使用题库练习宾州道路规则、交通标志和安全驾驶知识。','完成 18 题模拟考试，目标至少答对 15 题；把错题集中到错题本反复复习。','正式考试前再次到 PennDOT 官方页面核对证件、考试地点和最新规定。'] : isMassachusetts ? ['先阅读 Massachusetts RMV Class D Driver’s Manual；官方提供简体中文、繁体中文和 English 版本。','使用题库重点掌握 JOL、Hands-Free、校车 100 英尺、4 英尺安全超车、White Cane、路权与交通标志。','完成 25 题模拟考试，目标至少答对 18 题；把错题集中到错题本反复复习。','预约、费用、线上考试环境等办事信息放在考试指南中核对。','正式考试前再次核对 Massachusetts RMV 当前规则和 Driver’s Manual。'] : isWashington ? ['先阅读 Washington DOL Driver Guide，并用中文版本建立华州规则框架。','使用题库重点掌握 school zone 20 mph、校车、Intermediate License、40+10 小时、车灯 500/300 ft、行人和 DUI 规则。','完成 40 题模拟考试，目标至少答对 32 题；把错题集中到错题本反复复习。','预约、费用、测试地点和课程要求放在考试指南中核对。','正式考试前再次核对 Washington DOL 当前 Driver Guide 和考试页面。'] : state.guide).map((item,index)=><div key={item} className="flex gap-3 rounded-md bg-slate-50 p-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-blue-700 text-sm font-black text-white">{index+1}</span><p className="text-sm leading-6 text-slate-700">{item}</p></div>)}</div><Link href={`/${state.slug}/guide`} className="focus-ring mt-5 inline-flex rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-800">查看完整考试指南</Link></div>
       <div className="card p-5"><h2 className="text-2xl font-black text-slate-950">官方入口</h2><div className="mt-4 grid gap-2 text-sm font-bold text-blue-800"><ExternalLinkAnchor href={state.officialUrl} className="justify-between px-1 py-1">{state.officialName} 官方首页</ExternalLinkAnchor><ExternalLinkAnchor href={state.driverManualUrl} className="justify-between px-1 py-1">Driver Manual / Handbook</ExternalLinkAnchor><ExternalLinkAnchor href={state.permitUrl} className="justify-between px-1 py-1">Permit / License 申请</ExternalLinkAnchor><ExternalLinkAnchor href={state.roadTestUrl} className="justify-between px-1 py-1">Road Test</ExternalLinkAnchor>{isCalifornia ? <ExternalLinkAnchor href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/" className="justify-between px-1 py-1">官方 Class C 样题</ExternalLinkAnchor> : null}</div><p className="mt-4 text-xs leading-5 text-slate-500">正式考试规则、申请资格、费用和预约信息请以官方页面最新内容为准。</p></div>
     </div></section>
 

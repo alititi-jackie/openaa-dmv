@@ -1,0 +1,30 @@
+name: DMV browser regression
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  browser-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - name: Start production site
+        run: npm run start -- -p 3100 > /tmp/openaa-dmv-server.log 2>&1 &
+      - name: Wait for site
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3100/ > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/openaa-dmv-server.log
+          exit 1
+      - run: npm run test:browser

@@ -9,7 +9,7 @@ export default function WashingtonRules() {
     ['Intermediate License', '前 6 个月通常不得搭载未满 20 岁的非直系家庭成员；凌晨 1:00–5:00 通常不得单独驾驶。'],
     ['校车', '同方向车辆遇校车红灯和 stop sign 必须停车；两车道路对向车辆也要停车，3 条或更多车道或有实体隔离带时对向交通有例外。'],
     ['车灯', '法律要求从日落后 30 分钟到日出前 30 分钟开启 headlights；会车 500 ft 内、跟车 300 ft 内应使用近光灯。'],
-    ['即将生效', '从 2026 年 11 月 1 日起，首次申请驾照且未满 25 岁的人将新增免费的 Work Zone and First Responder Safety 在线课程要求。该要求当前尚未生效。'],
+    ['课程生效日期', 'Washington DOL 公告的 Work Zone and First Responder Safety 在线课程生效日期为 2026 年 11 月 1 日，涉及首次申请驾照且未满 25 岁的人。申请前请到 DOL 官方页面核对现行要求。'],
   ]
 
   return <RuleSection eyebrow="Washington DOL 重点规则" title="华盛顿州考试规则与高频考点" description="下面是学习说明，不混入题库充当考题。题库只保留适合 Driving Knowledge Exam 练习的道路规则、交通标志和安全驾驶内容。" items={items} footnote="正式考试、驾照资格和未来生效规则请以 Washington DOL 当前 Driver Guide 和官方页面为准。" />
