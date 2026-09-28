@@ -1,4 +1,4 @@
-import type { DmvQuestion } from './dmv-data'
+import { getLiveStateBySlug, type DmvQuestion } from './dmv-data'
 import { getQuestionsForState as getBaseQuestionsForState } from './question-bank'
 import { sharedCoreBank } from './shared-core-bank'
 import { newJerseyQuestions } from './new-jersey-questions'
@@ -13,6 +13,8 @@ import { floridaQuestions } from './florida-questions'
 import { floridaSupplementQuestions } from './florida-questions-supplement'
 import { usesIndependentQuestionBank } from './state-architecture'
 
+const composedStateBanks = new Set(['california', 'new-jersey', 'pennsylvania', 'massachusetts', 'washington', 'texas', 'florida'])
+
 function normalize(value: string) { return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '') }
 function dedupe(questions: DmvQuestion[]) { const ids=new Set<string>(); const texts=new Set<string>(); return questions.filter((q)=>{ const text=normalize(q.question); if(ids.has(q.id)||texts.has(text)) return false; ids.add(q.id); texts.add(text); return true }) }
 const NON_EXAM_PATTERNS=[/多少道.*题|多少题.*通过|答对多少|通过分|及格分|80%.*通过/,/预约|appointment|测试中心|testing center|哪里.*考试|考试地点/,/身份证明|带什么.*证件|需要.*文件|申请材料/,/提供.*中文|考试语言|普通话|mandarin|翻译员|interpreter/,/失败.*几天|多久.*重考|重新考试|re-?test/,/路考.*车辆|road test.*vehicle|路考.*预约|路考.*多久|路考.*失败/,/考试.*费用|permit.*费用|license.*费用|手续费/,/driver manual.*哪里|手册.*哪里|官方网站|官网|网站.*查询/]
@@ -20,6 +22,7 @@ function isExamQuestion(question:DmvQuestion){ const text=`${question.question} 
 
 export function getStateQuestions(stateSlug:string):DmvQuestion[]{
   if (usesIndependentQuestionBank(stateSlug)) throw new Error('New York uses getNewYorkQuestions, not the shared state question bank')
+  if (getLiveStateBySlug(stateSlug) && !composedStateBanks.has(stateSlug)) throw new Error(`Missing state-specific question bank for ${stateSlug}`)
   const shared=getBaseQuestionsForState(stateSlug)
   if(stateSlug==='new-jersey') return dedupe([...newJerseyQuestions,...newJerseySignQuestions,...shared.filter(isExamQuestion)])
   if(stateSlug==='pennsylvania') return dedupe([...pennsylvaniaQuestions,...shared.filter(isExamQuestion)])

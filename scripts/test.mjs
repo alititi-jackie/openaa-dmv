@@ -56,6 +56,8 @@ for (const [slug, count] of Object.entries(counts)) {
   check(`${slug}: unchanged bank, IDs, answers and bilingual structure`, () => {
     const questions = getStateQuestions(slug)
     assert.equal(questions.length, count)
+    assert.ok(questions.some((question) => question.id.startsWith('shared-core-')))
+    assert.ok(questions.some((question) => !question.id.startsWith('shared-core-')))
     assert.equal(new Set(questions.map((q) => q.id)).size, count)
     for (const q of questions) {
       assert.ok(Number.isInteger(q.answerIndex) && q.answerIndex >= 0 && q.answerIndex < q.choices.length)
