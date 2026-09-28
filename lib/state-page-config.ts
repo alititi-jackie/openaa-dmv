@@ -9,7 +9,7 @@ export type StatePageConfig = {
   practice?: { title: string; description: string }
   mockTest?: { title: string; description: string; pageTitle?: string; pageDescription?: string; allowedLanguages?: Array<'zh'|'en'|'bilingual'>; defaultLanguage?: 'zh'|'en'|'bilingual'; notices?: Array<{ title: string; body: string; tone?: 'warning' }> }
   signs?: { title: string; description: string }
-  wrongQuestions?: { title: string; description: string }
+  wrongQuestions?: { title: string; description: string; heading?: string; structuredDescription?: string; backLabel?: string }
 }
 
 const CONFIGS: Record<string, StatePageConfig> = {
@@ -43,7 +43,7 @@ const CONFIGS: Record<string, StatePageConfig> = {
       ],
     },
     signs: { title: 'Florida Class E 交通标志练习', description: '佛州 Class E 交通标志、信号和道路标线练习。' },
-    wrongQuestions: { title: 'Florida Class E 错题本', description: '佛州 Class E 驾照笔试错题复习。' },
+    wrongQuestions: { title: 'Florida Class E 错题本', description: '佛州 Class E 驾照笔试错题复习。', heading: '佛州 FLHSMV 错题本', structuredDescription: '集中复习佛州 Class E 练习和模拟考试中的错题。', backLabel: '返回佛州 FLHSMV' },
   },
 }
 
