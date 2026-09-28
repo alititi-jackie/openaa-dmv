@@ -7,12 +7,25 @@ export const CONTENT_YEAR = 2026
 export type StatePageConfig = {
   questions?: { title: string; description: string; headerDescription?: (count: number) => string }
   practice?: { title: string; description: string }
-  mockTest?: { title: string; description: string; pageTitle?: string; pageDescription?: string; allowedLanguages?: Array<'zh'|'en'|'bilingual'>; defaultLanguage?: 'zh'|'en'|'bilingual'; notices?: Array<{ title: string; body: string; tone?: 'warning' }> }
+  mockTest?: { title: string; description: string; pageTitle?: string; pageDescription?: string; breadcrumbLabel?: string; backLabel?: string; allowedLanguages?: Array<'zh'|'en'|'bilingual'>; defaultLanguage?: 'zh'|'en'|'bilingual'; notices?: Array<{ title: string; body: string; tone?: 'warning' }> }
   signs?: { title: string; description: string }
   wrongQuestions?: { title: string; description: string; heading?: string; structuredDescription?: string; backLabel?: string }
 }
 
 const CONFIGS: Record<string, StatePageConfig> = {
+  texas: {
+    mockTest: {
+      title: '2026 德州 DPS 30题模拟练习｜Knowledge Test 70%通过标准',
+      description: 'Texas DPS Knowledge Test 30题模拟练习，按官方明确的70%通过标准评分。正式普通非商业驾照知识考试目前不提供中文，只提供 English 或 Spanish。',
+      pageTitle: '2026 德州 DPS 30题模拟练习',
+      pageDescription: '本站采用30题练习模式并按Texas DPS官方70%通过标准评分；正式考试语言为English或Spanish。',
+      breadcrumbLabel: '30题模拟练习',
+      backLabel: '返回德州 DPS',
+      allowedLanguages: ['en', 'bilingual'],
+      defaultLanguage: 'en',
+      notices: [{ title: '正式考试语言提醒', tone: 'warning', body: 'Texas DPS 普通非商业驾照正式 Knowledge Test 当前不提供中文，只提供 English 或 Spanish。本站模拟考试只提供 English / 中英对照；中文学习请使用题库或普通练习。' }],
+    },
+  },
   california: {
     questions: { title: `${CONTENT_YEAR} 加州 DMV 中英文题库｜驾照笔试练习`, description: '加州 DMV 驾照知识考试中英文练习题库。' },
     signs: { title: `${CONTENT_YEAR} 加州 DMV 交通标志题库｜中英文识图练习`, description: '加州 DMV 交通标志专项题库，支持中文、English 和中英对照。' },
