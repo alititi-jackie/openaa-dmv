@@ -36,6 +36,12 @@ check('architecture contract keeps New York independent and every other live ban
     assert.deepEqual(getStateArchitecture(slug), { questionBank: 'shared-plus-state', examRules: 'state-specific' })
   }
 })
+check('shared bank and generic exam config reject both New York route aliases', () => {
+  for (const slug of ['ny', 'new-york']) {
+    assert.throws(() => getStateQuestions(slug), /New York uses getNewYorkQuestions/)
+    assert.throws(() => getStateExamConfig(slug), /New York uses buildNyExam/)
+  }
+})
 for (const [slug, count] of Object.entries(counts)) {
   check(`${slug}: unchanged bank, IDs, answers and bilingual structure`, () => {
     const questions = getStateQuestions(slug)
