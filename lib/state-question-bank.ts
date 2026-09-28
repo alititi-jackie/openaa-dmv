@@ -11,6 +11,7 @@ import { texasQuestions } from './texas-questions'
 import { texasSpeedQuestions } from './texas-questions-speed'
 import { floridaQuestions } from './florida-questions'
 import { floridaSupplementQuestions } from './florida-questions-supplement'
+import { usesIndependentQuestionBank } from './state-architecture'
 
 function normalize(value: string) { return value.toLowerCase().replace(/[\s，。！？、,.!?;；:'"“”‘’（）()\-]/g, '') }
 function dedupe(questions: DmvQuestion[]) { const ids=new Set<string>(); const texts=new Set<string>(); return questions.filter((q)=>{ const text=normalize(q.question); if(ids.has(q.id)||texts.has(text)) return false; ids.add(q.id); texts.add(text); return true }) }
@@ -18,6 +19,7 @@ const NON_EXAM_PATTERNS=[/多少道.*题|多少题.*通过|答对多少|通过�
 function isExamQuestion(question:DmvQuestion){ const text=`${question.question} ${question.explanation}`.toLowerCase(); return !NON_EXAM_PATTERNS.some((p)=>p.test(text)) }
 
 export function getStateQuestions(stateSlug:string):DmvQuestion[]{
+  if (usesIndependentQuestionBank(stateSlug)) throw new Error('New York uses getNewYorkQuestions, not the shared state question bank')
   const shared=getBaseQuestionsForState(stateSlug)
   if(stateSlug==='new-jersey') return dedupe([...newJerseyQuestions,...newJerseySignQuestions,...shared.filter(isExamQuestion)])
   if(stateSlug==='pennsylvania') return dedupe([...pennsylvaniaQuestions,...shared.filter(isExamQuestion)])
