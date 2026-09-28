@@ -83,7 +83,7 @@ export default async function StatePage({ params }: Props) {
     { question: '华盛顿州 DOL Knowledge Test 有多少题？', answer: '正式 Driving Knowledge Exam 共 40 题，至少答对 32 题通过，及格成绩有效 2 年。' },
     { question: 'Washington DOL 提供中文考试吗？', answer: '提供。Knowledge Test 支持多种语言，其中包括简体中文、繁体中文和 English。' },
     { question: '华州模拟考试按什么标准练习？', answer: '本站华州模拟考试按 40 题组卷，并以答对 32 题作为通过标准。' },
-    { question: '2026年11月1日的新课程现在需要完成吗？', answer: '目前还不需要。DOL 已公告从 2026 年 11 月 1 日开始，首次申请驾照且未满 25 岁的人将新增免费的 Work Zone and First Responder Safety 在线课程要求。' },
+    { question: '华盛顿州新驾驶安全课程从何时开始？', answer: 'Washington DOL 公告的生效日期为 2026 年 11 月 1 日，涉及首次申请驾照且未满 25 岁的人。申请前请到 DOL 官方页面核对 Work Zone and First Responder Safety 课程的现行要求。' },
   ] : [
     { question: `${state.nameZh} DMV 驾照题库可以直接代替官方手册吗？`, answer: `不可以。本站用于驾照考试学习辅助，正式规则、费用和预约以 ${state.officialName} 官方页面为准。` },
     { question: `${state.shortZh} DMV 练习需要登录吗？`, answer: '不需要，练习和错题默认保存在当前浏览器本地。' },
