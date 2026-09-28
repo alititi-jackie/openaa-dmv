@@ -5,15 +5,20 @@ export function buildExam(questions: DmvQuestion[], mode: ExamModeConfig, seed: 
   if (!mode.quotas) return shuffleQuestions(questions, seed * 977 + 17).slice(0, Math.min(mode.size, questions.length))
 
   const categories: DmvQuestion['category'][] = ['rules', 'safety', 'signs', 'documents']
+  const quotaTotal = categories.reduce((total, category) => total + (mode.quotas?.[category] ?? 0), 0)
+  if (quotaTotal > mode.size || questions.length < mode.size) {
+    throw new Error(`Invalid exam quotas for ${mode.id}: cannot fill ${mode.size} questions`)
+  }
   const selected: DmvQuestion[] = []
   for (const [index, category] of categories.entries()) {
     const count = mode.quotas[category] ?? 0
     if (!count) continue
     const pool = shuffleQuestions(questions.filter((q) => q.category === category), seed * 97 + index * 31 + 1)
+    if (pool.length < count) throw new Error(`Invalid exam quotas for ${mode.id}: ${category} needs ${count}, has ${pool.length}`)
     selected.push(...pool.slice(0, count))
   }
 
-  const target = Math.min(mode.size, questions.length)
+  const target = mode.size
   if (selected.length < target) {
     const used = new Set(selected.map((q) => q.id))
     const remainder = shuffleQuestions(questions.filter((q) => !used.has(q.id)), seed * 193 + 7)
