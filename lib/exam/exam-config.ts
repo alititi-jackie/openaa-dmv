@@ -1,5 +1,6 @@
 import type { StateExamConfig } from './exam-types'
 import { usesIndependentQuestionBank } from '../state-architecture'
+import { getLiveStateBySlug } from '../dmv-data'
 
 const PRACTICE_DEFAULT: StateExamConfig = { stateSlug:'default', agencyLabel:'DMV', defaultModeId:'practice-20', modes:[{ id:'practice-20', label:'20 题练习模式', description:'本站学习模式；正式考试题量与通过标准以该州官方最新规定为准。', size:20, passingPercent:80, ruleStatus:'practice' }] }
 
@@ -15,5 +16,6 @@ const CONFIGS: Record<string, StateExamConfig> = {
 
 export function getStateExamConfig(stateSlug:string):StateExamConfig {
   if (usesIndependentQuestionBank(stateSlug)) throw new Error('New York uses buildNyExam and nyExamPassed, not the shared state exam config')
+  if (!CONFIGS[stateSlug] && getLiveStateBySlug(stateSlug)) throw new Error(`Missing state-specific exam config for ${stateSlug}`)
   return CONFIGS[stateSlug] ?? { ...PRACTICE_DEFAULT, stateSlug }
 }
