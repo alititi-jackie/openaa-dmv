@@ -5,6 +5,7 @@ process.env.NEXT_PUBLIC_SITE_URL = 'https://ny.openaa.com'
 
 const { getStateQuestions } = require('../lib/state-question-bank.ts')
 const { getNewYorkQuestions } = require('../lib/new-york-bank.ts')
+const { getStateArchitecture } = require('../lib/state-architecture.ts')
 const { getEnglishContent } = require('../lib/dmv-language.ts')
 const { auditNewYorkEnglish } = require('../lib/new-york-english-audit.ts')
 const { SITE_URL, getSiteUrl } = require('../lib/site.ts')
@@ -28,6 +29,13 @@ check('canonical site URL cannot be overwritten by a stale deployment variable',
   assert.equal(getSiteUrl('/sitemap.xml'), 'https://dmv.openaa.com/sitemap.xml')
 })
 const counts = { california: 263, 'new-jersey': 188, pennsylvania: 187, massachusetts: 195, washington: 190, texas: 180, florida: 197 }
+check('architecture contract keeps New York independent and every other live bank shared-plus-state', () => {
+  assert.deepEqual(getStateArchitecture('new-york'), { questionBank: 'independent', examRules: 'state-specific' })
+  assert.deepEqual(getStateArchitecture('ny'), { questionBank: 'independent', examRules: 'state-specific' })
+  for (const slug of Object.keys(counts)) {
+    assert.deepEqual(getStateArchitecture(slug), { questionBank: 'shared-plus-state', examRules: 'state-specific' })
+  }
+})
 for (const [slug, count] of Object.entries(counts)) {
   check(`${slug}: unchanged bank, IDs, answers and bilingual structure`, () => {
     const questions = getStateQuestions(slug)
