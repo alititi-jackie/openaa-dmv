@@ -14,7 +14,7 @@ export default function Header() {
       <div className="dmv-header-inner">
         <Link href="/" className="dmv-brand focus-ring" aria-label="OpenAA DMV 首页">
           <Image src="/openaa-logo.png" alt="" width={36} height={36} priority />
-          <b><em>Open</em>AA DMV</b>
+          <span className="dmv-brand-text"><em>Open</em>AA DMV</span>
         </Link>
 
         <nav className="dmv-site-nav" aria-label="主导航">
@@ -52,26 +52,38 @@ export default function Header() {
         }
 
         .dmv-brand {
-          display: flex;
-          align-items: center;
+          display: inline-flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: flex-start;
           gap: 9px;
           color: #0f172a;
-          flex-shrink: 0;
+          flex: 0 0 auto;
+          white-space: nowrap;
           text-decoration: none;
         }
 
         .dmv-brand :global(img) {
+          display: block;
+          width: 36px;
+          height: 36px;
+          flex: 0 0 36px;
           border-radius: 10px;
         }
 
-        .dmv-brand b {
+        .dmv-brand-text {
+          display: inline-block;
+          flex: 0 0 auto;
+          margin: 0;
           font-size: 23px;
+          font-weight: 700;
           letter-spacing: -0.7px;
           line-height: 1;
           white-space: nowrap;
+          color: #0f172a;
         }
 
-        .dmv-brand em {
+        .dmv-brand-text em {
           font-style: normal;
           color: #2563eb;
         }
@@ -128,12 +140,17 @@ export default function Header() {
             gap: 6px;
           }
 
+          .dmv-brand {
+            gap: 7px;
+          }
+
           .dmv-brand :global(img) {
             width: 30px;
             height: 30px;
+            flex-basis: 30px;
           }
 
-          .dmv-brand b {
+          .dmv-brand-text {
             font-size: 21px;
           }
 
@@ -169,7 +186,7 @@ export default function Header() {
             gap: 6px;
           }
 
-          .dmv-brand b {
+          .dmv-brand-text {
             font-size: 18px;
           }
 
