@@ -14,10 +14,7 @@ export default function Header() {
       <div className="dmv-header-inner">
         <Link href="/" className="dmv-brand focus-ring" aria-label="OpenAA DMV 首页">
           <Image src="/openaa-logo.png" alt="" width={36} height={36} priority />
-          <span>
-            <b><em>Open</em>AA DMV</b>
-            <small>美国驾照题库</small>
-          </span>
+          <b><em>Open</em>AA DMV</b>
         </Link>
 
         <nav className="dmv-site-nav" aria-label="主导航">
@@ -67,12 +64,6 @@ export default function Header() {
           border-radius: 10px;
         }
 
-        .dmv-brand > span {
-          display: flex;
-          align-items: baseline;
-          gap: 10px;
-        }
-
         .dmv-brand b {
           font-size: 23px;
           letter-spacing: -0.7px;
@@ -83,14 +74,6 @@ export default function Header() {
         .dmv-brand em {
           font-style: normal;
           color: #2563eb;
-        }
-
-        .dmv-brand small {
-          font-size: 14px;
-          color: #64748b;
-          border-left: 1px solid #dbe3ee;
-          padding-left: 10px;
-          white-space: nowrap;
         }
 
         .dmv-site-nav {
@@ -154,15 +137,6 @@ export default function Header() {
             font-size: 21px;
           }
 
-          .dmv-brand > span {
-            gap: 6px;
-          }
-
-          .dmv-brand small {
-            font-size: 12px;
-            padding-left: 6px;
-          }
-
           .dmv-site-nav {
             gap: 8px;
           }
@@ -189,6 +163,14 @@ export default function Header() {
         @media (max-width: 390px) {
           .dmv-header-inner {
             gap: 5px;
+          }
+
+          .dmv-brand {
+            gap: 6px;
+          }
+
+          .dmv-brand b {
+            font-size: 18px;
           }
 
           .dmv-site-nav {
