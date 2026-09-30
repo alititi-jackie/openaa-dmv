@@ -27,7 +27,7 @@ export default function Header() {
             aria-current={isHome ? 'page' : undefined}
             className={`focus-ring inline-flex items-center whitespace-nowrap rounded-md px-2 py-2 text-xs transition sm:px-3 sm:text-sm ${
               isHome
-                ? 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                ? 'font-bold text-blue-700'
                 : 'text-slate-700 hover:bg-slate-100'
             }`}
           >
