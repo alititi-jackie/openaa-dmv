@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { dmvStates } from '@/lib/dmv-data'
-import { getOpenAAUrl, NUMBERMOBI_URL, OPENAA_DMV_URL, TOOLKU_URL } from '@/lib/site'
+import { getOpenAAUrl, NUMBERMOBI_URL, OPENAA_DMV_URL, OPENAA_TOOLS_URL } from '@/lib/site'
 
 export default function Footer() {
   const liveStates = dmvStates.filter((state) => state.status === 'live')
@@ -36,7 +36,7 @@ export default function Footer() {
         <div>
           <p className="text-sm font-bold text-slate-950">实用服务</p>
           <div className="mt-3 grid gap-2 text-sm text-slate-600">
-            <a href={TOOLKU_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-950">Toolku 工具库</a>
+            <a href={OPENAA_TOOLS_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-950">OpenAA 工具库</a>
             <a href={NUMBERMOBI_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-950">NumberMobi 美国靓号</a>
           </div>
         </div>

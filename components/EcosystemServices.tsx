@@ -1,12 +1,12 @@
 import { Smartphone, Wrench } from 'lucide-react'
-import { NUMBERMOBI_URL, TOOLKU_URL } from '@/lib/site'
+import { NUMBERMOBI_URL, OPENAA_TOOLS_URL } from '@/lib/site'
 
 const services = [
   {
-    title: 'Toolku 美国生活工具',
+    title: 'OpenAA 工具库',
     description: '检查 DMV 申请资料，并使用汇率换算、费用记录等在美生活工具。',
-    action: '打开 Toolku',
-    href: TOOLKU_URL,
+    action: '打开 OpenAA 工具库',
+    href: OPENAA_TOOLS_URL,
     icon: Wrench,
     accent: 'text-teal-700',
     hover: 'hover:border-teal-300',
