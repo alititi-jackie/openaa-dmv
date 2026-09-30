@@ -2,7 +2,7 @@ import Link from 'next/link'
 import BackLink from './BackLink'
 import ExternalLinkAnchor from './ExternalLinkAnchor'
 import type { DmvState } from '@/lib/dmv-data'
-import { TOOLKU_DMV_CHECKER_URL } from '@/lib/site'
+import { OPENAA_TOOLS_DMV_CHECKER_URL } from '@/lib/site'
 
 type Props = {
   state: DmvState
@@ -59,8 +59,8 @@ export default function StateGuideLayout({ state, basePath = `/${state.slug}`, b
             </div>
             <div className="card p-5">
               <h2 className="text-xl font-black text-slate-950">申请资料工具</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">准备申请驾照前，可使用 Toolku 检查常见证件和资料，正式要求仍以本州 DMV 为准。</p>
-              <ExternalLinkAnchor href={TOOLKU_DMV_CHECKER_URL} className="mt-4 border border-teal-200 bg-teal-50 px-3 py-2 text-sm font-bold text-teal-800 hover:bg-teal-100">检查 DMV 申请资料</ExternalLinkAnchor>
+              <p className="mt-3 text-sm leading-6 text-slate-600">准备申请驾照前，可使用 OpenAA 工具库检查常见证件和资料，正式要求仍以本州 DMV 为准。</p>
+              <ExternalLinkAnchor href={OPENAA_TOOLS_DMV_CHECKER_URL} className="mt-4 border border-teal-200 bg-teal-50 px-3 py-2 text-sm font-bold text-teal-800 hover:bg-teal-100">检查 DMV 申请资料</ExternalLinkAnchor>
             </div>
             {extraAside}
           </aside>

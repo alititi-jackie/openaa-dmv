@@ -203,7 +203,7 @@ check('JSON-LD cannot close its script element', () => {
 })
 check('ecosystem services use descriptive tracked external links', () => {
   const html = renderToStaticMarkup(React.createElement(EcosystemServices))
-  assert.ok(html.includes('Toolku 美国生活工具'))
+  assert.ok(html.includes('OpenAA 工具库'))
   assert.ok(html.includes('NumberMobi 美国手机靓号'))
   assert.ok(html.includes('utm_source=dmv.openaa.com'))
   assert.equal((html.match(/target="_blank"/g) || []).length, 2)
