@@ -12,7 +12,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[#dbe3ee] bg-white/95 backdrop-blur-[12px]">
-      <div className="mx-auto flex min-h-[72px] max-w-[1080px] items-center gap-[22px] px-5 py-3 max-[760px]:min-h-16 max-[760px]:gap-1.5 max-[760px]:px-2.5 max-[760px]:py-2.5 max-[390px]:gap-1.5">
+      <div className="mx-auto flex min-h-[72px] max-w-[1040px] items-center gap-[22px] px-4 py-3 max-[760px]:min-h-16 max-[760px]:gap-1.5 max-[760px]:px-2.5 max-[760px]:py-2.5 max-[390px]:gap-1.5">
         <Link href="/" className="focus-ring shrink-0 text-[#0f172a]" aria-label="OpenAA DMV 首页">
           <span
             className="inline-flex flex-row flex-nowrap items-center whitespace-nowrap"
