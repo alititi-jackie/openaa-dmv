@@ -37,7 +37,7 @@ export default function ToolGrid({ state, basePath = `/${state.slug}` }: { state
         </div>
       </section>
       {showMovedExamReminder ? <section className="moved-exam-reminder bg-white"><div className="page-shell"><div className="card p-5"><p className="text-sm font-bold text-teal-700">考试提醒</p><p className="mt-2 text-sm leading-6 text-slate-600">{examRule}</p><p className="mt-2 text-sm leading-6 text-slate-600">{passRule}</p></div></div></section> : null}
-      {showMovedExamReminder ? <style>{`.moved-exam-reminder + section > .page-shell > .card:first-child { display: none; }`}</style> : null}
+      {showMovedExamReminder ? <style>{`.moved-exam-reminder + style + section > .page-shell > .card:first-child { display: none; }`}</style> : null}
     </>
   )
 }
