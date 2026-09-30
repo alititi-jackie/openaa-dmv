@@ -70,12 +70,25 @@ for (const [slug, count] of Object.entries(counts)) {
       const exam = buildExam(questions, mode, 123)
       assert.equal(exam.length, mode.size)
       assert.equal(new Set(exam.map((q) => q.id)).size, mode.size)
+      if (mode.quotas) {
+        for (const [category, quota] of Object.entries(mode.quotas)) {
+          assert.ok(exam.filter((q) => q.category === category).length >= quota, `${slug}/${mode.id}: ${category} quota`)
+          assert.ok(questions.filter((q) => q.category === category).length >= quota, `${slug}/${mode.id}: ${category} bank capacity`)
+        }
+        assert.ok(Object.values(mode.quotas).reduce((sum, quota) => sum + quota, 0) <= mode.size)
+      }
       assert.notDeepEqual(exam.map((q) => q.id), buildExam(questions, mode, 456).map((q) => q.id))
       assert.ok(examPassed(mode.size, mode.size, mode))
       assert.equal(examPassed(0, mode.size, mode), false)
     }
   })
 }
+check('configured exam quotas reject undersized category pools instead of silently substituting questions', () => {
+  const mode = getStateExamConfig('washington').modes[0]
+  const questions = getStateQuestions('washington').filter((q) => q.category !== 'signs')
+  assert.throws(() => buildExam(questions, mode, 123), /signs needs 8, has 0/)
+  assert.throws(() => buildExam(getStateQuestions('washington'), { ...mode, size: 20 }, 123), /cannot fill 20 questions/)
+})
 check('New York remains independent: 150 questions, 20 per exam, exactly 4 signs, dual pass conditions', () => {
   const questions = getNewYorkQuestions()
   assert.equal(questions.length, 150)
