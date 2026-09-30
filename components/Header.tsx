@@ -8,206 +8,55 @@ import { OPENAA_DMV_URL } from '@/lib/site'
 
 export default function Header() {
   const pathname = usePathname()
+  const isHome = pathname === '/'
 
   return (
-    <header className="dmv-site-header">
-      <div className="dmv-header-inner">
-        <Link href="/" className="dmv-brand focus-ring" aria-label="OpenAA DMV 首页">
-          <Image src="/openaa-logo.png" alt="" width={36} height={36} priority />
-          <span className="dmv-brand-text"><em>Open</em>AA DMV</span>
+    <header className="sticky top-0 z-50 border-b border-[#dbe3ee] bg-white/95 backdrop-blur-[12px]">
+      <div className="mx-auto flex min-h-[72px] max-w-[1080px] items-center gap-[22px] px-5 py-3 max-[760px]:min-h-16 max-[760px]:gap-1.5 max-[760px]:px-2.5 max-[760px]:py-2.5 max-[390px]:gap-1.5">
+        <Link href="/" className="focus-ring shrink-0 text-[#0f172a]" aria-label="OpenAA DMV 首页">
+          <span
+            className="inline-flex flex-row flex-nowrap items-center whitespace-nowrap"
+            style={{ display: 'inline-flex', flexDirection: 'row', alignItems: 'center', flexWrap: 'nowrap', gap: 9, whiteSpace: 'nowrap' }}
+          >
+            <Image
+              src="/openaa-logo.png"
+              alt=""
+              width={36}
+              height={36}
+              priority
+              className="block h-9 w-9 shrink-0 rounded-[10px] max-[760px]:h-[30px] max-[760px]:w-[30px]"
+            />
+            <span className="inline-block shrink-0 whitespace-nowrap text-[23px] font-bold leading-none tracking-[-0.7px] max-[760px]:text-[21px] max-[390px]:text-[18px]">
+              <em className="not-italic text-[#2563eb]">Open</em>AA DMV
+            </span>
+          </span>
         </Link>
 
-        <nav className="dmv-site-nav" aria-label="主导航">
-          <Link href="/" aria-current={pathname === '/' ? 'page' : undefined} className="focus-ring">
+        <nav className="ml-auto flex shrink-0 items-center gap-6 max-[760px]:gap-2 max-[390px]:gap-[7px]" aria-label="主导航">
+          <Link
+            href="/"
+            aria-current={isHome ? 'page' : undefined}
+            className="focus-ring whitespace-nowrap text-sm max-[760px]:text-xs max-[390px]:text-[11px]"
+            style={{ color: isHome ? '#2563eb' : '#475569', fontWeight: isHome ? 700 : 400 }}
+          >
             首页
           </Link>
-          <a href={OPENAA_DMV_URL} target="_blank" rel="noopener noreferrer" className="focus-ring">
+          <a
+            href={OPENAA_DMV_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="focus-ring whitespace-nowrap text-sm text-[#475569] max-[760px]:text-xs max-[390px]:text-[11px]"
+          >
             OpenAA DMV
           </a>
         </nav>
 
-        <div className="dmv-header-actions" aria-label="页面操作">
-          <ShareButton title="OpenAA DMV" iconOnly className="dmv-header-share" />
-        </div>
+        <ShareButton
+          title="OpenAA DMV"
+          iconOnly
+          className="!h-[38px] !w-[38px] !shrink-0 !rounded-full !border-[#dbe3ee] !bg-white !p-0 !text-[#0f172a] max-[760px]:!h-7 max-[760px]:!w-7 max-[390px]:!h-[27px] max-[390px]:!w-[27px]"
+        />
       </div>
-
-      <style jsx>{`
-        .dmv-site-header {
-          position: sticky;
-          top: 0;
-          z-index: 50;
-          background: rgba(255, 255, 255, 0.93);
-          border-bottom: 1px solid #dbe3ee;
-          backdrop-filter: blur(12px);
-        }
-
-        .dmv-header-inner {
-          max-width: 1080px;
-          margin: auto;
-          min-height: 72px;
-          padding: 12px 20px;
-          display: flex;
-          align-items: center;
-          gap: 22px;
-        }
-
-        .dmv-brand {
-          display: inline-flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
-          justify-content: flex-start;
-          gap: 9px;
-          color: #0f172a;
-          flex: 0 0 auto;
-          white-space: nowrap;
-          text-decoration: none;
-        }
-
-        .dmv-brand :global(img) {
-          display: block;
-          width: 36px;
-          height: 36px;
-          flex: 0 0 36px;
-          border-radius: 10px;
-        }
-
-        .dmv-brand-text {
-          display: inline-block;
-          flex: 0 0 auto;
-          margin: 0;
-          font-size: 23px;
-          font-weight: 700;
-          letter-spacing: -0.7px;
-          line-height: 1;
-          white-space: nowrap;
-          color: #0f172a;
-        }
-
-        .dmv-brand-text em {
-          font-style: normal;
-          color: #2563eb;
-        }
-
-        .dmv-site-nav {
-          margin-left: auto;
-          display: flex;
-          gap: 24px;
-          align-items: center;
-          flex-shrink: 0;
-        }
-
-        .dmv-site-nav :global(a) {
-          font-size: 14px;
-          color: #475569;
-          white-space: nowrap;
-          text-decoration: none;
-        }
-
-        .dmv-site-nav :global(a[aria-current='page']) {
-          color: #2563eb !important;
-          font-weight: 700;
-        }
-
-        .dmv-header-actions {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex-shrink: 0;
-        }
-
-        .dmv-header-actions :global(.dmv-header-share) {
-          width: 38px !important;
-          height: 38px !important;
-          padding: 0 !important;
-          border: 1px solid #dbe3ee !important;
-          border-radius: 50% !important;
-          background: #fff !important;
-          color: #0f172a !important;
-          display: grid !important;
-          place-items: center !important;
-          flex-shrink: 0;
-        }
-
-        .dmv-header-actions :global(.dmv-header-share svg) {
-          width: 19px;
-          height: 19px;
-        }
-
-        @media (max-width: 760px) {
-          .dmv-header-inner {
-            min-height: 64px;
-            padding: 10px;
-            gap: 6px;
-          }
-
-          .dmv-brand {
-            gap: 7px;
-          }
-
-          .dmv-brand :global(img) {
-            width: 30px;
-            height: 30px;
-            flex-basis: 30px;
-          }
-
-          .dmv-brand-text {
-            font-size: 21px;
-          }
-
-          .dmv-site-nav {
-            gap: 8px;
-          }
-
-          .dmv-site-nav :global(a) {
-            font-size: 12px;
-          }
-
-          .dmv-header-actions {
-            gap: 5px;
-          }
-
-          .dmv-header-actions :global(.dmv-header-share) {
-            width: 28px !important;
-            height: 28px !important;
-          }
-
-          .dmv-header-actions :global(.dmv-header-share svg) {
-            width: 16px;
-            height: 16px;
-          }
-        }
-
-        @media (max-width: 390px) {
-          .dmv-header-inner {
-            gap: 5px;
-          }
-
-          .dmv-brand {
-            gap: 6px;
-          }
-
-          .dmv-brand-text {
-            font-size: 18px;
-          }
-
-          .dmv-site-nav {
-            gap: 7px;
-          }
-
-          .dmv-site-nav :global(a) {
-            font-size: 11px;
-          }
-
-          .dmv-header-actions {
-            gap: 4px;
-          }
-
-          .dmv-header-actions :global(.dmv-header-share) {
-            width: 27px !important;
-            height: 27px !important;
-          }
-        }
-      `}</style>
     </header>
   )
 }
