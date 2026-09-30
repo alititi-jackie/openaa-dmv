@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { ExternalLink } from 'lucide-react'
 import ShareButton from '@/components/ShareButton'
 import { OPENAA_DMV_URL } from '@/lib/site'
 
@@ -13,36 +12,57 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="page-shell flex h-16 items-center justify-between gap-1.5 sm:gap-4">
-        <Link href="/" className="focus-ring flex shrink-0 items-center gap-2 rounded-md" aria-label="OpenAA DMV 首页">
-          <Image src="/openaa-logo.png" alt="" width={36} height={36} className="h-8 w-8 rounded-md object-contain sm:h-9 sm:w-9" priority />
-          <span className="hidden min-w-0 sm:block">
-            <span className="block whitespace-nowrap text-base font-extrabold leading-5 text-slate-950">OpenAA DMV</span>
-            <span className="block whitespace-nowrap text-xs font-medium text-slate-500">美国驾照题库</span>
+      <div className="page-shell flex min-h-16 items-center gap-1.5 px-2 py-2 sm:min-h-[72px] sm:gap-5 sm:px-5 sm:py-3">
+        <Link href="/" className="focus-ring flex shrink-0 items-center gap-1.5 rounded-md text-slate-950 sm:gap-2" aria-label="OpenAA DMV 首页">
+          <Image src="/openaa-logo.png" alt="" width={36} height={36} className="h-[30px] w-[30px] rounded-md object-contain sm:h-9 sm:w-9" priority />
+          <span className="flex min-w-0 items-baseline gap-1.5 sm:gap-2.5">
+            <strong className="whitespace-nowrap text-[17px] font-extrabold leading-none tracking-tight text-slate-950 sm:text-[21px]">OpenAA DMV</strong>
+            <small className="whitespace-nowrap border-l border-slate-200 pl-1.5 text-[10px] font-medium text-slate-500 sm:pl-2.5 sm:text-xs">美国驾照题库</small>
           </span>
         </Link>
-        <nav className="flex min-w-0 shrink-0 items-center gap-1 text-sm font-semibold sm:gap-2">
+
+        <nav className="ml-auto flex min-w-0 shrink-0 items-center gap-1.5 text-xs font-semibold sm:gap-6 sm:text-sm" aria-label="主导航">
           <Link
             href="/"
             aria-current={isHome ? 'page' : undefined}
-            className={`focus-ring inline-flex items-center whitespace-nowrap rounded-md px-2 py-2 text-xs transition sm:px-3 sm:text-sm ${
-              isHome
-                ? 'font-bold text-blue-700'
-                : 'text-slate-700 hover:bg-slate-100'
-            }`}
+            className={`focus-ring whitespace-nowrap rounded-md ${isHome ? 'font-bold text-blue-600' : 'text-slate-600 hover:text-slate-950'}`}
           >
             首页
           </Link>
           <a
             href={OPENAA_DMV_URL}
-            className="focus-ring inline-flex items-center whitespace-nowrap rounded-md border border-slate-200 px-2 py-2 text-xs text-slate-800 hover:bg-slate-100 sm:px-3 sm:text-sm"
+            className="focus-ring whitespace-nowrap rounded-md text-slate-600 hover:text-slate-950"
           >
             OpenAA DMV
-            <ExternalLink size={14} className="ml-1 shrink-0 sm:ml-1.5 sm:size-[15px]" />
           </a>
-          <ShareButton title="OpenAA DMV" iconOnly />
         </nav>
+
+        <ShareButton
+          title="OpenAA DMV"
+          iconOnly
+          className="!h-7 !w-7 !rounded-full !border-slate-200 !text-slate-900 sm:!h-[38px] sm:!w-[38px]"
+        />
       </div>
+
+      <style jsx>{`
+        @media (max-width: 360px) {
+          :global(.page-shell) {
+            padding-left: 8px;
+            padding-right: 8px;
+          }
+          nav {
+            gap: 5px;
+            font-size: 10px;
+          }
+          strong {
+            font-size: 15px;
+          }
+          small {
+            padding-left: 5px;
+            font-size: 9px;
+          }
+        }
+      `}</style>
     </header>
   )
 }
