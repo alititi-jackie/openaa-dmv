@@ -12,8 +12,7 @@ export default function ToolGrid({ state, basePath = `/${state.slug}` }: { state
       <section className="bg-white py-8">
         <div className="page-shell">
           <div className="mb-4">
-            <p className="text-sm font-bold text-teal-700">学习中心</p>
-            <h2 className="mt-1 text-2xl font-black text-slate-950">选择学习方式</h2>
+            <h2 className="text-2xl font-black text-slate-950">选择学习方式</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {dmvTools.map(({ title, description, href, icon: Icon }) => (
