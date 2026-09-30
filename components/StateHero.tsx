@@ -3,8 +3,12 @@ import type { DmvState } from '@/lib/dmv-data'
 
 type Props = {
   state: DmvState
+  basePath?: string
   title?: string
   summary?: string
+  examRule?: string
+  passRule?: string
+  examButtonLabel?: string
 }
 
 export default function StateHero({ state, title, summary: summaryOverride }: Props) {
