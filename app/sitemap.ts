@@ -7,6 +7,7 @@ import { pennsylvaniaSeoArticles } from '@/lib/pennsylvania-seo-content'
 import { massachusettsSeoArticles } from '@/lib/massachusetts-seo-content'
 import { washingtonSeoArticles } from '@/lib/washington-seo-content'
 import { texasSeoArticles } from '@/lib/texas-seo-content'
+import { floridaSeoArticles } from '@/lib/florida-seo-content'
 import { getSiteUrl } from '@/lib/site'
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -29,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   routes.push(...massachusettsSeoArticles.map((article) => `/massachusetts/${article.slug}`))
   routes.push(...washingtonSeoArticles.map((article) => `/washington/${article.slug}`))
   routes.push(...texasSeoArticles.map((article) => `/texas/${article.slug}`))
+  routes.push(...floridaSeoArticles.map((article) => `/florida/${article.slug}`))
 
   return routes.map((route) => ({
     url: getSiteUrl(route),
