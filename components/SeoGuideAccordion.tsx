@@ -30,6 +30,7 @@ export default function SeoGuideAccordion({ states }: { states: GuideState[] }) 
               onClick={() => setOpenState(isOpen ? null : state.englishName)}
               className="focus-ring flex w-full items-center justify-between gap-4 px-5 py-5 text-left transition hover:bg-slate-50"
               aria-expanded={isOpen}
+              aria-controls={`guide-${state.englishName.toLowerCase().replaceAll(' ', '-')}`}
             >
               <span>
                 <span className="block text-xl font-black text-slate-950">{state.name}</span>
@@ -41,22 +42,25 @@ export default function SeoGuideAccordion({ states }: { states: GuideState[] }) 
               />
             </button>
 
-            {isOpen ? (
-              <div className="border-t border-slate-100 px-4 py-3 sm:px-5">
-                <div className="divide-y divide-slate-100">
-                  {state.links.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="focus-ring flex min-h-12 items-center justify-between gap-3 py-3 text-[15px] font-bold text-slate-700 transition hover:text-blue-700"
-                    >
-                      <span>{link.label}</span>
-                      <span className="text-slate-300">›</span>
-                    </Link>
-                  ))}
-                </div>
+            <div
+              id={`guide-${state.englishName.toLowerCase().replaceAll(' ', '-')}`}
+              className={`${isOpen ? 'block' : 'hidden'} border-t border-slate-100 px-4 py-3 sm:px-5`}
+              aria-hidden={!isOpen}
+            >
+              <div className="divide-y divide-slate-100">
+                {state.links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    tabIndex={isOpen ? 0 : -1}
+                    className="focus-ring flex min-h-12 items-center justify-between gap-3 py-3 text-[15px] font-bold text-slate-700 transition hover:text-blue-700"
+                  >
+                    <span>{link.label}</span>
+                    <span className="text-slate-300">›</span>
+                  </Link>
+                ))}
               </div>
-            ) : null}
+            </div>
           </section>
         )
       })}
