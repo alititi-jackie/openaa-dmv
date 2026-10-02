@@ -10,9 +10,10 @@ type Props = {
   practiceLabel: string
   sections: Section[]
   faq: FaqItem[]
+  officialName?: string
 }
 
-export default function SeoArticleLayout({ title, intro, practiceHref, practiceLabel, sections, faq }: Props) {
+export default function SeoArticleLayout({ title, intro, practiceHref, practiceLabel, sections, faq, officialName = 'New York State DMV' }: Props) {
   return (
     <article className="bg-white py-6 sm:py-10">
       <div className="page-shell max-w-3xl">
@@ -57,7 +58,7 @@ export default function SeoArticleLayout({ title, intro, practiceHref, practiceL
         </section>
 
         <footer className="mt-10 border-t border-slate-200 pt-6">
-          <p className="text-sm leading-6 text-slate-500">考试规则、语言和办事要求可能调整，正式考试前请以 New York State DMV 最新公布的信息为准。</p>
+          <p className="text-sm leading-6 text-slate-500">考试规则、语言和办事要求可能调整，正式考试前请以 {officialName} 最新公布的信息为准。</p>
           <Link href="/" className="mt-4 inline-flex font-bold text-blue-700 hover:text-blue-800">选择其他州练习 →</Link>
         </footer>
       </div>
