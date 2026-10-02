@@ -21,7 +21,8 @@ export default function SeoArticleLayout({ title, intro, practiceHref, practiceL
           <p className="mt-4 text-base leading-7 text-slate-600">{intro}</p>
           <Link
             href={practiceHref}
-            className="mt-5 inline-flex min-h-14 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-6 py-3.5 text-xl font-extrabold !text-blue-700 shadow-sm transition hover:bg-blue-100 hover:!text-blue-800"
+            className="mt-5 inline-flex min-h-14 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-6 py-3.5 text-xl font-extrabold shadow-sm transition hover:bg-blue-100"
+            style={{ color: '#1d4ed8' }}
           >
             {practiceLabel}
           </Link>
