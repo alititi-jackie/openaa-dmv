@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { dmvStates } from '@/lib/dmv-data'
+import { nySeoArticles } from '@/lib/ny-seo-content'
 import { getSiteUrl } from '@/lib/site'
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -15,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   routes.push('/ny','/ny/questions','/ny/practice','/ny/mock-test','/ny/signs','/ny/wrong-questions','/ny/guide')
+  routes.push(...nySeoArticles.map((article) => `/ny/${article.slug}`))
 
   return routes.map((route) => ({
     url: getSiteUrl(route),
