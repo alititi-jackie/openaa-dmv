@@ -1,7 +1,18 @@
-import { Smartphone, Wrench } from 'lucide-react'
+import Link from 'next/link'
+import { BookOpen, Smartphone, Wrench } from 'lucide-react'
 import { NUMBERMOBI_URL, OPENAA_TOOLS_URL } from '@/lib/site'
 
 const services = [
+  {
+    title: 'DMV 中文考试指南',
+    description: '按州查看中文题库、模拟考试、考试规则、交通标志和驾驶手册。',
+    action: '查看各州考试指南',
+    href: '/guide',
+    icon: BookOpen,
+    accent: 'text-sky-700',
+    hover: 'hover:border-sky-300',
+    external: false,
+  },
   {
     title: 'OpenAA 工具库',
     description: '检查 DMV 申请资料，并使用汇率换算、费用记录等在美生活工具。',
@@ -10,6 +21,7 @@ const services = [
     icon: Wrench,
     accent: 'text-teal-700',
     hover: 'hover:border-teal-300',
+    external: true,
   },
   {
     title: 'NumberMobi 美国手机靓号',
@@ -19,6 +31,7 @@ const services = [
     icon: Smartphone,
     accent: 'text-blue-700',
     hover: 'hover:border-blue-300',
+    external: true,
   },
 ]
 
@@ -31,15 +44,27 @@ export default function EcosystemServices() {
           <h2 className="mt-2 text-3xl font-black text-slate-950">更多在美生活工具</h2>
           <p className="mt-3 text-sm leading-6 text-slate-600">完成驾照学习后，还可以使用这些独立服务处理生活中的实际需要。</p>
         </div>
-        <div className="mt-7 grid gap-3 sm:grid-cols-2">
-          {services.map(({ title, description, action, href, icon: Icon, accent, hover }) => (
-            <a key={href} href={href} target="_blank" rel="noopener noreferrer" className={`card focus-ring block p-5 ${hover}`}>
-              <Icon size={25} className={accent} aria-hidden="true" />
-              <h3 className="mt-4 text-lg font-black text-slate-950">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
-              <span className={`mt-4 inline-flex text-sm font-bold ${accent}`}>{action} ↗</span>
-            </a>
-          ))}
+        <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {services.map(({ title, description, action, href, icon: Icon, accent, hover, external }) => {
+            const content = (
+              <>
+                <Icon size={25} className={accent} aria-hidden="true" />
+                <h3 className="mt-4 text-lg font-black text-slate-950">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+                <span className={`mt-4 inline-flex text-sm font-bold ${accent}`}>{action} {external ? '↗' : '→'}</span>
+              </>
+            )
+
+            return external ? (
+              <a key={href} href={href} target="_blank" rel="noopener noreferrer" className={`card focus-ring block p-5 ${hover}`}>
+                {content}
+              </a>
+            ) : (
+              <Link key={href} href={href} className={`card focus-ring block p-5 ${hover}`}>
+                {content}
+              </Link>
+            )
+          })}
         </div>
       </div>
     </section>
