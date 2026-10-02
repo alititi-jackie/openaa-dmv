@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
 import SeoArticleLayout from '@/components/SeoArticleLayout'
 import { californiaSeoArticles, getCaliforniaSeoArticle } from '@/lib/california-seo-content'
+import { getSearchIntentOverride } from '@/lib/seo-search-intent-overrides'
 import { breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from '@/lib/seo'
 
 type Props = { params: Promise<{ seoSlug: string }> }
@@ -15,16 +16,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { seoSlug } = await params
   const article = getCaliforniaSeoArticle(seoSlug)
   if (!article) return {}
+  const intent = getSearchIntentOverride('california', seoSlug)
+  const title = intent?.title ?? article.title
+  const description = intent?.description ?? article.description
+  const keywords = intent?.keywords ?? article.keywords
 
   return {
-    title: article.title,
-    description: article.description,
-    keywords: article.keywords,
+    title,
+    description,
+    keywords,
     alternates: { canonical: `/california/${article.slug}` },
     openGraph: {
       type: 'article',
-      title: article.title,
-      description: article.description,
+      title,
+      description,
       url: `/california/${article.slug}`,
     },
   }
@@ -34,20 +39,22 @@ export default async function CaliforniaSeoArticlePage({ params }: Props) {
   const { seoSlug } = await params
   const article = getCaliforniaSeoArticle(seoSlug)
   if (!article) notFound()
-
+  const intent = getSearchIntentOverride('california', seoSlug)
+  const title = intent?.title ?? article.title
+  const description = intent?.description ?? article.description
   const path = `/california/${article.slug}`
 
   return (
     <>
-      <JsonLd data={webPageJsonLd(article.title, article.description, path)} />
+      <JsonLd data={webPageJsonLd(title, description, path)} />
       <JsonLd data={faqJsonLd(article.faq)} />
       <JsonLd data={breadcrumbJsonLd([
         { name: '首页', path: '/' },
         { name: '加州 DMV', path: '/california' },
-        { name: article.title, path },
+        { name: title, path },
       ])} />
       <SeoArticleLayout
-        title={article.title}
+        title={title}
         intro={article.intro}
         practiceHref="/california"
         practiceLabel="进入加州 DMV 练习"
