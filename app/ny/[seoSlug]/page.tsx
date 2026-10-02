@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import JsonLd from '@/components/JsonLd'
 import SeoArticleLayout from '@/components/SeoArticleLayout'
 import { getNySeoArticle, nySeoArticles } from '@/lib/ny-seo-content'
+import { normalizeSeoKeywords, normalizeSeoText } from '@/lib/seo-copy'
 import { getSearchIntentOverride } from '@/lib/seo-search-intent-overrides'
 import { breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from '@/lib/seo'
 
@@ -17,9 +18,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getNySeoArticle(seoSlug)
   if (!article) return {}
   const intent = getSearchIntentOverride('ny', seoSlug)
-  const title = intent?.title ?? article.title
-  const description = intent?.description ?? article.description
-  const keywords = intent?.keywords ?? article.keywords
+  const title = normalizeSeoText(intent?.title ?? article.title)
+  const description = normalizeSeoText(intent?.description ?? article.description)
+  const keywords = normalizeSeoKeywords(intent?.keywords ?? article.keywords)
 
   return {
     title,
@@ -40,8 +41,8 @@ export default async function NewYorkSeoArticlePage({ params }: Props) {
   const article = getNySeoArticle(seoSlug)
   if (!article) notFound()
   const intent = getSearchIntentOverride('ny', seoSlug)
-  const title = intent?.title ?? article.title
-  const description = intent?.description ?? article.description
+  const title = normalizeSeoText(intent?.title ?? article.title)
+  const description = normalizeSeoText(intent?.description ?? article.description)
   const path = `/ny/${article.slug}`
 
   return (
