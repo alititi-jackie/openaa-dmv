@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import Script from 'next/script'
 import StorageNotice from '@/components/StorageNotice'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body>
+        <Script src="https://openaa.com/analytics/tracker.js" strategy="afterInteractive" />
         <Header />
         <StorageNotice />
         <main>{children}</main>
