@@ -4,6 +4,7 @@ import JsonLd from '@/components/JsonLd'
 import EcosystemServices from '@/components/EcosystemServices'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import StateSearch from '@/components/StateSearch'
+import InstallAppButton from '@/components/InstallAppButton'
 import { dmvStates } from '@/lib/dmv-data'
 import { getStateQuestionCount } from '@/lib/state-question-bank'
 import { breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from '@/lib/seo'
@@ -22,7 +23,7 @@ export default function HomePage() {
     <JsonLd data={faqJsonLd(faq)} />
     <JsonLd data={breadcrumbJsonLd([{ name: 'OpenAA DMV', path: '/' }])} />
     {/* Keep the homepage hero focused; state selection lives in the dedicated selector below. */}
-    <section className="bg-[#e9f2f9]"><div className="page-shell py-10 md:py-14"><div className="mx-auto max-w-3xl text-center"><h1 className="text-4xl font-black leading-tight text-slate-950 md:text-6xl">美国 DMV 驾照题库</h1><p className="mt-4 text-base leading-8 text-slate-700 md:text-lg">各州驾照笔试题库、模拟考试和交通标志练习，支持中文、English 和中英对照学习。</p></div></div></section>
+    <section className="bg-[#e9f2f9]"><div className="page-shell py-10 md:py-14"><div className="mx-auto max-w-3xl text-center"><h1 className="text-4xl font-black leading-tight text-slate-950 md:text-6xl">美国 DMV 驾照题库</h1><p className="mt-4 text-base leading-8 text-slate-700 md:text-lg">各州驾照笔试题库、模拟考试和交通标志练习，支持中文、English 和中英对照学习。</p><div className="mt-6"><InstallAppButton light /></div></div></div></section>
     <StateSearch states={dmvStates.map((state) => ({ ...state, actualCount: state.status === 'live' ? getStateQuestionCount(state.slug) : state.questionCount }))} />
     <OpenAACrossLinks />
     <EcosystemServices />

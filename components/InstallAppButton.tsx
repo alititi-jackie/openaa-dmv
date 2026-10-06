@@ -8,7 +8,7 @@ type InstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
 }
 
-export default function InstallAppButton({ className = '' }: { className?: string }) {
+export default function InstallAppButton({ className = '', light = false }: { className?: string; light?: boolean }) {
   const [promptEvent, setPromptEvent] = useState<InstallPromptEvent | null>(null)
   const [installed, setInstalled] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
@@ -53,7 +53,7 @@ export default function InstallAppButton({ className = '' }: { className?: strin
 
   return (
     <>
-      <button type="button" onClick={install} disabled={installed} className={`focus-ring inline-flex items-center justify-center rounded-md border border-white/20 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-white/10 disabled:cursor-default disabled:bg-white/10 ${className}`}>
+      <button type="button" onClick={install} disabled={installed} className={`focus-ring inline-flex items-center justify-center rounded-md border px-4 py-2.5 text-sm font-bold transition disabled:cursor-default ${light ? 'border-blue-200 bg-white text-blue-800 shadow-sm hover:bg-blue-50 disabled:bg-blue-50' : 'border-white/20 text-white hover:bg-white/10 disabled:bg-white/10'} ${className}`}>
         {installed ? <Check size={16} className="mr-1.5" /> : <Download size={16} className="mr-1.5" />}
         {installed ? '已添加到桌面' : '下载到桌面练习'}
       </button>
