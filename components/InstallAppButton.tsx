@@ -66,7 +66,7 @@ export default function InstallAppButton({ className = '' }: { className?: strin
               <div>
                 <h2 id="install-help-title" className="text-lg font-black">添加到桌面练习</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-600">{isAppleMobile ? '请点击浏览器底部的“分享”按钮，然后选择“添加到主屏幕”。' : '请打开浏览器菜单，选择“安装应用”或“添加到主屏幕”。'}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-500">添加后可像 App 一样从桌面打开；题库和模拟考试仍需联网使用。</p>
+                <p className="mt-2 text-xs leading-5 text-slate-500">添加后可像 App 一样从桌面打开；已打开过的页面和题库支持离线练习。</p>
               </div>
             </div>
             <button type="button" onClick={() => setShowHelp(false)} className="focus-ring mt-5 w-full rounded-md bg-blue-700 px-4 py-2.5 text-sm font-black text-white hover:bg-blue-800">知道了</button>
