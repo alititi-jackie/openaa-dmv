@@ -2,14 +2,9 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 import ShareButton from '@/components/ShareButton'
-import { OPENAA_DMV_URL } from '@/lib/site'
 
 export default function Header() {
-  const pathname = usePathname()
-  const isHome = pathname === '/'
-
   return (
     <header className="sticky top-0 z-50 border-b border-[#dbe3ee] bg-white/95 backdrop-blur-[12px]">
       <div className="mx-auto flex min-h-[72px] max-w-[1040px] items-center gap-[22px] px-4 py-3 max-[760px]:min-h-16 max-[760px]:gap-1.5 max-[760px]:px-2.5 max-[760px]:py-2.5 max-[390px]:gap-1.5">
@@ -32,30 +27,38 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="ml-auto flex shrink-0 items-center gap-6 max-[760px]:gap-2 max-[390px]:gap-[7px]" aria-label="主导航">
-          <Link
-            href="/"
-            aria-current={isHome ? 'page' : undefined}
-            className="focus-ring whitespace-nowrap text-sm max-[760px]:text-xs max-[390px]:text-[11px]"
-            style={{ color: isHome ? '#2563eb' : '#475569', fontWeight: isHome ? 700 : 400 }}
-          >
-            首页
-          </Link>
+        <nav className="ml-auto flex shrink-0 items-center gap-2 max-[760px]:gap-1.5" aria-label="网站导航与页面操作">
           <a
-            href={OPENAA_DMV_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="focus-ring whitespace-nowrap text-sm text-[#475569] max-[760px]:text-xs max-[390px]:text-[11px]"
+            href="https://go.openaa.com/"
+            aria-label="打开 OpenAA 导航"
+            title="OpenAA 导航"
+            className="focus-ring inline-flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-full border border-[#dbe3ee] bg-white text-[#334155] transition-colors hover:bg-[#f8fafc] max-[760px]:h-7 max-[760px]:w-7 max-[390px]:h-[27px] max-[390px]:w-[27px]"
           >
-            OpenAA DMV
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              className="max-[760px]:h-[17px] max-[760px]:w-[17px]"
+            >
+              <rect x="3" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="3" width="7" height="7" rx="1.5" />
+              <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            </svg>
           </a>
-        </nav>
 
-        <ShareButton
-          title="OpenAA DMV"
-          iconOnly
-          className="!h-[38px] !w-[38px] !shrink-0 !rounded-full !border-[#dbe3ee] !bg-white !p-0 !text-[#0f172a] max-[760px]:!h-7 max-[760px]:!w-7 max-[390px]:!h-[27px] max-[390px]:!w-[27px]"
-        />
+          <ShareButton
+            title="OpenAA DMV"
+            iconOnly
+            className="!h-[38px] !w-[38px] !shrink-0 !rounded-full !border-[#dbe3ee] !bg-white !p-0 !text-[#0f172a] hover:!bg-[#f8fafc] max-[760px]:!h-7 max-[760px]:!w-7 max-[390px]:!h-[27px] max-[390px]:!w-[27px]"
+          />
+        </nav>
       </div>
     </header>
   )
