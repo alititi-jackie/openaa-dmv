@@ -94,3 +94,12 @@ select {
     box-shadow: none;
   }
 }
+
+/* 404 page: keep the home button text white in every link state. */
+.not-found-home-button,
+.not-found-home-button:link,
+.not-found-home-button:visited,
+.not-found-home-button:hover,
+.not-found-home-button:active {
+  color: #ffffff !important;
+}
