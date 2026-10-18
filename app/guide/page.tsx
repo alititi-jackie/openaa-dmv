@@ -64,6 +64,26 @@ export default function GuidePage() {
         <div className="mx-auto mt-8 max-w-5xl md:mt-10">
           <SeoGuideAccordion states={states} />
         </div>
+
+        <div className="mx-auto mt-10 max-w-5xl md:mt-14">
+          <h2 className="text-xl font-black tracking-tight text-slate-950 md:text-2xl">更多指南</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Link
+              href="/about"
+              className="focus-ring block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:bg-slate-100"
+            >
+              <div className="text-base font-black text-slate-950">关于 OpenAA DMV</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">平台介绍：OpenAA DMV（openaadmv）是什么、覆盖哪些州、是否收费。</p>
+            </Link>
+            <Link
+              href="/dmv-hours"
+              className="focus-ring block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:bg-slate-100"
+            >
+              <div className="text-base font-black text-slate-950">DMV 营业时间查询</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">DMV open hours：各州办公时间、周末是否开门、节假日安排。</p>
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   )
