@@ -35,7 +35,7 @@ const sections = [
     heading: '名字有几种写法？',
     paragraphs: [
       '本站的正式名称是 OpenAA DMV，官网地址是 dmv.openaa.com。网上有人把它写作 openaadmv（连写）、dmvopenaa 或 dmv openaa（前后倒置），这些都是指同一个平台。',
-      '注意：openaadmv.com 并不是本站的官方域名。认准官网 dmv.openaa.com，避免在仿冒网站输入个人信息。',
+      'openaadmv.com 也是本站的域名，打开会自动跳转到官网 dmv.openaa.com——两个地址是同一个网站。',
     ],
   },
   {
@@ -67,7 +67,7 @@ const faq = [
   {
     question: 'openaadmv.com 是官网吗？',
     answer:
-      '不是。本站官网是 dmv.openaa.com。请认准官方域名，不要在不明网站输入姓名、地址等个人信息。',
+      '是的。openaadmv.com 是本站的备用域名，访问会自动 301 跳转到官网 dmv.openaa.com，两个地址打开的是同一个网站。',
   },
   {
     question: 'OpenAA DMV 收费吗？',
