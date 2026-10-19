@@ -8,7 +8,7 @@ const ny: Record<string, SearchIntentOverride> = {
   'dmv-chinese-test': {
     title: '2026 纽约 DMV 中文题库｜驾照笔试中文试题',
     description: '纽约 DMV 中文题库、驾照笔试中文试题和中文考试练习，适合华人免费在线复习 Permit Test、交通标志和 20 题考试规则。',
-    keywords: ['纽约 DMV 中文题库','纽约 DMV 中文试题','纽约驾照笔试中文试题','纽约 DMV 中文考试','纽约 DMV 中文练习','纽约 DMV 考试题'],
+    keywords: ['纽约 DMV 中文题库','纽约 DMV 中文试题','纽约驾照笔试中文试题','纽约 DMV 中文考试','纽约DMV中文考试','纽约 DMV 中文练习','纽约 DMV 考试题'],
   },
   'english-practice': {
     title: '2026 纽约 DMV 英文考试｜英文练习与模拟考试',
