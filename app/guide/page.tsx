@@ -82,6 +82,27 @@ export default function GuidePage() {
               <div className="text-base font-black text-slate-950">DMV 营业时间查询</div>
               <p className="mt-2 text-sm leading-6 text-slate-600">DMV open hours：各州办公时间、周末是否开门、节假日安排。</p>
             </Link>
+            <Link
+              href="/driving-test"
+              className="focus-ring block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:bg-slate-100"
+            >
+              <div className="text-base font-black text-slate-950">美国驾照考试指南</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">笔试流程、中文考试、考试题及答案解析，考前一次看懂。</p>
+            </Link>
+            <Link
+              href="/practice-test"
+              className="focus-ring block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:bg-slate-100"
+            >
+              <div className="text-base font-black text-slate-950">美国驾照模拟考试</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">免费 DMV practice test 在线练习，按各州真实规则组卷评分。</p>
+            </Link>
+            <Link
+              href="/traffic-signs"
+              className="focus-ring block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:bg-slate-100"
+            >
+              <div className="text-base font-black text-slate-950">美国交通标志中文图解</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">DMV 交通标志大全：按颜色形状分类，附高频标志与记忆方法。</p>
+            </Link>
           </div>
         </div>
       </div>
