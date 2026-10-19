@@ -17,6 +17,7 @@ export const metadata: Metadata = {
     'dmv permit practice test',
     'dmv exam test',
     'drivers test practice',
+    'drivers license test',
     'DMV 模拟考试',
     '驾照模拟题',
   ],
