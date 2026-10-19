@@ -103,6 +103,27 @@ export default function GuidePage() {
               <div className="text-base font-black text-slate-950">美国交通标志中文图解</div>
               <p className="mt-2 text-sm leading-6 text-slate-600">DMV 交通标志大全：按颜色形状分类，附高频标志与记忆方法。</p>
             </Link>
+            <Link
+              href="/road-test"
+              className="focus-ring block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:bg-slate-100"
+            >
+              <div className="text-base font-black text-slate-950">美国驾照路考指南</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">路考流程、考官评分要点、常见挂科原因与预约方法。</p>
+            </Link>
+            <Link
+              href="/chinese-license"
+              className="focus-ring block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:bg-slate-100"
+            >
+              <div className="text-base font-black text-slate-950">中国驾照在美国能用吗</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">中国驾照短期使用规则、换美国驾照流程，国际驾照有没有用。</p>
+            </Link>
+            <Link
+              href="/real-id"
+              className="focus-ring block rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:bg-slate-100"
+            >
+              <div className="text-base font-black text-slate-950">Real ID 指南</div>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Real ID 是什么、申请条件、材料清单与办理流程。</p>
+            </Link>
           </div>
         </div>
       </div>
