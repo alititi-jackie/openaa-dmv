@@ -12,7 +12,7 @@ import { getSiteUrl } from '@/lib/site'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date()
-  const routes = ['/', '/guide', '/about', '/dmv-hours']
+  const routes = ['/', '/guide', '/about', '/dmv-hours', '/driving-test', '/practice-test', '/traffic-signs']
 
   for (const state of dmvStates) {
     if (state.status === 'external') continue
