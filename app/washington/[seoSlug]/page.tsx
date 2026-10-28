@@ -57,6 +57,8 @@ export default async function WashingtonSeoArticlePage({ params }: Props) {
         intro={article.intro}
         practiceHref="/washington"
         practiceLabel="进入华盛顿州 DMV 练习"
+        stateBasePath="/washington"
+        currentSlug={article.slug}
         sections={article.sections}
         faq={article.faq}
         officialName="Washington State Department of Licensing"

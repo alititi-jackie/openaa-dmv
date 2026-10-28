@@ -59,6 +59,8 @@ export default async function NewYorkSeoArticlePage({ params }: Props) {
         intro={article.intro}
         practiceHref="/ny"
         practiceLabel="进入纽约州 DMV 练习"
+        stateBasePath="/ny"
+        currentSlug={article.slug}
         sections={article.sections}
         faq={article.faq}
       />

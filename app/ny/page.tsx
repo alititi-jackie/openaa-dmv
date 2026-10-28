@@ -5,6 +5,7 @@ import ExternalLinkAnchor from '@/components/ExternalLinkAnchor'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import PageStructuredData from '@/components/PageStructuredData'
 import StateHero from '@/components/StateHero'
+import StatePracticeLinks from '@/components/StatePracticeLinks'
 import ToolGrid from '@/components/ToolGrid'
 import { getStateBySlug } from '@/lib/dmv-data'
 import { getNewYorkQuestions } from '@/lib/new-york-bank'
@@ -26,6 +27,7 @@ export default function NewYorkPage(){
       <div className="card p-5"><p className="text-sm font-bold text-teal-700">学习范围</p><p className="mt-2 text-xl font-black">Chapter 4–11 + Road Signs</p></div>
     </div></section>
     <section className="bg-white py-10"><div className="page-shell"><div className="card flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between"><div className="flex gap-3"><Smartphone size={25} className="mt-0.5 shrink-0 text-blue-700" aria-hidden="true"/><div><p className="text-sm font-bold text-blue-700">纽约生活服务</p><h2 className="mt-1 text-xl font-black text-slate-950">需要一个好记的美国手机号？</h2><p className="mt-2 text-sm leading-6 text-slate-600">NumberMobi 提供纽约 917、347、646、929 等精品好记号码和购买说明。</p></div></div><ExternalLinkAnchor href={NUMBERMOBI_NY_URL} className="shrink-0 justify-center border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-bold text-blue-800 hover:bg-blue-100">查看美国靓号</ExternalLinkAnchor></div></div></section>
+    <StatePracticeLinks basePath="/ny" current="" />
     <OpenAACrossLinks/>
   </>
 }

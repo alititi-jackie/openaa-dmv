@@ -9,6 +9,7 @@ import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import PennsylvaniaRules from '@/components/PennsylvaniaRules'
 import WashingtonRules from '@/components/WashingtonRules'
 import StateHero from '@/components/StateHero'
+import StatePracticeLinks from '@/components/StatePracticeLinks'
 import ToolGrid from '@/components/ToolGrid'
 import { dmvStates, getStateBySlug } from '@/lib/dmv-data'
 import { getStateQuestions } from '@/lib/state-question-bank'
@@ -124,6 +125,7 @@ export default async function StatePage({ params }: Props) {
     </div></section>
 
     <section className="bg-white py-10"><div className="page-shell"><div className="card p-5"><h2 className="text-2xl font-black text-slate-950">{state.shortZh} DMV 题库概览</h2><p className="mt-3 text-sm leading-6 text-slate-600">当前开放 {questions.length} 道练习题，覆盖道路规则、交通标志和安全驾驶。练习页支持中文、English、中英对照及即时答案解析，{isCalifornia ? '模拟考试提供参考历史题量设计的 36 题和 46 题练习模式' : isNJ ? '模拟考试按 50 题、答对 40 题通过的形式练习' : isPennsylvania ? '模拟考试按 PennDOT 18 题、答对 15 题通过的标准练习' : isMassachusetts ? '模拟考试按 Massachusetts RMV 25 题、答对 18 题通过的标准练习' : isWashington ? '模拟考试按 Washington DOL 40 题、答对 32 题通过的标准练习' : '模拟考试支持分类随机组卷'}，答错题目会保存到本地错题本。正式考试要求以官方最新规定为准。</p><div className="mt-5 flex flex-wrap gap-3"><Link href={`/${state.slug}/questions`} className="focus-ring inline-flex rounded-md bg-blue-700 px-4 py-2 text-sm font-black text-white">查看全部题目</Link><Link href={`/${state.slug}/mock-test`} className="focus-ring inline-flex rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-800">开始模拟考试</Link><Link href={`/${state.slug}/wrong-questions`} className="focus-ring inline-flex rounded-md border border-slate-300 px-4 py-2 text-sm font-bold text-slate-800">复习错题</Link></div></div></div></section>
+    <StatePracticeLinks basePath={`/${state.slug}`} current="" />
     <OpenAACrossLinks />
   </>
 }

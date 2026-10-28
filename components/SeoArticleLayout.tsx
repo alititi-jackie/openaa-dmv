@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import StatePracticeLinks from './StatePracticeLinks'
 
 type FaqItem = { question: string; answer: string }
 type Section = { heading: string; paragraphs: string[]; bullets?: string[] }
@@ -11,9 +12,11 @@ type Props = {
   sections: Section[]
   faq: FaqItem[]
   officialName?: string
+  stateBasePath?: string
+  currentSlug?: string
 }
 
-export default function SeoArticleLayout({ title, intro, practiceHref, practiceLabel, sections, faq, officialName = 'New York State DMV' }: Props) {
+export default function SeoArticleLayout({ title, intro, practiceHref, practiceLabel, sections, faq, officialName = 'New York State DMV', stateBasePath, currentSlug }: Props) {
   return (
     <article className="bg-white py-6 sm:py-10">
       <div className="page-shell max-w-3xl">
@@ -61,6 +64,8 @@ export default function SeoArticleLayout({ title, intro, practiceHref, practiceL
           <p className="text-sm leading-6 text-slate-500">考试规则、语言和办事要求可能调整，正式考试前请以 {officialName} 最新公布的信息为准。</p>
           <Link href="/" className="mt-4 inline-flex font-bold text-blue-700 hover:text-blue-800">选择其他州练习 →</Link>
         </footer>
+
+        {stateBasePath ? <StatePracticeLinks basePath={stateBasePath} current={currentSlug} embedded /> : null}
       </div>
     </article>
   )

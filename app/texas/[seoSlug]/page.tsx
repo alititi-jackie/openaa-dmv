@@ -51,6 +51,8 @@ export default async function TexasSeoArticlePage({ params }: Props) {
         intro={article.intro}
         practiceHref="/texas"
         practiceLabel="进入德州 DMV 练习"
+        stateBasePath="/texas"
+        currentSlug={article.slug}
         sections={article.sections}
         faq={article.faq}
         officialName="Texas Department of Public Safety"

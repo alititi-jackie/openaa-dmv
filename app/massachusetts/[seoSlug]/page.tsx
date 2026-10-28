@@ -57,6 +57,8 @@ export default async function MassachusettsSeoArticlePage({ params }: Props) {
         intro={article.intro}
         practiceHref="/massachusetts"
         practiceLabel="进入麻州 DMV 练习"
+        stateBasePath="/massachusetts"
+        currentSlug={article.slug}
         sections={article.sections}
         faq={article.faq}
         officialName="Massachusetts RMV"

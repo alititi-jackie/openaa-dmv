@@ -57,6 +57,8 @@ export default async function PennsylvaniaSeoArticlePage({ params }: Props) {
         intro={article.intro}
         practiceHref="/pennsylvania"
         practiceLabel="进入宾州 DMV 练习"
+        stateBasePath="/pennsylvania"
+        currentSlug={article.slug}
         sections={article.sections}
         faq={article.faq}
         officialName="PennDOT Driver and Vehicle Services"

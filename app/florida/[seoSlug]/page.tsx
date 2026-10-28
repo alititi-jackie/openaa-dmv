@@ -51,6 +51,8 @@ export default async function FloridaSeoArticlePage({ params }: Props) {
         intro={article.intro}
         practiceHref="/florida"
         practiceLabel="进入佛州 DMV 练习"
+        stateBasePath="/florida"
+        currentSlug={article.slug}
         sections={article.sections}
         faq={article.faq}
         officialName="Florida Highway Safety and Motor Vehicles"

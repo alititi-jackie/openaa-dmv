@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import BackLink from './BackLink'
+import StatePracticeLinks from './StatePracticeLinks'
 import ExternalLinkAnchor from './ExternalLinkAnchor'
 import type { DmvState } from '@/lib/dmv-data'
 import { OPENAA_TOOLS_DMV_CHECKER_URL } from '@/lib/site'
@@ -65,6 +66,7 @@ export default function StateGuideLayout({ state, basePath = `/${state.slug}`, b
             {extraAside}
           </aside>
         </div>
+        <StatePracticeLinks basePath={basePath} current="guide" embedded />
       </div>
     </section>
   )

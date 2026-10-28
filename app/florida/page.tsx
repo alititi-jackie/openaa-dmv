@@ -5,6 +5,7 @@ import NoticeCard from '@/components/NoticeCard'
 import OpenAACrossLinks from '@/components/OpenAACrossLinks'
 import PageStructuredData from '@/components/PageStructuredData'
 import StateHero from '@/components/StateHero'
+import StatePracticeLinks from '@/components/StatePracticeLinks'
 import ToolGrid from '@/components/ToolGrid'
 import { getStateBySlug } from '@/lib/dmv-data'
 import { getStateQuestions } from '@/lib/state-question-bank'
@@ -26,6 +27,7 @@ export default function FloridaPage(){
       <div className="card p-5"><p className="text-sm font-bold text-teal-700">模拟考试</p><p className="mt-2 text-3xl font-black">每次 50 题</p><p className="mt-2 text-sm text-slate-600">从完整题库随机组卷，不代表全站只有50题。</p></div>
       <div className="card p-5"><p className="text-sm font-bold text-teal-700">学习语言</p><p className="mt-2 text-xl font-black">中文 / English / 中英对照</p><p className="mt-2 text-sm text-slate-600">模拟考试仅 English / 中英对照。</p></div>
     </div></section>
+    <StatePracticeLinks basePath="/florida" current="" />
     <OpenAACrossLinks/>
   </>
 }

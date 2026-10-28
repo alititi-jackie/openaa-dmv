@@ -59,6 +59,8 @@ export default async function CaliforniaSeoArticlePage({ params }: Props) {
         intro={article.intro}
         practiceHref="/california"
         practiceLabel="进入加州 DMV 练习"
+        stateBasePath="/california"
+        currentSlug={article.slug}
         sections={article.sections}
         faq={article.faq}
         officialName="California DMV"

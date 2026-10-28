@@ -17,6 +17,9 @@ export default function Footer() {
         <div>
           <p className="text-sm font-bold text-slate-950">已上线州</p>
           <div className="mt-3 grid gap-2 text-sm text-slate-600">
+            <Link href="/ny" className="hover:text-slate-950">
+              纽约州 New York
+            </Link>
             {liveStates.map((state) => (
               <Link key={state.slug} href={`/${state.slug}`} className="hover:text-slate-950">
                 {state.nameZh} {state.nameEn}

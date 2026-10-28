@@ -57,6 +57,8 @@ export default async function NewJerseySeoArticlePage({ params }: Props) {
         intro={article.intro}
         practiceHref="/new-jersey"
         practiceLabel="进入新泽西 DMV 练习"
+        stateBasePath="/new-jersey"
+        currentSlug={article.slug}
         sections={article.sections}
         faq={article.faq}
         officialName="New Jersey MVC"
