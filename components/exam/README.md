@@ -1,9 +1,16 @@
-# Unified DMV exam architecture
+# DMV考试架构
 
-- Question source remains shared/common questions plus state-specific questions through `getStateQuestions(stateSlug)`.
-- Progress cards, question cards, result cards, language selectors, and mobile exam actions are shared across states.
-- State-specific question count, pass rule and category quotas live in `lib/exam/exam-config.ts`.
-- Exam assembly lives in `lib/exam/exam-engine.ts`.
-- Mock tests keep unfinished answers in memory only. Refreshing, leaving, or closing the page abandons the exam; only submitted scores and wrong answers are stored.
-- New York keeps its independent question bank, exam assembly, and dual pass rule even though it shares the exam UI.
-- Traffic-sign pages should continue to derive their questions from the state question bank rather than maintain a second sign-question list.
+各州共用答题卡、题目卡、结果卡、语言选择器和移动端操作UI，但题源与考试规则保持独立配置。
+
+| 路径 | 题源 / 判分 |
+| --- | --- |
+| 纽约`/ny` | `getNewYorkQuestions()`读取独立150题；`new-york-engine.ts`按20题、4题标志组卷，总正确≥14且标志正确≥2 |
+| 其它七个已上线州 | `getStateQuestions(stateSlug)`组合公共核心与州专属内容；规则见`exam-config.ts`，组卷见`exam-engine.ts` |
+
+通用题库入口及考试配置会拒绝`ny`和`new-york`别名。不要因UI共用而把纽约接入Shared Core、通用百分比判分或通用存储命名。
+
+未提交答案只保留在内存；刷新、离开或关闭页面即放弃当前试卷。已提交的成绩与错题按州保存；错题复习不覆盖完整模拟考试成绩。通用页面会清理旧续考记录，而不是恢复中断考试。
+
+德州、佛州模拟考试有单独语言限制。各州题量、时间、配额、模式与通过目标必须按配置维护，不能简单统一；配置中的练习模式不能描述成实时官方考试承诺。
+
+标志专项从最终州题库派生，不单独维护第二套标志题列表。更新题源、判分、选项、语言或存储后运行`npm test`，UI变化另按[主README](../../README.md)执行本地浏览器回归。
