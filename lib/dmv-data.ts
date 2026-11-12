@@ -106,7 +106,7 @@ export const dmvStates: DmvState[] = [
     nameZh: '新泽西州',
     shortZh: '新泽西',
     status: 'live',
-    questionCount: 188,
+    questionCount: 193,
     examRule: 'New Jersey MVC Knowledge Test 共 50 题。',
     passRule: '至少答对 40 题通过（80%）。',
     officialName: 'New Jersey MVC',
@@ -117,9 +117,9 @@ export const dmvStates: DmvState[] = [
     popular: true,
     summary: '新泽西 MVC 中文、English 和中英对照题库，包含 NJ 专属考点、50 题模拟考试和交通标志。',
     guide: [
-      '阅读 New Jersey Driver Manual，并重点复习路权、标志、安全驾驶和酒驾规则。',
+      '阅读 NJ MVC 官方 New Jersey Driver Manual（官方提供中文版），并重点复习路权、标志、安全驾驶和酒驾规则。',
       '完成完整题库练习，再使用 50 题模拟考试检验掌握程度。',
-      '正式考试前到 MVC 官方页面核对预约、证件和考试地点。',
+      '正式考试前到 MVC 官方页面核对预约、证件和考试地点；相关费用以官方实际收取为准。',
     ],
   },
   {

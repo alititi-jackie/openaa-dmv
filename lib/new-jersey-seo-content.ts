@@ -120,7 +120,7 @@ export const newJerseySeoArticles: NewJerseySeoArticle[] = [
     sections: [
       { heading: 'Permit Test 核心是什么', paragraphs: ['新泽西首次驾驶许可流程中，知识考试是重要步骤。正式 Knowledge Test 共 50 题，至少答对 40 题。'] },
       { heading: '中文用户怎么准备', paragraphs: ['先中文理解规则，再做 50 题模拟；如果以后需要英文驾驶环境，也建议做中英对照。'] },
-      { heading: '正式申请前还要确认什么', paragraphs: ['证件、预约、身份和许可流程可能调整，正式办理前应查看 NJ MVC 最新要求。'] },
+      { heading: '正式申请前还要确认什么', paragraphs: ['证件、预约、身份和许可流程可能调整，正式办理前应查看 NJ MVC 最新要求；相关费用以官方实际收取为准。'] },
     ],
     faq: [
       { question: '新泽西 Permit Test 可以中文考吗？', answer: '新泽西知识考试支持中文。' },
@@ -169,12 +169,12 @@ export const newJerseySeoArticles: NewJerseySeoArticle[] = [
     intro: 'New Jersey MVC 官方提供中文 Driver Manual。对华人来说，官方中文手册加上题库和模拟考试，是最稳妥的学习组合。',
     keywords: ['新泽西驾驶手册中文版','新泽西 DMV 驾驶手册中文','NJ MVC Driver Manual 中文','新州驾驶手册','新泽西驾照考试手册'],
     sections: [
-      { heading: '官方有中文驾驶手册', paragraphs: ['New Jersey MVC 提供中文版本 Driver Manual，可以直接用来理解州内交通规则和考试知识。'] },
+      { heading: '官方有中文驾驶手册', paragraphs: ['New Jersey MVC 提供中文版本 Driver Manual（2026 版），可以直接用来理解州内交通规则和考试知识。本站题库页提供官方中文版和英文版手册 PDF 下载链接，均直达 NJ MVC 官网。'] },
       { heading: '哪些内容最值得重点看', paragraphs: ['重点包括交通法规、标志、酒驾、安全驾驶、路权、停车和新泽西州专属规则。'] },
       { heading: '手册和题库怎么搭配', paragraphs: ['先看手册建立基础，再做题库找薄弱点，最后用 50 题模拟检查是否稳定通过。'] },
     ],
     faq: [
-      { question: '新泽西有官方中文 Driver Manual 吗？', answer: '有，NJ MVC 提供中文驾驶手册。' },
+      { question: '新泽西有官方中文 Driver Manual 吗？', answer: '有，NJ MVC 提供中文驾驶手册（2026 版），本站题库页可直接下载官方 PDF。' },
       { question: '中文手册能代替练习题吗？', answer: '不能完全代替，两者搭配最好。' },
       { question: '题库能代替官方手册吗？', answer: '不能完全代替，正式规则仍应以 NJ MVC 官方资料为准。' },
     ],

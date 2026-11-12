@@ -29,7 +29,7 @@ check('canonical site URL cannot be overwritten by a stale deployment variable',
   assert.equal(SITE_URL, 'https://dmv.openaa.com')
   assert.equal(getSiteUrl('/sitemap.xml'), 'https://dmv.openaa.com/sitemap.xml')
 })
-const counts = { california: 263, 'new-jersey': 188, pennsylvania: 184, massachusetts: 195, washington: 190, texas: 180, florida: 197 }
+const counts = { california: 263, 'new-jersey': 193, pennsylvania: 184, massachusetts: 195, washington: 190, texas: 180, florida: 197 }
 check('every live shared-bank state has explicit exam rules', () => {
   const live = dmvStates.filter((state) => state.status === 'live').map((state) => state.slug).sort()
   assert.deepEqual(live, Object.keys(counts).sort())
