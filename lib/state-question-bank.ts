@@ -3,7 +3,7 @@ import { getQuestionsForState as getBaseQuestionsForState } from './question-ban
 import { sharedCoreBank } from './shared-core-bank'
 import { newJerseyQuestions } from './new-jersey-questions'
 import { newJerseySignQuestions } from './new-jersey-sign-questions'
-import { pennsylvaniaQuestions } from './pennsylvania-questions'
+import { pennsylvaniaOfficialQuestions } from './pennsylvania-official-questions'
 import { massachusettsQuestions } from './massachusetts-questions'
 import { massachusettsJolQuestions } from './massachusetts-questions-jol'
 import { washingtonQuestions } from './washington-questions'
@@ -25,7 +25,12 @@ export function getStateQuestions(stateSlug:string):DmvQuestion[]{
   if (getLiveStateBySlug(stateSlug) && !composedStateBanks.has(stateSlug)) throw new Error(`Missing state-specific question bank for ${stateSlug}`)
   const shared=getBaseQuestionsForState(stateSlug)
   if(stateSlug==='new-jersey') return dedupe([...newJerseyQuestions,...newJerseySignQuestions,...shared.filter(isExamQuestion)])
-  if(stateSlug==='pennsylvania') return dedupe([...pennsylvaniaQuestions,...shared.filter(isExamQuestion)])
+  // Pennsylvania uses ONLY the official PennDOT manual review questions (PUB 95 / PUB 95C,
+  // chapters 2-4, 184 questions). No shared-core questions are mixed in (owner decision 2026-11-12).
+  // Returned without text dedupe on purpose: the official set contains questions that share a
+  // stem but are different questions (e.g. several "此标志表示：" sign items told apart by their
+  // printed figure, and the three under-21 alcohol items that differ only in the answer).
+  if(stateSlug==='pennsylvania') return [...pennsylvaniaOfficialQuestions]
   if(stateSlug==='massachusetts') return dedupe([...massachusettsQuestions,...massachusettsJolQuestions,...shared.filter(isExamQuestion)])
   if(stateSlug==='washington') return dedupe([...washingtonQuestions,...shared.filter(isExamQuestion)])
   if(stateSlug==='texas') return dedupe([...texasQuestions,...texasSpeedQuestions,...shared.filter(isExamQuestion)])
