@@ -29,7 +29,7 @@ check('canonical site URL cannot be overwritten by a stale deployment variable',
   assert.equal(SITE_URL, 'https://dmv.openaa.com')
   assert.equal(getSiteUrl('/sitemap.xml'), 'https://dmv.openaa.com/sitemap.xml')
 })
-const counts = { california: 263, 'new-jersey': 188, pennsylvania: 187, massachusetts: 195, washington: 190, texas: 180, florida: 197 }
+const counts = { california: 263, 'new-jersey': 188, pennsylvania: 184, massachusetts: 195, washington: 190, texas: 180, florida: 197 }
 check('every live shared-bank state has explicit exam rules', () => {
   const live = dmvStates.filter((state) => state.status === 'live').map((state) => state.slug).sort()
   assert.deepEqual(live, Object.keys(counts).sort())
@@ -56,8 +56,14 @@ for (const [slug, count] of Object.entries(counts)) {
   check(`${slug}: unchanged bank, IDs, answers and bilingual structure`, () => {
     const questions = getStateQuestions(slug)
     assert.equal(questions.length, count)
-    assert.ok(questions.some((question) => question.id.startsWith('shared-core-')))
-    assert.ok(questions.some((question) => !question.id.startsWith('shared-core-')))
+    if (slug === 'pennsylvania') {
+      // PA is official-only since 2026-11-12: every question is a PennDOT manual
+      // review question (pa-ch*), and no shared-core question is mixed in.
+      assert.ok(questions.every((question) => question.id.startsWith('pa-ch')))
+    } else {
+      assert.ok(questions.some((question) => question.id.startsWith('shared-core-')))
+      assert.ok(questions.some((question) => !question.id.startsWith('shared-core-')))
+    }
     assert.equal(new Set(questions.map((q) => q.id)).size, count)
     for (const q of questions) {
       assert.ok(Number.isInteger(q.answerIndex) && q.answerIndex >= 0 && q.answerIndex < q.choices.length)

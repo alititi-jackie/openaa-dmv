@@ -9,7 +9,8 @@ export default function PennsylvaniaRules() {
     ['雨刷与车灯', '因天气使用挡风玻璃雨刷时，应同时打开前灯。'],
     ['未满 18 岁', 'Learner’s Permit 通常至少持有 6 个月，并完成 65 小时监督驾驶，其中至少 10 小时夜间、5 小时恶劣天气。'],
     ['积分制度', '驾驶记录达到 6 points 时，PennDOT 会按规定启动相应纠正措施。'],
+    ['酒驾与未成年', '21 岁以下零容忍：血液酒精浓度达到 0.02% 即构成酒驾；未成年饮酒、持酒、运酒均属违法，使用假身份证将被罚款并暂停驾照。'],
   ]
 
-  return <RuleSection eyebrow="PennDOT 重点规则" title="宾州笔试先记住这些规则" description="下面是学习说明，不混入题库充当考题。题库只保留适合知识考试练习的题目。" items={rules} footnote="规则依据 PennDOT 官方 Driver’s Manual 与 Driver and Vehicle Services 公布信息整理；正式考试及法规变化以 PennDOT 最新内容为准。" />
+  return <RuleSection eyebrow="PennDOT 重点规则" title="宾州笔试先记住这些规则" description="下面是依据官方手册整理的学习说明。本站宾州题库已直接采用手册第 2–4 章的章末复习题，共 184 题。" items={rules} footnote="规则依据 PennDOT 官方 Driver’s Manual 与 Driver and Vehicle Services 公布信息整理；正式考试及法规变化以 PennDOT 最新内容为准。" />
 }
