@@ -12,11 +12,11 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
   {
     slug: 'dmv-chinese-test',
     title: '2026 宾州 DMV 中文题库｜驾照笔试中文试题',
-    description: '宾州 DMV 中文题库、驾照笔试中文试题和中文考试练习，适合华人准备 PennDOT 18 题 Knowledge Test。',
-    intro: '准备宾州驾照笔试的华人，最常搜索“宾州 DMV 中文题库”“宾州驾照笔试中文试题”“PennDOT 中文考试”。宾州知识考试支持普通话，正式考试共 18 题。',
+    description: '宾州 DMV 官方中文题库：184 道题全部来自 PennDOT 官方手册章末复习题，适合华人准备 PennDOT 18 题 Knowledge Test。',
+    intro: '准备宾州驾照笔试的华人，最常搜索“宾州 DMV 中文题库”“宾州驾照笔试中文试题”“PennDOT 中文考试”。宾州知识考试支持普通话，正式考试共 18 题。本站题库的 184 道练习题全部取自 PennDOT 官方驾驶手册第 2、3、4 章章末复习题，与考试同一知识来源。',
     keywords: ['宾州 DMV 中文题库','宾州 DMV 中文试题','宾州驾照笔试中文试题','PennDOT 中文题库','宾州中文考试','PA 驾照笔试'],
     sections: [
-      { heading: '宾州中文考试怎么准备', paragraphs: ['PennDOT Knowledge Test 共 18 题，至少答对 15 题通过。中文用户可以先用中文题库理解规则，再通过中英对照熟悉英文术语。','复习重点应覆盖交通标志、宾州驾驶法规、安全驾驶、校车、School Zone、Move Over 和道路规则。'] },
+      { heading: '宾州中文考试怎么准备', paragraphs: ['PennDOT Knowledge Test 共 18 题，至少答对 15 题通过。中文用户可以先用中文题库理解规则，再通过中英对照熟悉英文术语。','复习重点按手册章节走：第 2 章交通标志、信号与标线（58 题），第 3 章学习驾驶与安全驾驶（110 题），第 4 章酒驾与法律（16 题）。'] },
       { heading: '中文题库适合哪些人', paragraphs: ['如果英文阅读速度较慢，先用中文理解规则会更高效。理解之后再切换 English 或中英对照，可以帮助熟悉驾驶场景里的常见词汇。'] },
       { heading: '推荐复习顺序', paragraphs: ['先完成中文题库，再做随机练习和 18 题模拟考试。'], bullets: ['中文理解规则','中英对照熟悉词汇','随机练习查漏补缺','18 题模拟稳定达到 15 题以上'] },
     ],
@@ -24,6 +24,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
       { question: '宾州 DMV 笔试有中文吗？', answer: '有。PennDOT 知识考试支持 Mandarin（普通话）。' },
       { question: '宾州知识考试有多少题？', answer: '正式 Knowledge Test 共 18 题。' },
       { question: '多少题通过？', answer: '至少答对 15 题。' },
+      { question: '本站宾州题库的题目从哪来？', answer: '来自 PennDOT 官方驾驶手册（PUB 95 / 中文版 PUB 95C）第 2、3、4 章的章末复习题，共 184 题，题目与正确答案均为官方原文。' },
     ],
   },
   {
@@ -33,7 +34,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
     intro: '很多华人已经理解中文交规，但会担心宾州 DMV 英文考试里的词汇和句型。最有效的方法是先用中文理解，再用英文题目重复相同知识点。',
     keywords: ['宾州 DMV 英文考试','宾州 DMV 英文练习','宾州 DMV 英文模拟考试','宾州驾照英文考试','PennDOT English test'],
     sections: [
-      { heading: '英文考试主要难在哪里', paragraphs: ['常见难点不是规则本身，而是 right of way、yield、school bus、school zone、move over、parking、pedestrian 等词汇。','把中文规则与英文关键词对应起来，比单独背单词更有效。'] },
+      { heading: '英文考试主要难在哪里', paragraphs: ['常见难点不是规则本身，而是 right of way、yield、school bus、school zone、move over、parking、pedestrian 等词汇。','本站的英文题就是官方英文版手册同一道复习题的原文，与中文逐题对应。把中文规则与英文关键词对应起来，比单独背单词更有效。'] },
       { heading: '华人怎么练英文更快', paragraphs: ['先做中英对照，再切换纯英文。做错时先判断是规则不懂还是英文没看懂。'] },
       { heading: '正式考试前怎么检查', paragraphs: ['建议连续多轮英文模拟考试都稳定达到 15/18 以上，再参加正式考试。'] },
     ],
@@ -47,7 +48,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
     slug: 'bilingual-practice',
     title: '2026 宾州 DMV 中英对照题库｜中英文驾照笔试练习',
     description: '宾州 DMV 中英对照题库和中英文驾照笔试练习，帮助华人同时理解中文规则与 PennDOT 英文考试表达。',
-    intro: '中英对照最适合已经能看懂中文规则，但还不熟悉 DMV 英文关键词的用户。它可以把“规则理解”和“英文适应”放在同一道题里完成。',
+    intro: '中英对照最适合已经能看懂中文规则，但还不熟悉 DMV 英文关键词的用户。它可以把“规则理解”和“英文适应”放在同一道题里完成。本站宾州题的中英对照，用的正是官方手册同一道复习题的中文版与英文版原文。',
     keywords: ['宾州 DMV 中英对照','宾州 DMV 中英文题库','宾州驾照中英文练习','PennDOT 中英对照','PA DMV 双语题库'],
     sections: [
       { heading: '为什么中英对照适合华人', paragraphs: ['同一道知识点同时看到中文和英文，可以快速建立术语对应，例如 yield、right of way、school zone、school bus、move over。'] },
@@ -67,7 +68,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
     intro: '如果你搜索“宾州 DMV 在线练习”“宾州驾照题库”“PennDOT 免费练习”，重点应该是覆盖完整知识点，而不是只记固定答案。',
     keywords: ['宾州 DMV 在线练习','宾州 DMV 免费练习','宾州驾照题库','宾州 DMV 练习题','PennDOT practice test'],
     sections: [
-      { heading: '在线练习应该怎么用', paragraphs: ['第一次学习可按顺序练习，熟悉以后再切换随机模式。这样能避免只靠记题目顺序做答。'] },
+      { heading: '在线练习应该怎么用', paragraphs: ['本站练习题就是官方手册的 184 道章末复习题（第 2 章 58 题、第 3 章 110 题、第 4 章 16 题）。第一次学习可按顺序练习，熟悉以后再切换随机模式，避免只靠记题目顺序作答。'] },
       { heading: '哪些知识值得重点练', paragraphs: ['交通标志、宾州驾驶法规、安全驾驶、校车、School Zone、Move Over、车灯和道路规则都应该覆盖。'] },
       { heading: '练到什么程度再考试', paragraphs: ['正式考试 18 题要答对至少 15 题，建议练习成绩稳定高于通过线。'] },
     ],
@@ -84,7 +85,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
     intro: '宾州正式 Knowledge Test 共 18 题，因此模拟考试最好直接按 18 题节奏练习。中文模拟、英文模拟和中英对照可以分阶段使用。',
     keywords: ['宾州 DMV 中文模拟考试','宾州 DMV 模拟考试','宾州驾照模拟考试','宾州驾照笔试模拟题','PennDOT mock test'],
     sections: [
-      { heading: '为什么要做 18 题模拟', paragraphs: ['正式考试是 18 题，至少答对 15 题。18 题模拟可以更真实地检查正式考试节奏下的稳定性。'] },
+      { heading: '为什么要做 18 题模拟', paragraphs: ['正式考试是 18 题，至少答对 15 题。本站模拟考试从 184 道官方复习题中按正式规则抽 18 题，可以更真实地检查正式考试节奏下的稳定性。'] },
       { heading: '中文模拟和英文模拟怎么搭配', paragraphs: ['先中文确认规则，再用中英对照熟悉术语，最后做英文模拟。'] },
       { heading: '通过一次够不够', paragraphs: ['不建议只看一次成绩。连续多轮稳定达到 15 题以上更可靠。'] },
     ],
@@ -103,7 +104,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
     sections: [
       { heading: '宾州驾照笔试考什么', paragraphs: ['考试内容包括交通标志、宾州驾驶法规和安全驾驶知识。'] },
       { heading: '笔试和 Knowledge Test', paragraphs: ['华人常说“笔试”，PennDOT 官方更多使用 Knowledge Test。备考时可以理解为同一类驾照知识考试。'] },
-      { heading: '怎样复习更稳', paragraphs: ['先看官方手册，再做中文题库，最后用 18 题模拟检查整体掌握。'] },
+      { heading: '怎样复习更稳', paragraphs: ['先看官方手册，再做本站的官方复习题（184 题，与手册章末题一一对应），最后用 18 题模拟检查整体掌握。'] },
     ],
     faq: [
       { question: '宾州驾照笔试多少题？', answer: 'Knowledge Test 共 18 题。' },
@@ -120,7 +121,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
     sections: [
       { heading: 'Permit Test 核心是什么', paragraphs: ['宾州首次驾驶许可流程中，知识考试是重要步骤。正式 Knowledge Test 共 18 题，至少答对 15 题。'] },
       { heading: '中文用户怎么准备', paragraphs: ['先中文理解规则，再做 18 题模拟；同时建议熟悉交通标志和常见英文道路术语。'] },
-      { heading: '正式申请前还要确认什么', paragraphs: ['证件、体检、申请和考试流程可能调整，正式办理前应查看 PennDOT 最新要求。'] },
+      { heading: '正式申请前还要确认什么', paragraphs: ['证件、体检、申请和考试流程可能调整，正式办理前应查看 PennDOT 最新要求；申请与考试费用以官方实际收取为准。'] },
     ],
     faq: [
       { question: '宾州 Permit Test 可以中文考吗？', answer: '宾州知识考试支持普通话。' },
@@ -152,7 +153,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
     intro: '交通标志是宾州驾照笔试的重要部分。华人用户除了认图，还应该理解标志在真实驾驶场景里的含义。',
     keywords: ['宾州 DMV 交通标志题','宾州 DMV 路标题','宾州交通标志中文','PennDOT Road Signs','宾州驾照标志题'],
     sections: [
-      { heading: '交通标志怎么复习', paragraphs: ['不要只记颜色和形状，还要理解看到标志后应该减速、停车、让行还是调整车道。'] },
+      { heading: '交通标志怎么复习', paragraphs: ['不要只记颜色和形状，还要理解看到标志后应该减速、停车、让行还是调整车道。本站第 2 章标志题中，33 道配有官方手册原图，图和手册里完全一致。'] },
       { heading: '宾州还应注意哪些场景', paragraphs: ['School Zone、校车停车规则、Move Over 和道路标线都应该和交通标志一起复习。'] },
       { heading: '中文和英文怎么搭配', paragraphs: ['先中文理解，再用中英对照熟悉 stop、yield、warning、school zone、move over 等常见词。'] },
     ],
@@ -169,7 +170,7 @@ export const pennsylvaniaSeoArticles: PennsylvaniaSeoArticle[] = [
     intro: 'Pennsylvania Driver’s Manual 是准备宾州 Knowledge Test 最重要的官方资料之一。对华人来说，官方手册加上中文题库和模拟考试，是最稳妥的学习组合。',
     keywords: ['宾州驾驶手册中文版','宾州 DMV 驾驶手册中文','PennDOT Driver Manual 中文','PA 驾驶手册','宾州驾照考试手册'],
     sections: [
-      { heading: '官方驾驶手册有什么用', paragraphs: ['PennDOT Driver’s Manual 是考试规则和驾驶知识的重要来源，题库应该用来练习和检测，而不是替代官方资料。'] },
+      { heading: '官方驾驶手册有什么用', paragraphs: ['PennDOT Driver’s Manual 是考试规则和驾驶知识的官方来源。本站宾州题库的 184 道题就直接取自手册第 2、3、4 章的章末复习题；题库页提供官方中文版（PUB 95C）与英文版（PUB 95）PDF 下载链接，直达 pa.gov。'] },
       { heading: '哪些内容最值得重点看', paragraphs: ['重点包括交通标志、宾州驾驶法规、安全驾驶、校车、School Zone、Move Over、车灯和积分制度等。'] },
       { heading: '手册和题库怎么搭配', paragraphs: ['先看手册建立基础，再做题库找薄弱点，最后用 18 题模拟检查是否稳定通过。'] },
     ],

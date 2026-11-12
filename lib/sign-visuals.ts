@@ -85,11 +85,58 @@ const CUSTOM_VISUALS: Record<string, SignMeta> = {
   'ca2-signs-017': custom('ca-wide-double-yellow.svg', '宽间隔双黄线', 'Part 3B', 'California 道路标线学习图'),
 }
 
+
+const PA_SIGNS = '/traffic-signs/pennsylvania'
+const paOfficial = (file: string, alt: string, code: string): SignMeta => ({ imageUrl: `${PA_SIGNS}/${file}`, alt, code, sourceLabel: 'PennDOT 官方手册 PUB 95 原图' })
+
+// Pennsylvania official bank is source-faithful like New York: paired images are
+// the exact figures printed in the PennDOT manual (PUB 95 / PUB 95C) review
+// questions; questions without a printed figure show no image.
+const PA_OFFICIAL_IMAGES: Record<string, SignMeta> = {
+  'pa-ch2-001': paOfficial('pa-ch2-q01.png', '停车标志（红色八角形）', 'PUB 95 CH2 Q1'),
+  'pa-ch2-002': paOfficial('pa-ch2-q02.png', '让行标志（红白倒三角形）', 'PUB 95 CH2 Q2'),
+  'pa-ch2-003': paOfficial('pa-ch2-q03.png', '禁止进入标志', 'PUB 95 CH2 Q3'),
+  'pa-ch2-004': paOfficial('pa-ch2-q04.png', '禁止掉头标志', 'PUB 95 CH2 Q4'),
+  'pa-ch2-005': paOfficial('pa-ch2-q05.png', '禁止右转标志', 'PUB 95 CH2 Q5'),
+  'pa-ch2-006': paOfficial('pa-ch2-q06.png', '分岔高速公路交叉标志', 'PUB 95 CH2 Q6'),
+  'pa-ch2-009': paOfficial('pa-ch2-q09.png', '铁路道口实景照片', 'PUB 95 CH2 Q9'),
+  'pa-ch2-011': paOfficial('pa-ch2-q11.png', '出口专用车道指路标志', 'PUB 95 CH2 Q11'),
+  'pa-ch2-013': paOfficial('pa-ch2-q13.png', '右弯道警告标志', 'PUB 95 CH2 Q13'),
+  'pa-ch2-014': paOfficial('pa-ch2-q14.png', '连续弯道警告标志', 'PUB 95 CH2 Q14'),
+  'pa-ch2-015': paOfficial('pa-ch2-q15.png', '路面湿滑警告标志', 'PUB 95 CH2 Q15'),
+  'pa-ch2-016': paOfficial('pa-ch2-q16.png', '陡坡警告标志', 'PUB 95 CH2 Q16'),
+  'pa-ch2-017': paOfficial('pa-ch2-q17.png', '警告标志（黄色菱形）', 'PUB 95 CH2 Q17'),
+  'pa-ch2-018': paOfficial('pa-ch2-q18.png', '禁止超车区标志（黄色三角旗）', 'PUB 95 CH2 Q18'),
+  'pa-ch2-019': paOfficial('pa-ch2-q19.png', '四个候选标志组合图（编号1-4）', 'PUB 95 CH2 Q19'),
+  'pa-ch2-020': paOfficial('pa-ch2-q20.png', '车道结束向左汇流标志', 'PUB 95 CH2 Q20'),
+  'pa-ch2-021': paOfficial('pa-ch2-q21.png', '十字路口警告标志', 'PUB 95 CH2 Q21'),
+  'pa-ch2-022': paOfficial('pa-ch2-q22.png', '丁字路口警告标志', 'PUB 95 CH2 Q22'),
+  'pa-ch2-023': paOfficial('pa-ch2-q23.png', '软路肩警告标志', 'PUB 95 CH2 Q23'),
+  'pa-ch2-024': paOfficial('pa-ch2-q24.png', '前方交通信号警告标志', 'PUB 95 CH2 Q24'),
+  'pa-ch2-025': paOfficial('pa-ch2-q25.png', '分岔高速公路开始标志', 'PUB 95 CH2 Q25'),
+  'pa-ch2-026': paOfficial('pa-ch2-q26.png', '交通信号灯警告标志', 'PUB 95 CH2 Q26'),
+  'pa-ch2-041': paOfficial('pa-ch2-q41.png', '车道使用控制信号（绿色箭头）', 'PUB 95 CH2 Q41'),
+  'pa-ch2-042': paOfficial('pa-ch2-q42.png', '前方有旗手标志', 'PUB 95 CH2 Q42'),
+  'pa-ch2-043': paOfficial('pa-ch2-q43.png', '前方施工人员标志', 'PUB 95 CH2 Q43'),
+  'pa-ch2-044': paOfficial('pa-ch2-q44.png', '施工区箭头面板', 'PUB 95 CH2 Q44'),
+  'pa-ch2-045': paOfficial('pa-ch2-q45.png', '中央左转车道实景照片', 'PUB 95 CH2 Q45'),
+  'pa-ch2-052': paOfficial('pa-ch2-q52.png', '大型方向箭头标志', 'PUB 95 CH2 Q52'),
+  'pa-ch2-053': paOfficial('pa-ch2-q53.png', '向左急弯人字纹标志', 'PUB 95 CH2 Q53'),
+  'pa-ch2-055': paOfficial('pa-ch2-q55.png', '限速20标志实景照片', 'PUB 95 CH2 Q55'),
+  'pa-ch2-056': paOfficial('pa-ch2-q56.png', '四个候选标志组合图（编号1-4）', 'PUB 95 CH2 Q56'),
+  'pa-ch2-057': paOfficial('pa-ch2-q57.png', '中央车道左转专用标志', 'PUB 95 CH2 Q57'),
+  'pa-ch2-058': paOfficial('pa-ch2-q58.png', '四个候选标志组合图（编号1-4）', 'PUB 95 CH2 Q58'),
+  'pa-ch3-030': paOfficial('pa-ch3-q30.png', '手势信号实景照片（左臂向下：减速或停车）', 'PUB 95 CH3 Q30'),
+  'pa-ch3-040': paOfficial('pa-ch3-q40.png', '手势信号实景照片（左臂向上：右转）', 'PUB 95 CH3 Q40'),
+  'pa-ch3-041': paOfficial('pa-ch3-q41.png', '手势信号实景照片（左臂平伸：左转）', 'PUB 95 CH3 Q41'),
+}
+
 export function getQuestionSignMeta(question: DmvQuestion): SignMeta | null {
   // New York is source-faithful: if the original OpenAA question has an image,
   // use that exact image; if the source image field is empty, show no invented
   // representative sign. This keeps dmv.openaa.com/ny aligned with OpenAA.com/dmv.
   if (question.id.startsWith('ny-openaa-')) return NEW_YORK_SOURCE_IMAGES[question.id] ?? null
+  if (question.id.startsWith('pa-ch')) return PA_OFFICIAL_IMAGES[question.id] ?? null
 
   if (question.category !== 'signs') return null
   const customMeta = CUSTOM_VISUALS[question.id]
