@@ -37,5 +37,14 @@ export default async function QuestionsPage({ params }: Props) {
           </div>
           <p className="mt-2 text-xs text-[#7a879c]">两个链接均直达宾州政府官网 pa.gov 官方文件。</p>
         </div>
+      ) : state.slug === 'new-jersey' ? (
+        <div className="mb-6 rounded-2xl border border-[#dbe4f0] bg-white p-5">
+          <p className="text-sm leading-6 text-[#40506b]">本站新泽西题库内容对照 NJ MVC 官方驾驶手册 <strong>New Jersey Driver Manual（2026 版）</strong>整理。官方手册提供中文版和英文版 PDF，可直接下载。</p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <a href="https://www.nj.gov/mvc/pdf/license/chinesemanual.pdf" target="_blank" rel="noopener noreferrer" style={{ color: '#1d4ed8' }} className="rounded-full border border-[#1d4ed8] bg-white px-4 py-2 text-sm font-semibold">下载官方中文手册 PDF</a>
+            <a href="https://www.nj.gov/mvc/pdf/license/drivermanual.pdf" target="_blank" rel="noopener noreferrer" style={{ color: '#1d4ed8' }} className="rounded-full border border-[#1d4ed8] bg-white px-4 py-2 text-sm font-semibold">Download English Manual</a>
+          </div>
+          <p className="mt-2 text-xs text-[#7a879c]">两个链接均直达新泽西州政府官网 nj.gov 官方文件。</p>
+        </div>
       ) : null}<QuestionsClient questions={questions} storageKey={`openaa-dmv:${state.slug}:wrong`} stateSlug={state.slug} /><StatePracticeLinks basePath={`/${state.slug}`} current="questions" embedded /></div></section>
 }
