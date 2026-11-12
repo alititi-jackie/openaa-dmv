@@ -32,8 +32,8 @@ export default async function QuestionsPage({ params }: Props) {
         <div className="mb-6 rounded-2xl border border-[#dbe4f0] bg-white p-5">
           <p className="text-sm leading-6 text-[#40506b]">本站宾州题库题目来源：PennDOT 官方驾驶手册 <strong>PUB 95（4-21）</strong>第 2、3、4 章章末复习题，共 184 题。题目、选项与正确答案均为官方原文，标志题配手册原图，解析由本站依据手册正文编写。</p>
           <div className="mt-3 flex flex-wrap gap-3">
-            <a href="https://www.pa.gov/content/dam/copapwp-pagov/en/penndot/documents/public/dvspubsforms/bdl/bdl-manuals/pa-drivers-manual-non-commercial/chinese/pub%2095c.pdf" target="_blank" rel="noopener noreferrer" className="rounded-full bg-[#1d4ed8] px-4 py-2 text-sm font-semibold text-white">下载官方中文手册 PDF（含复习题）</a>
-            <a href="https://www.pa.gov/content/dam/copapwp-pagov/en/penndot/documents/public/dvspubsforms/bdl/bdl-manuals/pa-drivers-manual-non-commercial/english/pub%2095.pdf" target="_blank" rel="noopener noreferrer" className="rounded-full border border-[#1d4ed8] px-4 py-2 text-sm font-semibold text-[#1d4ed8]">Download English Manual (PUB 95)</a>
+            <a href="https://www.pa.gov/content/dam/copapwp-pagov/en/penndot/documents/public/dvspubsforms/bdl/bdl-manuals/pa-drivers-manual-non-commercial/chinese/pub%2095c.pdf" target="_blank" rel="noopener noreferrer" style={{ color: '#1d4ed8' }} className="rounded-full border border-[#1d4ed8] bg-white px-4 py-2 text-sm font-semibold">下载官方中文手册 PDF（含复习题）</a>
+            <a href="https://www.pa.gov/content/dam/copapwp-pagov/en/penndot/documents/public/dvspubsforms/bdl/bdl-manuals/pa-drivers-manual-non-commercial/english/pub%2095.pdf" target="_blank" rel="noopener noreferrer" style={{ color: '#1d4ed8' }} className="rounded-full border border-[#1d4ed8] bg-white px-4 py-2 text-sm font-semibold">Download English Manual (PUB 95)</a>
           </div>
           <p className="mt-2 text-xs text-[#7a879c]">两个链接均直达宾州政府官网 pa.gov 官方文件。</p>
         </div>
