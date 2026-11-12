@@ -20,4 +20,9 @@ export const newJerseyQuestions: DmvQuestion[] = [
   { id:'nj-alcohol-002', category:'safety', question:'新泽西的 Implied Consent Law（默示同意法）与什么有关？', choices:['涉嫌酒驾被捕时接受呼气测试','允许朋友驾驶你的车','所有乘客必须坐后排'], answerIndex:0, explanation:'NJ MVC 官方样题明确考查涉嫌酒驾被捕时的呼气测试默示同意规则。' },
   { id:'nj-alcohol-003', category:'safety', question:'一杯约5盎司的葡萄酒，其酒精量大致相当于哪一种饮品？', choices:['一罐约12盎司普通啤酒','一整瓶威士忌','六罐啤酒'], answerIndex:0, explanation:'NJ MVC 官方样题直接考查标准饮酒量之间的酒精含量比较。' },
   { id:'nj-schoolbus-001', category:'rules', question:'在新泽西，跟在闪红灯并停车的校车后方时，通常至少应在多远处停车？', choices:['25英尺','10英尺','5英尺'], answerIndex:0, explanation:'NJ MVC 官方样题要求后方驾驶人至少在校车25英尺外停车。' },
+  { id:'nj-rules-007', category:'rules', question:'在新泽西州，登记一辆机动车时，申请人至少需要多少岁？', choices:['17岁','16岁','15岁','21岁'], answerIndex:0, explanation:'新泽西规定，登记机动车的申请人须年满17岁。' },
+  { id:'nj-rules-008', category:'rules', question:'驾驶时，在下列哪些情况下你必须停车？', choices:['在有停车标志的路口','在红灯处','交通警察命令你停车时','以上全部'], answerIndex:3, explanation:'遇到停车标志、红灯或交通警察的停车指令，驾驶人都必须停车。' },
+  { id:'nj-rules-009', category:'rules', question:'在下列哪种情况下，你不需要为冷冻甜点车（冰淇淋车）停车？', choices:['它正闪着红灯时','它伸出了停车信号臂时','有人正穿过道路、往返于冷冻甜点车时','在双向分隔公路上，你位于安全岛或抬高式中央分隔带的另一侧时'], answerIndex:3, explanation:'接近闪红灯并伸出停车信号臂的冷冻甜点车时必须停车，然后以不超过15 mph的速度通过；但在双向分隔公路上、你位于安全岛或抬高式中央分隔带另一侧时，无需停车。' },
+  { id:'nj-safety-005', category:'safety', question:'车辆的停车距离从来不取决于下列哪一项？', choices:['你自己的反应时间','一天中的时段','车辆刹车的状态','轮胎的状态和类型'], answerIndex:1, explanation:'官方手册列出的停车距离因素包括驾驶人反应时间、天气与能见度、车辆重量、刹车状态、轮胎状态和类型、路面条件以及车速，与一天中的时段无关。' },
+  { id:'nj-safety-006', category:'safety', question:'在高速公路干线上驾驶时，你应该：', choices:['保持警觉','目光不断扫视路面','随时准备应对道路危险','以上全部'], answerIndex:3, explanation:'在高速公路干线上驾驶时，应保持警觉、目光不断扫视，并随时准备应对道路危险。' },
 ]
